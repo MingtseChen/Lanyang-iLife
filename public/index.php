@@ -1,6 +1,6 @@
 <?php
 
-include_once(__DIR__ .'../vendor/autoload.php');
+include_once(__DIR__ .'/../vendor/autoload.php');
 
 use DebugBar\StandardDebugBar;
 
@@ -32,4 +32,3 @@ include_once("inc/header.php");
 <?php
 include_once("inc/footer.php");
 ?>
-
