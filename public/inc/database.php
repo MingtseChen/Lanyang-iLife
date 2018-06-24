@@ -47,9 +47,4 @@ class Finder
         else
             return false;
     }
-
-    public function getAll()
-    {
-
-    }
 }

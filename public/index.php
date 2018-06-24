@@ -1,5 +1,17 @@
 <?php
+
+include_once('../vendor/autoload.php');
+
+use DebugBar\StandardDebugBar;
+
+$debugbar = new StandardDebugBar();
+$debugbarRenderer = $debugbar->getJavascriptRenderer();
+
+$debugbar["messages"]->addMessage("hello world!");
+
+
 include_once("inc/header.php");
+
 ?>
 <section>
     <div class="container">

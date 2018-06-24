@@ -17,4 +17,4 @@
         crossorigin="anonymous"></script>
 <?php echo $debugbarRenderer->render() ?>
 </body>
-
+</html>

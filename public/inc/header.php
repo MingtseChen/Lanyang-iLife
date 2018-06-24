@@ -1,17 +1,8 @@
-<?php
-include_once('../../vendor/autoload.php');
-
-use DebugBar\StandardDebugBar;
-
-$debugbar = new StandardDebugBar();
-$debugbarRenderer = $debugbar->getJavascriptRenderer();
-
-$debugbar["messages"]->addMessage("hello world!");
-?>
 <!doctype html>
 <html lang="en">
 
 <head>
+    <?php echo $debugbarRenderer->renderHead() ?>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -52,7 +43,6 @@ $debugbar["messages"]->addMessage("hello world!");
             /*min-height: 650px;*/
         }
     </style>
-    <?php echo $debugbarRenderer->renderHead() ?>
 </head>
 
 <body>
