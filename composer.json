@@ -1,0 +1,14 @@
+{
+  "name": "chenmt/tkul",
+  "require": {
+    "maximebf/debugbar": ">=1.0.0",
+    "j4mie/idiorm": "^1.5"
+  },
+  "authors": [
+    {
+      "name": "MT.Chen",
+      "email": "gene31105@gmail.com"
+    }
+  ],
+  "description": "TKU iLife"
+}
