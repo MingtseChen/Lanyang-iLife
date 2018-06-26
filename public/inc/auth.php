@@ -32,4 +32,18 @@ class Auth
 
         return $this->headers["sso_roletype"];
     }
+
+    public function requestLogin()
+    {
+
+    }
+    public function isLogin()
+    {
+        if(is_null($this->sso_userid()))
+            return false;
+        else if (!is_null($this->sso_userid()))
+            return true;
+        else
+            return false;
+    }
 }

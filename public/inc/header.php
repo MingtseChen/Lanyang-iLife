@@ -1,3 +1,9 @@
+<?php
+$authUser = new Auth;
+$auth_status = $authUser->isLogin();
+$debugbar["messages"]->addMessage("Login Status : $auth_status");
+//$debugbar["messages"]->addMessage($authUser->isLogin());
+?>
 <!doctype html>
 <html lang="en">
 
@@ -75,11 +81,14 @@
                 </ul>
                 <ul class="navbar-nav ml-auto">
                     <!-- Authentication Links -->
-                    <li class="nav-item"><a class="nav-link" href="http://web.lanyang.tku.edu.tw">登入</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://sso.tku.edu.tw/ilifelytest/public/">登入</a>
+                    </li>
+                    <?php if($auth_status){ ?>
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ Auth::user()->name }} <span class="caret"></span>
+                            <?php echo $authUser->sso_userid()?><span class="caret"></span>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="#"
@@ -90,6 +99,7 @@
                             </form>
                         </div>
                     </li>
+                    <?php } ?>
                 </ul>
             </div>
         </div>

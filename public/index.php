@@ -1,6 +1,6 @@
 <?php
 
-include_once(__DIR__ .'/../vendor/autoload.php');
+include_once(__DIR__ . '/../vendor/autoload.php');
 
 use DebugBar\StandardDebugBar;
 
@@ -9,8 +9,9 @@ $debugbarRenderer = $debugbar->getJavascriptRenderer();
 
 $debugbar["messages"]->addMessage("hello world!");
 
+include_once(__DIR__ . "/inc/auth.php");
+include_once(__DIR__ . "/inc/header.php");
 
-include_once("inc/header.php");
 
 ?>
 <section>
