@@ -1,5 +1,5 @@
 <?php
-include_once("../../vendor/autoload.php");
+include_once(__DIR__."/../../vendor/autoload.php");
 
 class Finder
 {
@@ -48,3 +48,5 @@ class Finder
             return false;
     }
 }
+$find = new Finder;
+echo $find->fetch(403840308)->getUsername();
