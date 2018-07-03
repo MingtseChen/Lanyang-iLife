@@ -24,8 +24,7 @@ class Auth
 
     public function sso_userid()
     {
-        $user = $this->headers["sso_userid"];
-        if (!is_null($user))
+        if (array_key_exists("sso_userid",$this->headers))
             return $this->headers["sso_userid"];
         else
             return null;
