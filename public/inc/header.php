@@ -81,24 +81,26 @@ $debugbar["messages"]->addMessage("Login Status : $auth_status");
                 </ul>
                 <ul class="navbar-nav ml-auto">
                     <!-- Authentication Links -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="http://sso.tku.edu.tw/ilifelytest/public/">登入</a>
-                    </li>
-                    <?php if($auth_status){ ?>
-                    <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <?php echo $authUser->sso_userid()?><span class="caret"></span>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                {{ __('Logout') }}
+                    <?php if (!$auth_status) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="http://sso.tku.edu.tw/ilifelytest/public/">登入</a>
+                        </li>
+                    <?php } ?>
+                    <?php if ($auth_status) { ?>
+                        <li class="nav-item dropdown">
+                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <?php echo $authUser->sso_userid() ?><span class="caret"></span>
                             </a>
-                            <form id="logout-form" action="#" method="POST" style="display: none;">
-                            </form>
-                        </div>
-                    </li>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#"
+                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    {{ __('Logout') }}
+                                </a>
+                                <form id="logout-form" action="#" method="POST" style="display: none;">
+                                </form>
+                            </div>
+                        </li>
                     <?php } ?>
                 </ul>
             </div>
