@@ -24,7 +24,11 @@ class Auth
 
     public function sso_userid()
     {
-        return $this->headers["sso_userid"];
+        $user = $this->headers["sso_userid"];
+        if (!is_null($user))
+            return $this->headers["sso_userid"];
+        else
+            return null;
     }
 
     public function sso_roletype()
@@ -37,13 +41,12 @@ class Auth
     {
 
     }
+
     public function isLogin()
     {
-        if(is_null($this->sso_userid()))
+        if (is_null($this->sso_userid()))
             return false;
-        else if (!is_null($this->sso_userid()))
-            return true;
         else
-            return false;
+            return true;
     }
 }
