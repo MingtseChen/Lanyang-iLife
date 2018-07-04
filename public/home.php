@@ -1,21 +1,13 @@
 <?php
 
-include_once(__DIR__ . '/../vendor/autoload.php');
-
-use DebugBar\StandardDebugBar;
-
-$debugbar = new StandardDebugBar();
-$debugbarRenderer = $debugbar->getJavascriptRenderer();
-
-$debugbar["messages"]->addMessage("hello world!");
+include_once(__DIR__ . '../../vendor/autoload.php');
 
 include_once(__DIR__ . "/inc/auth.php");
-//include_once(__DIR__ . "/inc/header.php");
+
 
 $authUser = new Auth;
 $auth_status = $authUser->isLogin();
-$debugbar["messages"]->addMessage("Login Status : $auth_status");
-//$debugbar["messages"]->addMessage($authUser->isLogin());
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -25,7 +17,6 @@ $debugbar["messages"]->addMessage("Login Status : $auth_status");
             src="https://code.jquery.com/jquery-3.3.1.js"
             integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
             crossorigin="anonymous"></script>
-    <?php echo $debugbarRenderer->renderHead() ?>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -55,7 +46,7 @@ $debugbar["messages"]->addMessage("Login Status : $auth_status");
         header.masthead-login {
             /*padding-top: 10rem;*/
             /*padding-bottom: calc(10rem - 56px);*/
-            background-image: url("../../assets/cover.jpg");
+            background-image: url("../assets/bg.jpg");
             -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
@@ -147,7 +138,6 @@ $debugbar["messages"]->addMessage("Login Status : $auth_status");
         </div>
     </footer>
 </div>
-<?php echo $debugbarRenderer->render() ?>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
