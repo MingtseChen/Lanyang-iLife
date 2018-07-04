@@ -2,7 +2,9 @@
   "name": "chenmt/tkul",
   "require": {
     "maximebf/debugbar": "1.*",
-    "j4mie/idiorm": "^1.5"
+    "j4mie/idiorm": "^1.5",
+    "klein/klein": "^2.1",
+    "filp/whoops": "^2.2"
   },
   "authors": [
     {
