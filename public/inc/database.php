@@ -74,11 +74,3 @@ class Finder
 
 }
 
-$find = new Finder;
-//echo $find->fetch(403840302)->getUsername();
-try {
-    echo $find->fetch(403840303)->getUsername();
-} catch (NoUserException $e) {
-    echo $e->errorMessage();
-}
-
