@@ -1,5 +1,15 @@
 <?php
-include_once(__DIR__."/../../vendor/autoload.php");
+include_once(__DIR__ . "/../../vendor/autoload.php");
+
+class NoUserException extends Exception
+{
+    public function errorMessage()
+    {
+        //error message
+        $errorMsg = "No user record";
+        return $errorMsg;
+    }
+}
 
 class Finder
 {
@@ -17,10 +27,16 @@ class Finder
         ));
     }
 
+    /**
+     * @throws NoUserException
+     */
     public function fetch($id)
     {
-        $table = ORM::for_table('xoops2_users');
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
+        $table = ORM::forTable('xoops2_users')->selectMany('xoops2_users.uid', 'email', 'name', 'uname', 'xoops2_groups_users_link.groupid')->innerJoin('xoops2_groups_users_link', array('xoops2_users.uid', '=', 'xoops2_groups_users_link.uid'));
         $this->row = $table->where('uname', $id)->findOne();
+        if (is_bool($this->row))
+            throw new NoUserException();
         return $this;
     }
 
@@ -47,6 +63,22 @@ class Finder
         else
             return false;
     }
+
+    public function getRank()
+    {
+        if ($gid = $this->row->groupid)
+            return $gid;
+        else
+            return false;
+    }
+
 }
+
 $find = new Finder;
-echo $find->fetch(403840308)->getUsername();
+//echo $find->fetch(403840302)->getUsername();
+try {
+    echo $find->fetch(403840303)->getUsername();
+} catch (NoUserException $e) {
+    echo $e->errorMessage();
+}
+
