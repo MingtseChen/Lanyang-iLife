@@ -7,6 +7,8 @@ $whoops = new \Whoops\Run;
 $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
 $whoops->register();
 
+
+
 $router = new \Klein\Klein();
 
 //set layout page
