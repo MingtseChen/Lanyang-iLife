@@ -17,8 +17,16 @@ class Finder
 
     function __construct()
     {
+//        ORM::configure(array(
+//            'connection_string' => 'mysql:host=163.13.21.1;dbname=xoops',
+//            'username' => 'chenmt',
+//            'password' => '403840308',
+//            'charset' => 'utf8mb4',
+//            'driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'),
+//            'return_result_sets', true
+//        ));
         ORM::configure(array(
-            'connection_string' => 'mysql:host=163.13.21.1;dbname=xoops',
+            'connection_string' => 'mysql:host=163.13.21.1;dbname=iLife',
             'username' => 'chenmt',
             'password' => '403840308',
             'charset' => 'utf8mb4',
@@ -33,7 +41,7 @@ class Finder
     public function fetch($id)
     {
         /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $table = ORM::forTable('xoops2_users')->selectMany('xoops2_users.uid', 'email', 'name', 'uname', 'xoops2_groups_users_link.groupid')->innerJoin('xoops2_groups_users_link', array('xoops2_users.uid', '=', 'xoops2_groups_users_link.uid'));
+        $table = ORM::forTable('users')->selectMany('users.uid', 'email', 'name', 'uname', 'groups_users.groupid')->leftOuterJoin('groups_users', array('users.uid', '=', 'groups_users.uid'));
         $this->row = $table->where('uname', $id)->findOne();
         if (is_bool($this->row))
             throw new NoUserException();
@@ -73,4 +81,5 @@ class Finder
     }
 
 }
-
+$find = new Finder();
+$find->fetch(403840308)->getUsername();
