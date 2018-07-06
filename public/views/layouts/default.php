@@ -93,7 +93,7 @@ $auth_status = $authUser->isLogin();
                     <!-- Authentication Links -->
                     <?php if (!$auth_status) { ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="http://sso.tku.edu.tw/ilifelytest">登入</a>
+                            <a class="nav-link" href="/login">登入</a>
                         </li>
                     <?php } ?>
                     <?php if ($auth_status) { ?>

@@ -1,30 +1,40 @@
-    <header class="masthead-login d-flex">
-        <div class="container my-auto">
-            <div class="row">
-                <div class="col-lg-5 mx-auto" style="display: block">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Login</h4>
-                            <form method="POST" action="">
-                                <div class="form-group">
-                                    <label>Login</label>
-                                    <input type="text" class="form-control" placeholder="Username" name="name">
+<!--TODO: Add expand effect on admin login form-->
+<header class="masthead-login d-flex">
+    <div class="container my-auto">
+        <div class="row">
+            <div class="col-lg-5 mx-auto" style="display: block">
+                <div class="card border-dark bg-light mb-3">
+                    <div class="card-header bg-dark text-white"><i class="fas fa-sign-in-alt"></i> Login</div>
+                    <div class="card-body">
+                        <form method="POST" action="">
+                            <a  class="btn btn-info btn-block mt-2 text-white" aria-disabled="true" href="https://sso.tku.edu.tw/ilifelytest">SSO Login</a>
+                            <p class="text-center m-2 text-muted">or</p>
+                            <!-- username -->
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id=""><i class="fas fa-user"></i></span>
                                 </div>
-                                <div class="form-group">
-                                    <label>Password <a href="#">忘記密碼？</a></label>
-                                    <input type="password" class="form-control" placeholder="Password" name="password">
+                                <input type="text" class="form-control" placeholder="Username" name="name">
+                            </div>
+                            <!-- password -->
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id=""><i class="fas fa-lock"></i></span>
                                 </div>
-                                <div class="form-group form-check">
-                                    <input type="checkbox" class="form-check-input" name="remember">
-                                    <label class="form-check-label">記住我</label>
-                                </div>
-                                <button type="submit" class="btn btn-dark btn-block">Submit</button>
-                            </form>
-                        </div>
+                                <input type="password" class="form-control" placeholder="Password" name="password">
+                            </div>
 
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" name="remember" value="true">
+                                <label class="form-check-label">Remember me</label>
+                            </div>
+                            <button type="submit" class="btn btn-dark btn-block mt-5">Submit</button>
+                        </form>
                     </div>
-                </div>
 
+                </div>
             </div>
+
         </div>
-    </header>
+    </div>
+</header>
