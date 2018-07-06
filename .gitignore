@@ -172,3 +172,6 @@ composer.phar
 
 TKUPM
 
+/vendor/
+/logs/*
+!/logs/README.md
