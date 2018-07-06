@@ -21,6 +21,11 @@ $router->respond('/', function ($request, $response, $service) {
 $router->respond('GET', '/login', function ($request, $response, $service) {
     $service->render('views/auth/login.php');
 });
+$router->respond('POST', '/login', function ($request, $response, $service) {
+    $send = $request->paramsPost('name','password','remember');
+    var_dump($send);
+});
+
 
 
 $router->dispatch();

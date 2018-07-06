@@ -7,7 +7,7 @@
                     <div class="card-header bg-dark text-white"><i class="fas fa-sign-in-alt"></i> Login</div>
                     <div class="card-body">
                         <form method="POST" action="">
-                            <a  class="btn btn-info btn-block mt-2 text-white" aria-disabled="true">SSO Login</a>
+                            <a  class="btn btn-info btn-block mt-2 text-white" aria-disabled="true" href="https://sso.tku.edu.tw/ilifelytest">SSO Login</a>
                             <p class="text-center m-2 text-muted">or</p>
                             <!-- username -->
                             <div class="input-group mb-3">
@@ -25,7 +25,7 @@
                             </div>
 
                             <div class="form-group form-check">
-                                <input type="checkbox" class="form-check-input" name="remember">
+                                <input type="checkbox" class="form-check-input" name="remember" value="true">
                                 <label class="form-check-label">Remember me</label>
                             </div>
                             <button type="submit" class="btn btn-dark btn-block mt-5">Submit</button>
