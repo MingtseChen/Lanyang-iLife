@@ -18,9 +18,15 @@
         "monolog/monolog": "^1.17",
         "php-console/php-console": "^3.1",
         "j4mie/idiorm": "^1.5",
-        "klein/klein": "^2.1"
+        "klein/klein": "^2.1",
+        "zeuxisoo/slim-whoops": "0.6.*",
+        "davidepastore/slim-validation": "^0.5.0",
+        "runcmf/runtracy": "^0.2.10",
+        "slim/twig-view": "^2.4"
     },
     "require-dev": {
+        "squizlabs/php_codesniffer": "3.*",
+      "phpmd/phpmd" : "@stable",
         "phpunit/phpunit": ">=4.8 < 6.0"
     },
     "autoload-dev": {

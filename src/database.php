@@ -1,6 +1,8 @@
 <?php
-include_once(__DIR__ . "/../../vendor/autoload.php");
 
+/**
+ * Class NoUserException
+ */
 class NoUserException extends Exception
 {
     public function errorMessage()
@@ -11,28 +13,24 @@ class NoUserException extends Exception
     }
 }
 
+/**
+ * Class Finder
+ */
 class Finder
 {
     private $row;
 
-    function __construct()
+    function __construct($setting)
     {
 //        ORM::configure(array(
-//            'connection_string' => 'mysql:host=163.13.21.1;dbname=xoops',
+//            'connection_string' => 'mysql:host=163.13.21.1;dbname=iLife',
 //            'username' => 'chenmt',
 //            'password' => '403840308',
 //            'charset' => 'utf8mb4',
 //            'driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'),
 //            'return_result_sets', true
-//        ));
-        ORM::configure(array(
-            'connection_string' => 'mysql:host=163.13.21.1;dbname=iLife',
-            'username' => 'chenmt',
-            'password' => '403840308',
-            'charset' => 'utf8mb4',
-            'driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'),
-            'return_result_sets', true
-        ));
+//    ));
+        ORM::configure($setting);
     }
 
     /**
@@ -81,5 +79,3 @@ class Finder
     }
 
 }
-$find = new Finder();
-$find->fetch(403840308)->getUsername();
