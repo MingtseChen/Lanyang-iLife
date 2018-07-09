@@ -18,21 +18,31 @@ $container['logger'] = function ($c) {
     return $logger;
 };
 
-//Set up twig engine
-//$container['view'] = function ($c) {
-//    $settings = $c->get('settings');
-//    $view = new Slim\Views\Twig($settings['view']['template_path'], $settings['view']['twig']);
-//    // Add extensions
+// twig engine
+$container['view'] = function ($c) {
+    $settings = $c->get('settings');
+    $view = new Slim\Views\Twig($settings['view']['template_path'], $settings['view']['twig']);
+    // Add extensions
+    $basePath = rtrim(str_ireplace('index.php', '', $c->get('request')->getUri()->getBasePath()), '/');
+    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $basePath));
 //    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
-//    $view->addExtension(new Twig_Extension_Debug());
-//    return $view;
-//};
+    $view->addExtension(new Twig_Extension_Debug());
+    return $view;
+};
 
-// Set up database
+// database
 require __DIR__ . '/../src/database.php';
 
 $container['db'] = function ($c) {
     $settings = $c->get('settings')['db'];
     $db = new Finder($settings);
     return $db;
+};
+
+// auth
+require __DIR__ . '/../src/auth.php';
+
+$container['auth'] = function () {
+    $auth = new Auth();
+    return $auth;
 };
