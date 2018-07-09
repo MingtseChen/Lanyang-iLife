@@ -171,7 +171,6 @@ composer.phar
 # composer.lock
 
 TKUPM
-
-/vendor/
 /logs/*
 !/logs/README.md
+/cache/
