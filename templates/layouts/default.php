@@ -1,10 +1,10 @@
 <?php
 
-include_once(__DIR__ . '/../../../vendor/autoload.php');
-include_once(__DIR__ . "/../../inc/auth.php");
-
-$authUser = new Auth;
-$auth_status = $authUser->isLogin();
+//include_once(__DIR__ . '../vendor/autoload.php');
+//include_once(__DIR__ . "/../../inc/auth.php");
+//
+//$authUser = new Auth;
+//$auth_status = $authUser->isLogin();
 
 ?>
 <!doctype html>
@@ -117,7 +117,7 @@ $auth_status = $authUser->isLogin();
         </div>
     </nav>
 
-    <?php $this->yieldView(); ?>
+    {% block content %}{% endblock %}
 
 
     <footer>
