@@ -1,16 +1,16 @@
 <?php
 
-include_once(__DIR__ . '/../../../vendor/autoload.php');
-include_once(__DIR__ . "/../../inc/auth.php");
-
-$authUser = new Auth;
-$auth_status = $authUser->isLogin();
+//include_once(__DIR__ . '../vendor/autoload.php');
+//include_once(__DIR__ . "/../../inc/auth.php");
+//
+//$authUser = new Auth;
+//$auth_status = $authUser->isLogin();
 
 ?>
 <!doctype html>
 <html lang="en">
 
-<head>
+<head>git
     <script
             src="https://code.jquery.com/jquery-3.3.1.js"
             integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
@@ -117,7 +117,7 @@ $auth_status = $authUser->isLogin();
         </div>
     </nav>
 
-    <?php $this->yieldView(); ?>
+    {% block content %}{% endblock %}
 
 
     <footer>

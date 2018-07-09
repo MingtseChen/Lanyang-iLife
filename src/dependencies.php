@@ -3,6 +3,12 @@
 
 $container = $app->getContainer();
 
+// view controller
+//$container['controller'] = function ($app) {
+//    $controller = new App\Controller\RootController($app);
+//    return $controller;
+//};
+
 // view renderer
 $container['renderer'] = function ($c) {
     $settings = $c->get('settings')['renderer'];
