@@ -17,3 +17,32 @@ $container['logger'] = function ($c) {
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
     return $logger;
 };
+
+// twig engine
+$container['view'] = function ($c) {
+    $settings = $c->get('settings');
+    $view = new Slim\Views\Twig($settings['view']['template_path'], $settings['view']['twig']);
+    // Add extensions
+    $basePath = rtrim(str_ireplace('index.php', '', $c->get('request')->getUri()->getBasePath()), '/');
+    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $basePath));
+//    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
+    $view->addExtension(new Twig_Extension_Debug());
+    return $view;
+};
+
+// database
+require __DIR__ . '/../src/database.php';
+
+$container['db'] = function ($c) {
+    $settings = $c->get('settings')['db'];
+    $db = new Finder($settings);
+    return $db;
+};
+
+// auth
+require __DIR__ . '/../src/auth.php';
+
+$container['auth'] = function () {
+    $auth = new Auth();
+    return $auth;
+};

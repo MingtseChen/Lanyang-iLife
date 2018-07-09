@@ -1,8 +1,5 @@
 <?php
 
-/**
- *
- */
 class Auth
 {
     private $headers = NULL;
