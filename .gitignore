@@ -174,3 +174,4 @@ TKUPM
 /logs/*
 !/logs/README.md
 /cache/
+/src/settings.php
