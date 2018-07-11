@@ -24,14 +24,29 @@ $container['logger'] = function ($c) {
     return $logger;
 };
 
-// twig engine
+//// twig engine
+//$container['view'] = function ($c) {
+//    $settings = $c->get('settings');
+//    $view = new Slim\Views\Twig($settings['view']['template_path'], $settings['view']['twig']);
+//    // Add extensions
+//    $basePath = rtrim(str_ireplace('index.php', '', $c->get('request')->getUri()->getBasePath()), '/');
+//    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $basePath));
+////    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
+//    $view->addExtension(new Twig_Extension_Debug());
+//    return $view;
+//};
+
+// Twig
+$container['twig_profile'] = function () {
+    return new Twig_Profiler_Profile();
+};
+
 $container['view'] = function ($c) {
-    $settings = $c->get('settings');
-    $view = new Slim\Views\Twig($settings['view']['template_path'], $settings['view']['twig']);
+    $settings = $c->get('settings')['view'];
+    $view = new \Slim\Views\Twig($settings['template_path'], $settings['twig']);
     // Add extensions
-    $basePath = rtrim(str_ireplace('index.php', '', $c->get('request')->getUri()->getBasePath()), '/');
-    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $basePath));
-//    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
+    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
+    $view->addExtension(new Twig_Extension_Profiler($c['twig_profile']));
     $view->addExtension(new Twig_Extension_Debug());
     return $view;
 };

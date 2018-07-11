@@ -39,43 +39,51 @@ class Finder
     public function fetch($id)
     {
         /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $table = ORM::forTable('users')->selectMany('users.uid', 'email', 'name', 'uname', 'groups_users.groupid')->leftOuterJoin('groups_users', array('users.uid', '=', 'groups_users.uid'));
+        $table = ORM::forTable('users')->selectMany('users.uid', 'email', 'name', 'uname',
+            'groups_users.groupid')->leftOuterJoin('groups_users', array('users.uid', '=', 'groups_users.uid'));
         $this->row = $table->where('uname', $id)->findOne();
-        if (is_bool($this->row))
+        if (is_bool($this->row)) {
             throw new NoUserException();
+        }
         return $this;
     }
 
     public function getUsername()
     {
-        if ($name = $this->row->name)
-            return $name;
-        else
+        if ($name = $this->row->name) {
+            //remove space
+            $trimmedName = trim($name, '　');
+            return trim($trimmedName);
+        } else {
             return false;
+        }
     }
 
     public function getUID()
     {
-        if ($uid = $this->row->uid)
+        if ($uid = $this->row->uid) {
             return $uid;
-        else
+        } else {
             return false;
+        }
     }
 
     public function getMail()
     {
-        if ($email = $this->row->email)
+        if ($email = $this->row->email) {
             return $email;
-        else
+        } else {
             return false;
+        }
     }
 
     public function getRank()
     {
-        if ($gid = $this->row->groupid)
+        if ($gid = $this->row->groupid) {
             return $gid;
-        else
+        } else {
             return false;
+        }
     }
 
 }

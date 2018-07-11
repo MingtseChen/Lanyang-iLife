@@ -1,8 +1,10 @@
 <?php
 
+namespace App\Auth;
+
 class Auth
 {
-    private $headers = NULL;
+    private $headers = null;
 
     function __construct()
     {
@@ -16,18 +18,19 @@ class Auth
 
     public function logout()
     {
-
+        // code...
     }
 
-    public function sso_userid()
+    public function ssoUserId()
     {
-        if (array_key_exists("sso_userid",$this->headers))
+        if (array_key_exists("sso_userid", $this->headers)) {
             return $this->headers["sso_userid"];
-        else
+        } else {
             return null;
+        }
     }
 
-    public function sso_roletype()
+    public function ssoRoleType()
     {
 
         return $this->headers["sso_roletype"];
@@ -35,14 +38,15 @@ class Auth
 
     public function requestLogin()
     {
-
+        //code..
     }
 
     public function isLogin()
     {
-        if (is_null($this->sso_userid()))
+        if (is_null($this->ssoUserId())) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 }

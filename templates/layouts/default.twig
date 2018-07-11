@@ -1,19 +1,14 @@
-<?php
-
-//include_once(__DIR__ . '../vendor/autoload.php');
-//include_once(__DIR__ . "/../../inc/auth.php");
-//
-//$authUser = new Auth;
-//$auth_status = $authUser->isLogin();
-
-?>
 <!doctype html>
 <html lang="en">
 
-<head>git
+<head>
     <script
             src="https://code.jquery.com/jquery-3.3.1.js"
             integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
             crossorigin="anonymous"></script>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -24,12 +19,12 @@
     <!-- FontAwesome CSS -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
           integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
-    <title>Hello, world!</title>
+    <title>{% block title %}{% endblock %}</title>
     <style>
         header.masthead {
             padding-top: 10rem;
             padding-bottom: calc(10rem - 56px);
-            background-image: url("../../assets/bg.jpg");
+            background-image: url("{{ uri.base }}/assets/bg.jpg");
             -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
@@ -47,7 +42,7 @@
         header.masthead-login {
             /*padding-top: 10rem;*/
             /*padding-bottom: calc(10rem - 56px);*/
-            background-image: url("../../assets/login-bg.jpg");
+            background-image: url("{{ uri.base }}/assets/login-bg.jpg");
             -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
@@ -70,7 +65,7 @@
 <div>
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-transparent ">
         <div class="container">
-            <a class="navbar-brand" href="/">蘭陽ｉ生活</a>
+            <a class="navbar-brand" href="{{ path_for('home') }}">蘭陽ｉ生活</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -91,33 +86,33 @@
                         <a class="nav-link" href="#">蘭陽掛包</a>
                     </li>
                     <!-- Authentication Links -->
-                    <?php if (!$auth_status) { ?>
+                    {% if not login %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/login">登入</a>
+                            <a class="nav-link" href="{{ path_for('loginForm') }}">登入</a>
                         </li>
-                    <?php } ?>
-                    <?php if ($auth_status) { ?>
+                    {% else %}
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <?php echo $authUser->sso_userid() ?><span class="caret"></span>
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hi,
+                                {{ name }}<span class="caret"></span>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="#"
                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
+                                    Logout
                                 </a>
                                 <form id="logout-form" action="#" method="POST" style="display: none;">
                                 </form>
                             </div>
                         </li>
-                    <?php } ?>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    {% block content %}{% endblock %}
+    {% block content %}
+    {% endblock %}
 
 
     <footer>
