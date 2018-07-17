@@ -39,8 +39,8 @@ class Finder
     public function fetch($id)
     {
         /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $table = ORM::forTable('users')->selectMany('users.uid', 'email', 'name', 'uname',
-            'groups_users.groupid')->leftOuterJoin('groups_users', array('users.uid', '=', 'groups_users.uid'));
+        $table = ORM::forTable('studesnts')->selectMany('studesnts.uid', 'email', 'name', 'uname',
+            'groups_users.groupid')->leftOuterJoin('groups_users', array('studesnts.uid', '=', 'groups_users.uid'));
         $this->row = $table->where('uname', $id)->findOne();
         if (is_bool($this->row)) {
             throw new NoUserException();

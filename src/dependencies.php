@@ -64,6 +64,6 @@ $container['db'] = function ($c) {
 require __DIR__ . '/../src/auth.php';
 
 $container['auth'] = function () {
-    $auth = new Auth();
-    return $auth;
+//    $auth = new Auth();
+    return new App\User\Auth();
 };

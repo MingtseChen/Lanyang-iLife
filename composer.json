@@ -23,7 +23,8 @@
         "davidepastore/slim-validation": "^0.5.0",
         "runcmf/runtracy": "^0.2.10",
       "slim/twig-view": "^2.4",
-      "icosillion/slim-controllers": "^1.0"
+      "icosillion/slim-controllers": "^1.0",
+        "kanellov/slim-twig-flash": "^0.2.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "3.*",

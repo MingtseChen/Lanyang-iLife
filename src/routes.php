@@ -1,7 +1,7 @@
 <?php
 #TODO : Add Controller
-use Slim\Http\Request;
-use Slim\Http\Response;
+//use Slim\Http\Request;
+//use Slim\Http\Response;
 
 // Routes
 
@@ -13,7 +13,7 @@ use Slim\Http\Response;
 //});
 
 //Home
-$app->get('/', function (Request $request, Response $response, $args) {
+$app->get('/', function ($request, $response, $args) {
     $loginStatus = $this->auth->isLogin();
     if ($loginStatus) {
         $id = $this->auth->sso_userid();
@@ -35,8 +35,14 @@ $app->group('/login', function ($app) {
         return $this->view->render($response, '/auth/login.twig');
     })->setName('loginForm');
     $app->post('/auth', function ($request, $response, $args) {
-        return 'dddd';
+        var_dump($request);
     })->setName('loginAuth');
+});
+//admin
+$app->group('/admin', function ($app) {
+    $app->get('', function ($request, $response, $args) {
+        return $this->view->render($response, '/admin/index.twig');
+    })->setName('admin');
 });
 
 //console
