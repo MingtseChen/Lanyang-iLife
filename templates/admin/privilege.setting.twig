@@ -1,0 +1,166 @@
+{# TODO: Add expand effect on admin login form #}
+
+{% extends "/layouts/admin.twig" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block page_title %}User Manager{% endblock %}
+
+{% block content %}
+    <h5 class="mb-2">Info Box</h5>
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-info"><i class="fas fa-users"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Users</span>
+                    <span class="info-box-number">{{ student_count }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-success"><i class="far fa-address-card"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Admins</span>
+                    <span class="info-box-number">{{ user_count }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-warning"><i class="fas fa-check"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Active Accounts</span>
+                    <span class="info-box-number">{{ user_active }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-danger"><i class="fas fa-exclamation-triangle"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Alert</span>
+                    <span class="info-box-number">93,139</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Admin List
+                        <a class="btn btn-flat btn-success float-right" href="#"><i class="fas fa-plus"></i>
+                            Add new admin
+                        </a>
+                    </h3>
+
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="userTable" class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>UID</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Role</th>
+                            <th>Last login</th>
+                            <th>Create time</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ loop.index|e }}</td>
+                                <td>{{ user.uname|e }}</td>
+                                <td>{{ user.name|e }}</td>
+                                <td>
+                                    {% if user.active == true %}
+                                        <span style="color: #00a65a"><i class="fas fa-circle fa-xs"></i> Activate</span>
+                                    {% else %}
+                                        <span style="color: #f56954"><i
+                                                    class="fas fa-circle fa-xs"></i> Deactivate</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.role|e }}</td>
+                                <td>{{ user.last_login|e }}</td>
+                                <td>{{ user.create_time|e }}</td>
+                                <td>
+                                <span class="mx-1" style="color: #00c0ef" data-toggle="tooltip" data-placement="top"
+                                      title="Edit"><i class="far fa-edit"></i></span>
+                                    <span class="mx-1" style="color: #f39e12" data-toggle="tooltip" data-placement="top"
+                                          title="Suspend"><i class="fas fa-ban"></i></span>
+                                    <span class="mx-1" style="color: #f56954" data-toggle="tooltip" data-placement="top"
+                                          title="Delete"><i class="fas fa-trash"></i></span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">User List
+                    </h3>
+
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="studentTable" class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>UID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Secondary Email</th>
+                            <th>Last login</th>
+                            <th>Create time</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <td>{{ loop.index|e }}</td>
+                                <td>{{ student.uname|e }}</td>
+                                <td>{{ student.name|e }}</td>
+                                <td>{{ student.email|e }}</td>
+                                <td>{{ student.secondary_email|e }}</td>
+                                <td>{{ student.last_login|e }}</td>
+                                <td>{{ student.create_on|e }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

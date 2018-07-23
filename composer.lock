@@ -4,8 +4,57 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b5e7a3f8c0e77f0e158977deb073a0c",
+    "content-hash": "c822afafb7b16b9cb06965693592438f",
     "packages": [
+        {
+            "name": "bryanjhv/slim-session",
+            "version": "3.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bryanjhv/slim-session.git",
+                "reference": "0205470a35c716823ededae04d84a7f27fba400a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bryanjhv/slim-session/zipball/0205470a35c716823ededae04d84a7f27fba400a",
+                "reference": "0205470a35c716823ededae04d84a7f27fba400a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5",
+                "slim/slim": "^3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bryan Horna",
+                    "email": "bryanjhv@gmail.com",
+                    "homepage": "https://bryanjhv.github.io",
+                    "role": "developer"
+                }
+            ],
+            "description": "Session middleware and helper for Slim framework 3.",
+            "homepage": "https://github.com/bryanjhv/slim-session",
+            "keywords": [
+                "helper",
+                "middleware",
+                "session",
+                "slim"
+            ],
+            "time": "2018-07-22T23:41:31+00:00"
+        },
         {
             "name": "container-interop/container-interop",
             "version": "1.2.0",
@@ -1388,20 +1437,21 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.4.8",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "7b604c89da162034bdf4bb66310f358d313dd16d"
+                "reference": "6a5f676b77a90823c2d4eaf76137b771adf31323"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/7b604c89da162034bdf4bb66310f358d313dd16d",
-                "reference": "7b604c89da162034bdf4bb66310f358d313dd16d",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/6a5f676b77a90823c2d4eaf76137b771adf31323",
+                "reference": "6a5f676b77a90823c2d4eaf76137b771adf31323",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.0",
+                "symfony/polyfill-ctype": "^1.8",
                 "symfony/polyfill-mbstring": "~1.0"
             },
             "require-dev": {
@@ -1412,7 +1462,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -1441,16 +1491,16 @@
                 },
                 {
                     "name": "Twig Team",
-                    "homepage": "http://twig.sensiolabs.org/contributors",
+                    "homepage": "https://twig.symfony.com/contributors",
                     "role": "Contributors"
                 }
             ],
             "description": "Twig, the flexible, fast, and secure template language for PHP",
-            "homepage": "http://twig.sensiolabs.org",
+            "homepage": "https://twig.symfony.com",
             "keywords": [
                 "templating"
             ],
-            "time": "2018-04-02T09:24:19+00:00"
+            "time": "2018-07-13T07:18:09+00:00"
         },
         {
             "name": "zeuxisoo/slim-whoops",

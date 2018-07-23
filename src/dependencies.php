@@ -24,18 +24,6 @@ $container['logger'] = function ($c) {
     return $logger;
 };
 
-//// twig engine
-//$container['view'] = function ($c) {
-//    $settings = $c->get('settings');
-//    $view = new Slim\Views\Twig($settings['view']['template_path'], $settings['view']['twig']);
-//    // Add extensions
-//    $basePath = rtrim(str_ireplace('index.php', '', $c->get('request')->getUri()->getBasePath()), '/');
-//    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $basePath));
-////    $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
-//    $view->addExtension(new Twig_Extension_Debug());
-//    return $view;
-//};
-
 // Twig
 $container['twig_profile'] = function () {
     return new Twig_Profiler_Profile();
@@ -46,24 +34,33 @@ $container['view'] = function ($c) {
     $view = new \Slim\Views\Twig($settings['template_path'], $settings['twig']);
     // Add extensions
     $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
+    $view->addExtension(new Knlv\Slim\Views\TwigMessages(new Slim\Flash\Messages()));
     $view->addExtension(new Twig_Extension_Profiler($c['twig_profile']));
     $view->addExtension(new Twig_Extension_Debug());
+    //add global for twig(can access php vars)
+    $view->getEnvironment()->addGlobal('_session', $_SESSION);
+    $view->getEnvironment()->addGlobal('_post', $_POST);
+    $view->getEnvironment()->addGlobal('_get', $_GET);
     return $view;
 };
 
-// database
-require __DIR__ . '/../src/database.php';
-
-$container['db'] = function ($c) {
-    $settings = $c->get('settings')['db'];
-    $db = new Finder($settings);
-    return $db;
+//slim flash
+$container['flash'] = function () {
+    return new \Slim\Flash\Messages();
 };
+
+// database
+ORM::configure($container->get('settings')['db']);
 
 // auth
 require __DIR__ . '/../src/auth.php';
 
 $container['auth'] = function () {
 //    $auth = new Auth();
-    return new App\User\Auth();
+    return new App\Auth();
+};
+
+//session
+$container['session'] = function ($c) {
+    return new \SlimSession\Helper;
 };

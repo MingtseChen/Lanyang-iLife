@@ -1,0 +1,66 @@
+{# TODO: Add expand effect on admin login form #}
+
+{% extends "/layouts/admin.twig" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block page_title %}Create User{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            <!-- general form elements -->
+            <form role="form" autocomplete="off" method="post" action="{{ path_for("submituser") }}">
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label for="name" class="col-md-3 col-form-label">Name</label>
+                        <div class="col-md">
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="Username" class="col-md-3 col-form-label">Username</label>
+                        <div class="col-md">
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="email" class="col-md-3 col-form-label">Email address</label>
+                        <div class="col-md">
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="password" class="col-md-3 col-form-label">Password</label>
+                        <div class="col-md">
+                            <input type="text" class="form-control" id="password" name="pwd" required>
+                            <small id="passwordHelpInline" class="text-muted">
+                                Must be 8-20 characters long.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="role" class="col-md-3 col-form-label">User role</label>
+                        <div class="col-md-4">
+                            <select class="form-control" name="role">
+                                <option value="0">Superuser</option>
+                                <option value="1">Admin</option>
+                                <option value="2">User</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="role" class="col-md-3 col-form-label">Active status</label>
+                        <div class="col-md-4">
+                            <select class="form-control" name="active">
+                                <option value="1">Activate</option>
+                                <option value="0">Deactivate</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success float-right">Submit</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+

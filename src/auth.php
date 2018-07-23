@@ -1,24 +1,38 @@
 <?php
 
-namespace App\User;
+namespace App;
 
+
+//TODO Fix sso and user login conflict
 class Auth
 {
     private $headers = null;
+    private $session;
 
     function __construct()
     {
         $this->headers = apache_request_headers();
-    }
-
-    public function login()
-    {
-        // code...
+        $this->session = new \SlimSession\Helper;
     }
 
     public function logout()
     {
         // code...
+    }
+
+    public function ssoRoleType()
+    {
+        return $this->headers["sso_roletype"];
+    }
+
+    public function isSsoLogin()
+    {
+        //sso check
+        if (is_null($this->ssoUserId())) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public function ssoUserId()
@@ -30,23 +44,39 @@ class Auth
         }
     }
 
-    public function ssoRoleType()
+    public function loginType()
     {
+        $type = null;
 
-        return $this->headers["sso_roletype"];
+        if (!is_null($this->ssoUserId())) {
+            $type = 'sso';
+        }
+        if (isset($this->session['uname'])) {
+            $type = 'user';
+        }
+        return $type;
     }
 
-    public function requestLogin()
+    public function loginFix()
     {
-        //code..
+        $type = null;
+        if (!is_null($this->ssoUserId())) {
+            $type = 'sso';
+        }
+        if (isset($this->session['uname'])) {
+            $type = 'user';
+        }
+        return $type;
     }
 
-    public function isLogin()
+    public function isUserLogin()
     {
-        if (is_null($this->ssoUserId())) {
-            return false;
-        } else {
+        $isUserLogin = isset($this->session['uname']);
+        //user check
+        if ($isUserLogin) {
             return true;
+        } else {
+            return false;
         }
     }
 }
