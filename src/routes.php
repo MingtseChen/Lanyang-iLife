@@ -5,6 +5,7 @@ use Respect\Validation\Validator as v;
 
 include 'Models/StudentModel.php';
 include 'Models/UserModel.php';
+include 'Models/BusModel.php';
 include 'Middleware/AdminSection.php';
 include 'Middleware/RedirectIfAuth.php';
 
@@ -46,6 +47,26 @@ $app->get('/', function ($request, $response, $args) {
         ]);
     }
 })->setName('home');
+
+//bus
+$app->group('/bus', function ($app) {
+
+    $app->get('', function ($request, $response, $args) {
+        return $this->view->render($response, '/bus/search.twig');
+    })->setName('busIndex');
+
+    $app->get('/search', function ($request, $response, $args) {
+        $from = $request->getQueryParams()['from'];
+        $date = $request->getQueryParams()['date'];
+        $bus = new Bus();
+        $schedule = ['schedules' => $bus->find($from, $date)];
+        return $this->view->render($response, '/bus/reserve.twig',$schedule);
+    })->setName('busSearch');
+
+    $app->post('/reserve', function ($request, $response, $args) {
+        var_dump($request->getParsedBody());
+    })->setName('busReserve');
+});
 
 //login
 $app->group('/login', function ($app) {
