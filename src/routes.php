@@ -26,14 +26,12 @@ include 'Middleware/RedirectIfAuth.php';
 $app->get('/', function ($request, $response, $args) {
     //sso login check
     $ssoLoginCheck = $this->auth->isSsoLogin();
-    //user login check
-    $userLoginCheck = $this->auth->isUserLogin();
-
     //TODO Clean Home Page
-//    $ssoLoginCheck = true;
+    $ssoLoginCheck = true;
     if ($ssoLoginCheck) {
         $student = new Student();
-        $id = $this->auth->sso_userid();
+//        $id = $this->auth->sso_userid();
+        $id = 403840308;
         $username = $student->fetch($id)->getUsername();
 //        $username = $this->db->fetch($id)->getUsername();
         return $this->view->render($response, 'home.twig', [
@@ -60,7 +58,7 @@ $app->group('/bus', function ($app) {
         $date = $request->getQueryParams()['date'];
         $bus = new Bus();
         $schedule = ['schedules' => $bus->find($from, $date)];
-        return $this->view->render($response, '/bus/reserve.twig',$schedule);
+        return $this->view->render($response, '/bus/reserve.twig', $schedule);
     })->setName('busSearch');
 
     $app->post('/reserve', function ($request, $response, $args) {
@@ -95,7 +93,7 @@ $app->group('/login', function ($app) {
         return $this->view->render($response, '/auth/forget.twig');
     })->setName('recover');
 
-})->add(new RedirectIfAuth());
+});
 
 //admin
 
@@ -105,35 +103,29 @@ $app->group('/admin', function ($app) {
     })->setName('admin');
 
     $app->group('/manage', function ($app) {
-        $app->get('/privilege', function ($request, $response, $args) {
-            $user = new User();
+        $app->get('/users', function ($request, $response, $args) {
+            $admin = new User();
             $student = new Student();
-            $users = $user->read();
+            $adminData = $admin->read();
             $students = $student->read();
-            return $this->view->render($response, '/admin/privilege.setting.twig',
-                [
-                    'users' => $users,
-                    'students' => $students,
-                    'student_count' => $user->statistic()[0],
-                    'user_count' => $user->statistic()[1],
-                    'user_active' => $user->statistic()[3],
-                ]);
-        })->setName('privilege');
+            $data = [
+                'users' => $adminData,
+                'students' => $students,
+                'student_count' => $admin->statistic()[0],
+                'user_count' => $admin->statistic()[1],
+                'user_active' => $admin->statistic()[3],
+            ];
+            return $this->view->render($response, '/admin/user.show.twig', $data);
+        })->setName('users');
+
         $app->get('/create', function ($request, $response, $args) {
             return $this->view->render($response, '/admin/user.create.twig');
         })->setName('create');
 
         //Validate Rules
-//        TODO enforce password security
-        $name = v::noWhitespace()->length(1, 32);
-        $username = v::alnum()->noWhitespace()->length(1, 32);
-        $email = v::email()->length(1, 48);
-        $password = v::alnum()->noWhitespace()->length(7, 32);
+        $uid = v::digit()->noWhitespace()->length(1, 10);
         $validators = array(
-            'name' => $name,
-            'username' => $username,
-            'email' => $email,
-            'pwd' => $password,
+            'uid' => $uid,
         );
         $app->post('/create/submit', function ($request, $response, $args) {
             $user = new User();
@@ -142,20 +134,20 @@ $app->group('/admin', function ($app) {
                 $errors = $request->getAttribute('errors');
                 //var_dump($errors);
                 $msg = 'dddd';
-                $this->flash->addMessage('error', $msg);
+                $this->flash->addMessage('msg', $msg);
                 return $response->withRedirect('/admin/manage/create');
             } elseif ($user->usernameIsValid($userData)) {
                 $user->create($userData);
                 $msg = 'Success';
                 $this->flash->addMessage('msg', $msg);
-                return $response->withRedirect('/admin/manage/privilege');
+                return $response->withRedirect('/admin/manage/users');
             } else {
                 $this->flash->addMessage('msg', 'error');
                 return $response->withRedirect('/admin/manage/create');
             }
         })->setName('submituser')->add(new \DavidePastore\Slim\Validation\Validation($validators));
     });
-})->add(new AdminSection());
+});
 
 //console
 $app->post('/console', 'RunTracy\Controllers\RunTracyConsole:index');

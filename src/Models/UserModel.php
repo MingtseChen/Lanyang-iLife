@@ -7,12 +7,8 @@ class User
 
     public function create($dataArray)
     {
-        $user = ORM::for_table('users')->create();
-
-        $user->name = $dataArray['name'];
-        $user->uname = $dataArray['username'];
-        $user->email = $dataArray['email'];
-        $user->pass = password_hash($dataArray['pwd'], PASSWORD_BCRYPT);
+        $user = ORM::for_table('groups_users')->create();
+        $user->uid = $dataArray['uid'];
         $user->active = $dataArray['active'];
         $user->role = $dataArray['role'];
         $user->save();
@@ -20,7 +16,7 @@ class User
 
     public function usernameIsValid($uname)
     {
-        $user = ORM::for_table('users')->select('uname')->where('uname', $uname['username'])->count();
+        $user = ORM::for_table('groups_users')->select('uid')->where('uid', $uname['uid'])->count();
         if ($user > 0) {
             return false;
         } else {
@@ -40,51 +36,19 @@ class User
 
     public function read()
     {
-        return ORM::forTable('users')->find_array();
+        $table = ORM::forTable('groups_users');
+        $row = $table->selectMany('id', 'groups_users.uid', 'groupid', 'active', 'role', 'create_time',
+            'groups_users.last_login', 'students.name');
+        $data = $row->leftOuterJoin('students', array('groups_users.uid', '=', 'students.uname'))->find_array();
+        return $data;
     }
 
     public function statistic()
     {
         $studentCount = ORM::forTable('students')->count();
-        $userCount = ORM::forTable('users')->count();
-        $pendingUser = ORM::forTable('users')->count();
-        $activeUser = ORM::forTable('users')->where('active', true)->count();
+        $userCount = ORM::forTable('groups_users')->count();
+        $pendingUser = ORM::forTable('groups_users')->count();
+        $activeUser = ORM::forTable('groups_users')->where('active', true)->count();
         return [$studentCount, $userCount, $pendingUser, $activeUser];
-    }
-
-    public function login($loginData)
-    {
-        $uname = $loginData['uname'];
-        $password = $loginData['pwd'];
-        if ($uname == '' || $password == '') {
-            return false;
-        }
-        if ($this->hasUser($uname)) {
-            $verify = password_verify($password, $this->getPassword($uname));
-            if ($verify) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-
-    }
-
-    public function hasUser($uname)
-    {
-        $rowCount = ORM::forTable('users')->where('uname', $uname)->count();
-        if ($rowCount == 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function getPassword($uname)
-    {
-        $row = ORM::forTable('users')->where('uname', $uname)->findOne();
-        return $row->pass;
     }
 }
