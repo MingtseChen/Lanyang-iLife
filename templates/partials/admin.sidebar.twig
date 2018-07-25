@@ -3,7 +3,7 @@
     <!-- Brand Logo -->
     <a href="#" class="brand-link">
         <img src="/assets/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-        style="opacity: .8">
+             style="opacity: .8">
         <span class="brand-text font-weight-light">Lanyang iLife</span>
     </a>
 
@@ -11,13 +11,13 @@
     <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
         {#<div class="user-panel mt-3 pb-3 mb-3 d-flex">#}
-            {#<div class="image">#}
-                {#<img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">#}
-                {#<i class="img-circle elevation-2 far fa-user-circle fa-2x"></i>#}
-            {#</div>#}
-            {#<div class="info">#}
-                {#<a href="#" class="d-block">Alexander Pierce</a>#}
-            {#</div>#}
+        {#<div class="image">#}
+        {#<img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">#}
+        {#<i class="img-circle elevation-2 far fa-user-circle fa-2x"></i>#}
+        {#</div>#}
+        {#<div class="info">#}
+        {#<a href="#" class="d-block">Alexander Pierce</a>#}
+        {#</div>#}
         {#</div>#}
 
         <!-- Sidebar Menu -->
@@ -102,28 +102,24 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-unlock-alt"></i>
-                        <p>
-                            Administrator Tools
-                            <i class="right fa fa-angle-left"></i>
-                        </p>
+                <li class="nav-header">ADMINISTRATOR TOOLS</li>
+                <li class="nav-item">
+                    <a href="{{ path_for('privilege') }}" class="nav-link">
+                        <i class="nav-icon fas fa-hashtag"></i>
+                        <p>Privilege Setting</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="fa fa-circle-o nav-icon"></i>
-                                <p>Sub</p>
-                            </a>
-                        </li>
-                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path_for('create') }}" class="nav-link">
+                        <i class="nav-icon fas fa-plus-circle"></i>
+                        <p>Create Account</p>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>
                         <p>
-                            Simple Link
+                            Blank
                         </p>
                     </a>
                 </li>

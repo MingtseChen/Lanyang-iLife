@@ -14,10 +14,14 @@
     <!-- FontAwesome CSS -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"
           integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="/plugins/datatables/dataTables.bootstrap4.css">
     <!-- Theme style -->
-    <link rel="stylesheet" href="css/adminlte.min.css">
+    <link rel="stylesheet" href="/css/adminlte.min.css">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <!-- AnimatedCSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.6.2/animate.css" rel="stylesheet">
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -51,6 +55,15 @@
 
         <!-- Main content -->
         <div class="content">
+            {#<div class="alert alert-warning alert-dismissible fade show" role="alert">#}
+            {#{% for msg in flash('error') %}#}
+            {#{{ msg }}#}
+            {#{% endfor %}#}
+            {#<button type="button" class="close" data-dismiss="alert" aria-label="Close">#}
+            {#<span aria-hidden="true">&times;</span>#}
+            {#</button>#}
+            {#</div>#}
+
             <div class="container-fluid">
                 {% block content %}{% endblock %}
             </div>
@@ -86,7 +99,41 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"
         integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
         crossorigin="anonymous"></script>
+<!-- DataTables -->
+<script src="/plugins/datatables/jquery.dataTables.js"></script>
+<script src="/plugins/datatables/dataTables.bootstrap4.js"></script>
 <!-- AdminLTE App -->
 <script src="/js/adminlte.min.js"></script>
+<!-- Bootstrap-NotifyJS-->
+<script src="/js/bootstrap-notify.js"></script>
+<script>
+    $('#userTable').DataTable({
+        "paging": true,
+        // "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "pageLength": 5,
+        "lengthMenu": [5, 10, 15]
+    });
+    $('#studentTable').DataTable({
+        "paging": true,
+        // "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "pageLength": 5,
+        "lengthMenu": [5, 10, 15]
+    });
+    {% for msg in flash('msg') %}
+    $.notify({
+        // options
+        message: '{{ msg }}'
+    }, {
+        // settings
+        type: 'danger'
+    });
+    {% endfor %}
+</script>
 </body>
 </html>
