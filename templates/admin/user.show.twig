@@ -66,7 +66,8 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Admin List
-                        <a class="btn btn-flat btn-success float-right" href="#"><i class="fas fa-plus"></i>
+                        <a class="btn btn-flat btn-success float-right btn-sm" href="{{ path_for('users') }}"><i
+                                    class="fas fa-plus"></i>
                             Add new admin
                         </a>
                     </h3>
@@ -91,7 +92,7 @@
                         {% for user in users %}
                             <tr>
                                 <td>{{ loop.index|e }}</td>
-                                <td>{{ user.uname|e }}</td>
+                                <td>{{ user.uid|e }}</td>
                                 <td>{{ user.name|e }}</td>
                                 <td>
                                     {% if user.active == true %}
@@ -101,7 +102,11 @@
                                                     class="fas fa-circle fa-xs"></i> Deactivate</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ user.role|e }}</td>
+                                {% if user.role == 0 %}
+                                    <td>Superuser</td>
+                                {% else %}
+                                    <td>Admin</td>
+                                {% endif %}
                                 <td>{{ user.last_login|e }}</td>
                                 <td>{{ user.create_time|e }}</td>
                                 <td>

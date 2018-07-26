@@ -20,41 +20,41 @@
         <div class="card-body login-card-body">
             <p class="login-box-msg">Sign in to start your session</p>
             {#fix fontawsome confict with original css#}
-            <form action="{{ path_for('loginAuth') }}" method="post">
-                <div class="input-group mb-3">
-                    <input type="username" class="form-control" placeholder="Username" name="uname"
-                           value="{{ _post.uname|default("") }}">
-                    <div class="input-group-append">
-                        <span class="fas fa-user input-group-text" style="font-weight: 600;"></span>
-                    </div>
-                    <div class="invalid-feedback">
-                        Username or password is Invalid.
-                    </div>
-                </div>
-                <div class="input-group mb-3">
-                    <input type="password" class="form-control" placeholder="Password" name="pwd">
-                    <div class="input-group-append">
-                        <span class="fas fa-unlock input-group-text" style="font-weight: 600;"></span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-8">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox"> Remember Me
-                            </label>
-                        </div>
-                    </div>
-                    <!-- /.col -->
-                    <div class="col-4">
-                        <button type="submit" class="btn btn-success btn-block btn-flat">Sign In</button>
-                    </div>
-                    <!-- /.col -->
-                </div>
-            </form>
+            {#<form action="{{ path_for('loginAuth') }}" method="post">#}
+                {#<div class="input-group mb-3">#}
+                    {#<input type="username" class="form-control" placeholder="Username" name="uname"#}
+                           {#value="{{ _post.uname|default("") }}">#}
+                    {#<div class="input-group-append">#}
+                        {#<span class="fas fa-user input-group-text" style="font-weight: 600;"></span>#}
+                    {#</div>#}
+                    {#<div class="invalid-feedback">#}
+                        {#Username or password is Invalid.#}
+                    {#</div>#}
+                {#</div>#}
+                {#<div class="input-group mb-3">#}
+                    {#<input type="password" class="form-control" placeholder="Password" name="pwd">#}
+                    {#<div class="input-group-append">#}
+                        {#<span class="fas fa-unlock input-group-text" style="font-weight: 600;"></span>#}
+                    {#</div>#}
+                {#</div>#}
+                {#<div class="row">#}
+                    {#<div class="col-8">#}
+                        {#<div class="checkbox">#}
+                            {#<label>#}
+                                {#<input type="checkbox"> Remember Me#}
+                            {#</label>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<!-- /.col -->#}
+                    {#<div class="col-4">#}
+                        {#<button type="submit" class="btn btn-success btn-block btn-flat">Sign In</button>#}
+                    {#</div>#}
+                    {#<!-- /.col -->#}
+                {#</div>#}
+            {#</form>#}
 
-            <div class="social-auth-links text-center mb-3">
-                <p>- OR -</p>
+            <div class="social-auth-links text-center m-3">
+                {#<p>- OR -</p>#}
                 <a href="https://sso.tku.edu.tw/ilifelytest" class="btn btn-block btn-info">
                     <i class="fas fa-sign-in-alt mr-2"></i> Sign in using TKU SSO
                 </a>
