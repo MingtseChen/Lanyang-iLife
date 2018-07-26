@@ -1,5 +1,6 @@
 <?php
 // Application middleware
+include "Middleware/SSO.php";
 
 // e.g: $app->add(new \Slim\Csrf\Guard);
 
@@ -15,3 +16,5 @@ $app->add(new \Slim\Middleware\Session([
 
 //debug bar
 $app->add(new RunTracy\Middlewares\TracyMiddleware($app));
+
+$app->add(new SSO());

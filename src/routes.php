@@ -33,17 +33,13 @@ $app->get('/', function ($request, $response, $args) {
 //        $id = $this->auth->sso_userid();
         $id = 403840308;
         $username = $student->fetch($id)->getUsername();
+    }
 //        $username = $this->db->fetch($id)->getUsername();
         return $this->view->render($response, 'home.twig', [
             'login' => $ssoLoginCheck,
             'id' => $id,
             'name' => $username
         ]);
-    } else {
-        return $this->view->render($response, 'home.twig', [
-            'login' => $ssoLoginCheck,
-        ]);
-    }
 })->setName('home');
 
 //bus
@@ -102,8 +98,8 @@ $app->group('/admin', function ($app) {
         return $this->view->render($response, '/admin/index.twig');
     })->setName('admin');
 
-    $app->group('/manage', function ($app) {
-        $app->get('/users', function ($request, $response, $args) {
+    $app->group('/users', function ($app) {
+        $app->get('', function ($request, $response, $args) {
             $admin = new User();
             $student = new Student();
             $adminData = $admin->read();
@@ -135,15 +131,15 @@ $app->group('/admin', function ($app) {
                 //var_dump($errors);
                 $msg = 'dddd';
                 $this->flash->addMessage('msg', $msg);
-                return $response->withRedirect('/admin/manage/create');
+                return $response->withRedirect('/admin/users/create');
             } elseif ($user->usernameIsValid($userData)) {
                 $user->create($userData);
                 $msg = 'Success';
                 $this->flash->addMessage('msg', $msg);
-                return $response->withRedirect('/admin/manage/users');
+                return $response->withRedirect('/admin/users');
             } else {
                 $this->flash->addMessage('msg', 'error');
-                return $response->withRedirect('/admin/manage/create');
+                return $response->withRedirect('/admin/users/create');
             }
         })->setName('submituser')->add(new \DavidePastore\Slim\Validation\Validation($validators));
     });
