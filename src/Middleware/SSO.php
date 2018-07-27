@@ -16,7 +16,12 @@ class SSO
     public function __invoke($request, $response, $next)
     {
         $ssoLoginCheck = $this->auth->isSsoLogin();
-        $host = $request->
+        $uri = $request->getUri();
+        $host = $uri->getHost();
+        if ($host = 'sso.tku.edu.tw') {
+            $userId = $request->getHeader('sso_userid');
+            $this->session->set('id', $userId);
+        }
         $response = $next($request, $response);
         return $response;
     }
