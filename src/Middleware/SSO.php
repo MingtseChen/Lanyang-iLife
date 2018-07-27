@@ -18,6 +18,7 @@ class SSO
         $ssoLoginCheck = $this->auth->isSsoLogin();
         $uri = $request->getUri();
         $host = $uri->getHost();
+        var_dump($host);
         if ($host = 'sso.tku.edu.tw') {
             $userId = $request->getHeader('sso_userid');
             $this->session->set('id', $userId);
