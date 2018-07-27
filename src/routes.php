@@ -25,21 +25,22 @@ include 'Middleware/RedirectIfAuth.php';
 
 $app->get('/', function ($request, $response, $args) {
     //sso login check
-    $ssoLoginCheck = $this->auth->isSsoLogin();
+//    $ssoLoginCheck = $this->auth->isSsoLogin();
     //TODO Clean Home Page
-    $ssoLoginCheck = true;
-    if ($ssoLoginCheck) {
-        $student = new Student();
+//    $ssoLoginCheck = true;
+//    if ($ssoLoginCheck) {
+//        $student = new Student();
 //        $id = $this->auth->sso_userid();
-        $id = 403840308;
-        $username = $student->fetch($id)->getUsername();
-    }
+//        $id = 403840308;
+//        $username = $student->fetch($id)->getUsername();
+//    }
 //        $username = $this->db->fetch($id)->getUsername();
-        return $this->view->render($response, 'home.twig', [
-            'login' => $ssoLoginCheck,
-            'id' => $id,
-            'name' => $username
-        ]);
+    $data = [
+        'login' => true,
+        'id' => 403840308,
+        'name' => 'test'
+    ];
+    return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 
 //bus
