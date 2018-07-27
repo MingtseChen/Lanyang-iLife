@@ -35,10 +35,14 @@ $app->get('/', function ($request, $response, $args) {
 //        $username = $student->fetch($id)->getUsername();
 //    }
 //        $username = $this->db->fetch($id)->getUsername();
+    $id = 'test';
+    if ($this->session->exists('id')) {
+        $id = $this->session->id;
+    }
     $data = [
         'login' => true,
         'id' => 403840308,
-        'name' => 'test'
+        'name' => $id
     ];
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
