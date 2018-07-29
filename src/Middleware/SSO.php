@@ -19,10 +19,7 @@ class SSO
         $ssoLogin = array_key_exists("sso_userid", $headers);
 
         //retrieve value from sso
-        if ($ssoLogin) {
-            $uid = $headers['sso_userid'];
-            $ssoRole = $headers['sso_roletype'];
-        }
+
 
         //*****************************************//test only
         $uri = $request->getUri();
@@ -34,20 +31,36 @@ class SSO
         }
         //*****************************************//test only
 
-        $name = $this->username($uid);
+//        $name = $this->username($uid);
 
         $response = $next($request, $response);
         //after response area
-        if (!isset($session['id']) || $this->isIDChange($uid)) {
-            if ($this->isAdmin($uid)) {
-                $group = $this->userGroup($uid);
-                $this->setAdminSession($uid, $name, $ssoRole, $group);
-                $this->updateAdminLogin($uid);
-            } else {
-                $this->setUserSession($uid, $name, $ssoRole);
-                $this->updateUserLogin($uid);
+        if ($ssoLogin) {
+            $uid = $headers['sso_userid'];
+            $ssoRole = $headers['sso_roletype'];
+            $name = $this->username($uid);
+            if (!isset($session['id']) || $this->isIDChange($uid)) {
+                if ($this->isAdmin($uid)) {
+                    $group = $this->userGroup($uid);
+                    $this->setAdminSession($uid, $name, $ssoRole, $group);
+                    $this->updateAdminLogin($uid);
+                } else {
+                    $this->setUserSession($uid, $name, $ssoRole);
+                    $this->updateUserLogin($uid);
+                }
             }
         }
+
+//        if (!isset($session['id']) || $this->isIDChange($uid)) {
+//            if ($this->isAdmin($uid)) {
+//                $group = $this->userGroup($uid);
+//                $this->setAdminSession($uid, $name, $ssoRole, $group);
+//                $this->updateAdminLogin($uid);
+//            } else {
+//                $this->setUserSession($uid, $name, $ssoRole);
+//                $this->updateUserLogin($uid);
+//            }
+//        }
 
         return $response;
     }
