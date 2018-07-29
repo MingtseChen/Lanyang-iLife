@@ -22,6 +22,7 @@ class SSO
         if ($ssoLogin) {
             $uid = $headers['sso_userid'];
             $ssoRole = $headers['sso_roletype'];
+            $name = $this->username($uid);
             if (!isset($session['id']) || $this->isIDChange($uid)) {
                 if ($this->isAdmin($uid)) {
                     $group = $this->userGroup($uid);
@@ -44,7 +45,7 @@ class SSO
 //        }
         //*****************************************//test only
 
-        $name = $this->username($uid);
+//        $name = $this->username($uid);
 
         $response = $next($request, $response);
         //after response area
