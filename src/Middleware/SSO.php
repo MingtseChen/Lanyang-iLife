@@ -25,10 +25,10 @@ class SSO
         $uri = $request->getUri();
         $host = $uri->getHost();
 
-//        if ($host == "localhost") {
-//            $uid = 403840308;
-//            $ssoRole = 1;
-//        }
+        if ($host == "localhost") {
+            $uid = 403840308;
+            $ssoRole = 1;
+        }
         //*****************************************//test only
 
 //        $name = $this->username($uid);
