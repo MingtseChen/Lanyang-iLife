@@ -1,6 +1,6 @@
 {# TODO: Add expand effect on admin login form #}
 
-{% extends "/layouts/user.twig" %}
+{% extends "/layouts/bus.twig" %}
 {% block title %}iBus{% endblock %}
 
 {% block page_title %}Bus Reservation{% endblock %}
@@ -42,7 +42,9 @@
                                             <td>
                                                 <div class="radio">
                                                     <label><input type="radio" value="{{ schedule.id }}"
-                                                                  name="schedule"></label>
+                                                                  name="schedule" id="radio"
+                                                                  {% if not schedule.reservation %}disabled{% endif %}
+                                                                  required></label>
                                                 </div>
                                             </td>
                                             {% if schedule.type == 1 %}
@@ -73,17 +75,24 @@
                             <div class="card-body">
                                 <div class="form-group">
                                     <label>Name</label>
-                                    <input type="text" class="form-control float-right" name="name" id="name" disabled value="test">
+                                    <input type="text" class="form-control float-right" name="name" id="name" disabled
+                                           value="{{ _session.name }}">
                                     <!-- /.input group -->
                                 </div>
                                 <div class="form-group">
                                     <label>Department</label>
-                                    <input type="text" class="form-control float-right" name="dept" id="dept">
+                                    <input type="text" class="form-control float-right" name="dept" id="dept" required/>
+                                    <div class="invalid-feedback">
+                                        Please fill out this field!
+                                    </div>
                                     <!-- /.input group -->
                                 </div>
                                 <div class="form-group">
                                     <label>Room No.</label>
-                                    <input type="text" class="form-control float-right" name="room" id="room">
+                                    <input type="text" class="form-control float-right" name="room" id="room" required>
+                                    <div class="invalid-feedback">
+                                        Please fill out this field!
+                                    </div>
                                     <!-- /.input group -->
                                 </div>
                             </div>
@@ -110,7 +119,7 @@
                                     <strong><i class="fas fa-building mr-1"></i> Department</strong>
                                     <p class="text-muted" id="show-dept"></p>
                                     <hr>
-                                    <strong><i class="fas fa-home mr-1" ></i> Room No.</strong>
+                                    <strong><i class="fas fa-home mr-1"></i> Room No.</strong>
                                     <p class="text-muted" id="show-room"></p>
                                 </div>
                             </div>

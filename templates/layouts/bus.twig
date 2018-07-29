@@ -110,8 +110,8 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.js"></script>
 <!-- smartWizard-->
 <script type="text/javascript" src="/plugins/smartwizard/js/jquery.smartWizard.min.js"></script>
-<!--bootstrap-validate-->
-<script type="text/javascript" src="/js/bootstrap-validate.js"></script>
+{#<!--bootstrap-validate-->#}
+{#<script type="text/javascript" src="/js/bootstrap-validate.js"></script>#}
 
 <script>
     // bootstrapValidate('#input', 'email:Enter a valid email address');
@@ -161,6 +161,40 @@
             } else {
                 $(".btn-finish").hide();
             }
+        });
+        $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+            if (stepDirection === 'forward' && stepNumber === 0) {
+                var check = $('input[id=radio]:checked').length;
+                if (check > 0) {
+                    return true;
+                }
+                alert('Please select a item');
+                return false;
+            }
+            if (stepDirection === 'forward' && stepNumber === 1) {
+                var dept = $("#dept").val().trim().length;
+                var room = $("#room").val().trim().length;
+                if (dept === 0) {
+                    $("#dept").addClass("is-invalid");
+                    feildErr_1 = true;
+                } else {
+                    $("#dept").removeClass("is-invalid");
+                    $("#dept").addClass("is-valid");
+                    feildErr_1 = false;
+                }
+                if (room === 0) {
+                    $("#room").addClass("is-invalid");
+                    feildErr_2 = true;
+                } else {
+                    $("#room").removeClass("is-invalid");
+                    $("#room").addClass("is-valid");
+                    feildErr_2 = false;
+                }
+                if (feildErr_1 || feildErr_2) {
+                    return false;
+                }
+            }
+            return true;
         });
         // Toolbar extra buttons
         var btnFinish = $('<button></button>').text('Finish')

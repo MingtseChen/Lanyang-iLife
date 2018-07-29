@@ -26,18 +26,6 @@ class Student
 {
     private $row;
 
-    public function __construct()
-    {
-//        ORM::configure(array(
-//            'connection_string' => 'mysql:host=163.13.21.1;dbname=iLife',
-//            'username' => 'chenmt',
-//            'password' => '403840308',
-//            'charset' => 'utf8mb4',
-//            'driver_options', array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'),
-//            'return_result_sets', true
-//    ));
-//        ORM::configure($setting);
-    }
 
     /**
      * @throws NoUserException

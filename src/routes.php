@@ -24,25 +24,21 @@ include 'Middleware/RedirectIfAuth.php';
 //Home
 
 $app->get('/', function ($request, $response, $args) {
-    //sso login check
-//    $ssoLoginCheck = $this->auth->isSsoLogin();
-    //TODO Clean Home Page
-//    $ssoLoginCheck = true;
-//    if ($ssoLoginCheck) {
-//        $student = new Student();
-//        $id = $this->auth->sso_userid();
-//        $id = 403840308;
-//        $username = $student->fetch($id)->getUsername();
-//    }
-//        $username = $this->db->fetch($id)->getUsername();
-    $id = 'test';
+
+    $id = 'null';
+    $name = 's';
+    $login = false;
     if ($this->session->exists('id')) {
         $id = $this->session->id;
+        $name = $this->session->name;
+        $login = true;
+    } else {
+        $login = false;
     }
     $data = [
-        'login' => true,
-        'id' => 403840308,
-        'name' => $id
+        'login' => $login,
+        'id' => $id,
+        'name' => $name
     ];
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
@@ -59,12 +55,42 @@ $app->group('/bus', function ($app) {
         $date = $request->getQueryParams()['date'];
         $bus = new Bus();
         $schedule = ['schedules' => $bus->find($from, $date)];
+        $uid = $this->session->id;
+
+        if ($bus->isSuspend($uid)) {
+            return $response->withRedirect('/bus/status?action=fail&status=suspend');
+        } else {
+            if (empty($schedule['schedules'])) {
+                return $response->withRedirect('/bus/status?action=false&status=null');
+            }
+        }
+
         return $this->view->render($response, '/bus/reserve.twig', $schedule);
     })->setName('busSearch');
 
     $app->post('/reserve', function ($request, $response, $args) {
-        var_dump($request->getParsedBody());
+        $post = $request->getParsedBody();
+        $bus = new Bus();
+        $uid = $this->session->id;
+        $name = $this->session->name;
+
+        if (!isset($post['schedule'])) {
+            return $response->withRedirect('/bus/status?status=null');
+        } else {
+            $status = $bus->reserve($post['schedule'], $uid, $name, $post['dept'], $post['room']);
+        }
+        if ($status) {
+            return $response->withRedirect('/bus/status?action=success');
+        } else {
+            return $response->withRedirect('/bus/status?action=fail');
+        }
+
     })->setName('busReserve');
+
+    $app->get('/status', function ($request, $response, $args) {
+//        $result = $request->getQueryParams()['action'];
+        return $this->view->render($response, '/bus/status.twig');
+    })->setName('busStatus');
 });
 
 //login
@@ -74,27 +100,16 @@ $app->group('/login', function ($app) {
         return $this->view->render($response, '/auth/login.twig');
     })->setName('loginForm');
 
-    //login
-    $app->post('', function ($request, $response, $args) {
-        $passport = new User();
-        $loginData = $request->getParsedBody();
-        if ($passport->login($loginData)) {
-            //success
-            $this->session->set('uname', $loginData['uname']);
-            $this->flash->addMessage('success', 'success');
-            return $response->withRedirect('/');
-        } else {
-            //fail
-//            $this->flash->addMessage('msg', 'username or password incorrect');
-            return $this->view->render($response, '/auth/login.twig', ['error' => true]);
-        }
-    })->setName('loginAuth');
-
     $app->get('/recover', function ($request, $response, $args) {
         return $this->view->render($response, '/auth/forget.twig');
     })->setName('recover');
 
 });
+
+$app->get('/logout', function ($request, $response, $args) {
+    $this->session::destroy();
+    return $response->withRedirect('/');
+})->setName('recover');
 
 //admin
 
