@@ -1,10 +1,7 @@
 <?php
 
-namespace App;
-
-
 //TODO Fix sso and user login conflict
-class Auth
+class SSOAuth
 {
     private $headers = null;
     private $session;

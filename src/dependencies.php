@@ -53,12 +53,12 @@ $container['flash'] = function () {
 ORM::configure($container->get('settings')['db']);
 
 // auth
-require __DIR__ . '/../src/auth.php';
+//require __DIR__ . '/../src/auth.php';
 
-$container['auth'] = function () {
-//    $auth = new Auth();
-    return new App\Auth();
-};
+//$container['auth'] = function () {
+////    $auth = new Auth();
+//    return new App\Auth();
+//};
 
 //session
 $container['session'] = function ($c) {
