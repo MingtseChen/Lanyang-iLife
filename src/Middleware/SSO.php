@@ -19,6 +19,22 @@ class SSO
         $ssoLogin = array_key_exists("sso_userid", $headers);
 
         //retrieve value from sso
+
+
+        //*****************************************//test only
+        $uri = $request->getUri();
+        $host = $uri->getHost();
+
+//        if ($host == "localhost") {
+//            $uid = 403840308;
+//            $ssoRole = 1;
+//        }
+        //*****************************************//test only
+
+//        $name = $this->username($uid);
+
+        $response = $next($request, $response);
+        //after response area
         if ($ssoLogin) {
             $uid = $headers['sso_userid'];
             $ssoRole = $headers['sso_roletype'];
@@ -35,20 +51,6 @@ class SSO
             }
         }
 
-        //*****************************************//test only
-        $uri = $request->getUri();
-        $host = $uri->getHost();
-
-//        if ($host == "localhost") {
-//            $uid = 403840308;
-//            $ssoRole = 1;
-//        }
-        //*****************************************//test only
-
-//        $name = $this->username($uid);
-
-        $response = $next($request, $response);
-        //after response area
 //        if (!isset($session['id']) || $this->isIDChange($uid)) {
 //            if ($this->isAdmin($uid)) {
 //                $group = $this->userGroup($uid);
