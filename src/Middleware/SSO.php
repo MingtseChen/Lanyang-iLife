@@ -22,32 +22,42 @@ class SSO
         if ($ssoLogin) {
             $uid = $headers['sso_userid'];
             $ssoRole = $headers['sso_roletype'];
+            if (!isset($session['id']) || $this->isIDChange($uid)) {
+                if ($this->isAdmin($uid)) {
+                    $group = $this->userGroup($uid);
+                    $this->setAdminSession($uid, $name, $ssoRole, $group);
+                    $this->updateAdminLogin($uid);
+                } else {
+                    $this->setUserSession($uid, $name, $ssoRole);
+                    $this->updateUserLogin($uid);
+                }
+            }
         }
 
         //*****************************************//test only
         $uri = $request->getUri();
         $host = $uri->getHost();
 
-        if ($host == "localhost") {
-            $uid = 403840308;
-            $ssoRole = 1;
-        }
+//        if ($host == "localhost") {
+//            $uid = 403840308;
+//            $ssoRole = 1;
+//        }
         //*****************************************//test only
 
         $name = $this->username($uid);
 
         $response = $next($request, $response);
         //after response area
-        if (!isset($session['id']) || $this->isIDChange($uid)) {
-            if ($this->isAdmin($uid)) {
-                $group = $this->userGroup($uid);
-                $this->setAdminSession($uid, $name, $ssoRole, $group);
-                $this->updateAdminLogin($uid);
-            } else {
-                $this->setUserSession($uid, $name, $ssoRole);
-                $this->updateUserLogin($uid);
-            }
-        }
+//        if (!isset($session['id']) || $this->isIDChange($uid)) {
+//            if ($this->isAdmin($uid)) {
+//                $group = $this->userGroup($uid);
+//                $this->setAdminSession($uid, $name, $ssoRole, $group);
+//                $this->updateAdminLogin($uid);
+//            } else {
+//                $this->setUserSession($uid, $name, $ssoRole);
+//                $this->updateUserLogin($uid);
+//            }
+//        }
 
         return $response;
     }
