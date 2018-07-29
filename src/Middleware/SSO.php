@@ -17,8 +17,7 @@ class SSO
         $ssoRole = '';
         $headers = apache_request_headers();
         $ssoLogin = array_key_exists("sso_userid", $headers);
-
-        //retrieve value from sso
+        $ssoLogin = true;
 
 
         //*****************************************//test only
@@ -28,13 +27,15 @@ class SSO
         if ($host == "localhost") {
             $uid = 403840308;
             $ssoRole = 1;
+            $headers['sso_userid'] = $uid;
+            $headers['sso_roletype'] = $ssoRole;
         }
         //*****************************************//test only
 
-//        $name = $this->username($uid);
-
         $response = $next($request, $response);
         //after response area
+
+        //retrieve value from sso
         if ($ssoLogin) {
             $uid = $headers['sso_userid'];
             $ssoRole = $headers['sso_roletype'];
@@ -50,6 +51,22 @@ class SSO
                 }
             }
         }
+
+//        if ($ssoLogin) {
+//            $uid = $headers['sso_userid'];
+//            $ssoRole = $headers['sso_roletype'];
+//            $name = $this->username($uid);
+//            if (!isset($session['id']) || $this->isIDChange($uid)) {
+//                if ($this->isAdmin($uid)) {
+//                    $group = $this->userGroup($uid);
+//                    $this->setAdminSession($uid, $name, $ssoRole, $group);
+//                    $this->updateAdminLogin($uid);
+//                } else {
+//                    $this->setUserSession($uid, $name, $ssoRole);
+//                    $this->updateUserLogin($uid);
+//                }
+//            }
+//        }
 
 //        if (!isset($session['id']) || $this->isIDChange($uid)) {
 //            if ($this->isAdmin($uid)) {
