@@ -12,6 +12,35 @@ class Bus
         $this->flash = new \Slim\Flash\Messages();
     }
 
+    public function getSchedule()
+    {
+        $bus = ORM::forTable('bus_schedule')->findArray();
+        return $bus;
+    }
+
+    public function delete($id)
+    {
+        $bus = ORM::for_table('bus_schedule')->findOne($id);
+        $bus->delete();
+    }
+
+    public function deleteUser($id)
+    {
+        $bus = ORM::for_table('bus_reserve')->findOne($id);
+        $bus->delete();
+    }
+
+    public function edit($data)
+    {
+        $bus = ORM::forTable('bus_schedule')->findOne($data['id']);
+        $bus->type = $data['dest'];
+        $bus->departure_time = $data['depart'];
+        $bus->reservation = $data['reserve'];
+        $bus->capacity = $data['capacity'];
+        $bus->description = $data['desc'];
+        $bus->save();
+    }
+
     public function find($from, $date)
     {
         $setStartDay = Carbon::parse($date);
@@ -72,4 +101,51 @@ class Bus
         $user->dorm_no = $room;
         $user->save();
     }
+
+    public function adminCreate($data)
+    {
+        $bus = ORM::forTable('bus_schedule')->create();
+        $bus->type = $data['dest'];
+        $bus->departure_time = Carbon::parse($data['depart']);
+        $bus->reservation = $data['reserve'];
+        $bus->capacity = $data['capacity'];
+        $bus->description = $data['desc'];
+        $bus->save();
+    }
+
+    public function showReserveUser($id)
+    {
+        $reserve = ORM::forTable('bus_reserve')->where('bus_id', $id)->findArray();
+        return $reserve;
+    }
+
+    public function createSuspendList($data)
+    {
+        $suspend = ORM::forTable('bus_suspend')->create();
+        $suspend->uid = $data["uid"];
+        $suspend->description = $data["desc"];
+        $suspend->save();
+    }
+
+    public function readSuspendList()
+    {
+        $sql = ORM::forTable('bus_suspend')->innerJoin('students', ["bus_suspend.uid", "=", "students.uname"]);
+        $user = $sql->selectMany(["bus_suspend.*", "students.name"])->findArray();
+        return $user;
+    }
+
+    public function deleteSuspendList($id)
+    {
+        $sql = ORM::forTable('bus_suspend')->findOne($id);
+        $sql->delete();
+    }
+
+    public function updateSuspendList($data)
+    {
+        $suspend = ORM::forTable('bus_suspend')->findOne($data['id']);
+        $suspend->uid = $data["uid"];
+        $suspend->description = $data["desc"];
+        $suspend->save();
+    }
+
 }

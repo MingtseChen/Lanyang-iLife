@@ -22,6 +22,8 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     <!-- AnimatedCSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.6.2/animate.css" rel="stylesheet">
+    <!-- flatpickr dark -->
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/material_blue.css">
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -106,34 +108,37 @@
 <script src="/js/adminlte.min.js"></script>
 <!-- Bootstrap-NotifyJS-->
 <script src="/js/bootstrap-notify.js"></script>
+<!-- flatpickrJS-->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    $('#userTable').DataTable({
-        "paging": true,
-        // "lengthChange": false,
-        "searching": true,
-        "ordering": true,
-        "info": true,
-        "pageLength": 5,
-        "lengthMenu": [5, 10, 15]
-    });
-    $('#studentTable').DataTable({
-        "paging": true,
-        // "lengthChange": false,
-        "searching": true,
-        "ordering": true,
-        "info": true,
-        "pageLength": 5,
-        "lengthMenu": [5, 10, 15]
-    });
-    {% for msg in flash('msg') %}
+    {% for error in flash('error') %}
     $.notify({
         // options
-        message: '{{ msg }}'
+        message: '{{ error }}'
     }, {
         // settings
         type: 'danger'
     });
     {% endfor %}
+    {% for info in flash('info') %}
+    $.notify({
+        // options
+        message: '{{ info }}'
+    }, {
+        // settings
+        type: 'info'
+    });
+    {% endfor %}
+    {% for info in flash('success') %}
+    $.notify({
+        // options
+        message: '{{ info }}'
+    }, {
+        // settings
+        type: 'success'
+    });
+    {% endfor %}
 </script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

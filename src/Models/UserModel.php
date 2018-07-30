@@ -37,7 +37,7 @@ class User
     public function read()
     {
         $table = ORM::forTable('groups_users');
-        $row = $table->selectMany('id', 'groups_users.uid', 'groupid', 'active', 'role', 'create_time',
+        $row = $table->selectMany('groups_users.id', 'groups_users.uid', 'active', 'role', 'create_time',
             'groups_users.last_login', 'students.name');
         $data = $row->leftOuterJoin('students', array('groups_users.uid', '=', 'students.uname'))->find_array();
         return $data;

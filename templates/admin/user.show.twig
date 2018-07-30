@@ -130,9 +130,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">User List
-                    </h3>
-
+                    <h3 class="card-title">User List</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -168,4 +166,25 @@
         </div>
     </div>
 {% endblock %}
-
+{% block scripts %}
+    <script>
+        $('#userTable').DataTable({
+            "paging": true,
+            // "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "pageLength": 5,
+            "lengthMenu": [5, 10, 15]
+        });
+        $('#studentTable').DataTable({
+            "paging": true,
+            // "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "pageLength": 5,
+            "lengthMenu": [5, 10, 15]
+        });
+    </script>
+{% endblock %}
