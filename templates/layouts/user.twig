@@ -139,6 +139,15 @@
         type: 'info'
     });
     {% endfor %}
+    {% for info in flash('success') %}
+    $.notify({
+        // options
+        message: '{{ info }}'
+    }, {
+        // settings
+        type: 'success'
+    });
+    {% endfor %}
 
     $(document).ready(function () {
 

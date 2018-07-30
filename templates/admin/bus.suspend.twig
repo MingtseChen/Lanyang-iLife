@@ -1,0 +1,192 @@
+{# TODO: Add expand effect on admin login form #}
+
+{% extends "/layouts/admin.twig" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block page_title %}Suspend List{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                    <h3 class="card-title d-inline">Info</h3>
+                    <button type="button" class="btn btn-success btn-flat btn-sm float-right" data-toggle="modal"
+                            data-target="#create">
+                        <i class="fas fa-plus"></i> Create
+                    </button>
+
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive">
+                    <table id="userTable" class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User ID</th>
+                            <th hidden>id</th>
+                            <th>Username</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in suspend_users %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <th hidden>{{ user.id }}</th>
+                                <td>{{ user.uid }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.description }}</td>
+                                <td>
+                                    <a class="mx-1" style="color: #00c0ef" href="#" data-toggle="modal"
+                                       data-target="#edit" data-placement="top"
+                                       title="Edit" id="{{ loop.index0 }}"><i class="far fa-edit"></i></a>
+                                    <a class="mx-1" style="color: #f56954" href="#" data-toggle="modal"
+                                       data-placement="top" data-target="#delete"
+                                       title="Delete" id="seleteId" data-user-id="{{ user.id }}">
+                                        <i class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    <!-- Edit Modal -->
+    <div class="modal fade" id="edit" role="dialog" aria-labelledby="edit" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Edit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <div class="col-md">
+                            <form method="get">
+                                <div class="form-group">
+                                    <label for="">User ID</label>
+                                    <input type="text" class="form-control" id="uid" name="uid" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Username</label>
+                                    <input type="text" class="form-control" id="uname" name="uid" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="desc" name="desc" class="form-control" rows="3"
+                                              placeholder="Description..." required></textarea>
+                                </div>
+                                <input type="hidden" name="edit" value="true">
+                                <input type="hidden" name="id" id="userid">
+                                <button type="submit" class="btn btn-info float-rights">Save changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal -->
+    <div class="modal fade" id="delete" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body mx-auto">
+                    <div class="row">
+                        <div class="col text-center">
+                            <i class="fas fa-minus-circle fa-7x m-md-4" style="color: #f56954"></i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Do you really want to delete these records?
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="mx-auto">
+                        <form>
+                            <input type="hidden" name="delete" value="true">
+                            <input type="hidden" id="id" name="id">
+                            <button type="button" class="btn btn-flat btn-secondary" data-dismiss="modal">Cancel
+                            </button>
+                            <button type="submit" class="btn btn-flat btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Create Modal -->
+    <div class="modal fade" id="create" role="dialog" aria-labelledby="create" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Create</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <div class="col-md">
+                            <form method="get">
+                                <div class="form-group">
+                                    <label for="">User ID</label>
+                                    <input type="text" class="form-control" id="uid" name="uid" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="desc" name="desc" class="form-control" rows="3"
+                                              placeholder="Description..." required></textarea>
+                                </div>
+                                <input type="hidden" name="create" value="true">
+                                <button type="submit" class="btn btn-info btn-flat float-right">Save</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        var id;
+        $("a#seleteId").click(function () {
+            id = $(this).data("user-id")
+        });
+        $('#delete').on('show.bs.modal', function (e) {
+            $("input#id").val(id);
+        });
+
+        var rowNum;
+        $("a").click(function () {
+            rowNum = this.id;
+        });
+        $('#edit').on('show.bs.modal', function (e) {
+            row = $('#userTable').DataTable().row(parseInt(rowNum)).data();
+            $("#userid").val(row[1]);
+            $("#uid").val(row[2]);
+            $("#uname").val(row[3]);
+            $('#desc').val(row[4]);
+        });
+
+        $('#userTable').DataTable({
+            "paging": true,
+            // "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+        });
+    </script>
+{% endblock %}

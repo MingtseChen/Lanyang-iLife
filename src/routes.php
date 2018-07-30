@@ -118,7 +118,75 @@ $app->group('/admin', function ($app) {
     $app->get('', function ($request, $response, $args) {
         return $this->view->render($response, '/admin/index.twig');
     })->setName('admin');
+    //Bus Section
+    $app->group('/bus', function ($app) {
+        $app->get('', function ($request, $response, $args) {
+            $bus = new Bus();
+            if (isset($request->getQueryParams()['edit']) && $request->getQueryParams()['edit'] == true) {
+                $data = $request->getQueryParams();
+                $bus->edit($data);
+                return $response->withRedirect('/admin/bus?success');
+            }
+            if (isset($request->getQueryParams()['create']) && $request->getQueryParams()['create'] == true) {
+                $data = $request->getQueryParams();
+                $bus->adminCreate($data);
+                return $response->withRedirect('/admin/bus?success');
+            }
+            if (isset($request->getQueryParams()['delete']) && $request->getQueryParams()['delete'] == true) {
+                $id = $request->getQueryParams()['id'];
+                $bus->delete($id);
+                return $response->withRedirect('/admin/bus?success');
+            }
+            $users = [];
+            if (isset($request->getQueryParams()['user'])) {
+                $id = $request->getQueryParams()['user'];
+                $users = $bus->showReserveUser($id);
+            }
+            if (isset($request->getQueryParams()['deluser'])) {
+                $id = $request->getQueryParams()['deluser'];
+                $users = $bus->deleteUser($id);
+                $this->flash->addMessage('success', 'Operation Success !');
+                $uri = $request->getQueryParams()['from'] . "&success";
+                return $response->withRedirect($uri);
+            }
 
+            $schedule = ['schedules' => $bus->getSchedule(), 'users' => $users];
+            if (isset($request->getQueryParams()['success'])) {
+                $this->flash->addMessage('success', 'Operation Success !');
+            }
+
+            return $this->view->render($response, '/admin/bus.show.twig', $schedule);
+        })->setName('busSchedule');
+
+        $app->get('/suspended', function ($request, $response, $args) {
+            $bus = new Bus();
+            $userList = $bus->readSuspendList();
+            if (isset($request->getQueryParams()['edit']) && $request->getQueryParams()['edit'] == true) {
+                $data = $request->getQueryParams();
+                $bus->updateSuspendList($data);
+                return $response->withRedirect('/admin/bus/suspended?success');
+            }
+            if (isset($request->getQueryParams()['create']) && $request->getQueryParams()['create'] == true) {
+                $data = $request->getQueryParams();
+                $bus->createSuspendList($data);
+                return $response->withRedirect('/admin/bus/suspended?success');
+            }
+            if (isset($request->getQueryParams()['delete']) && $request->getQueryParams()['delete'] == true) {
+                $id = $request->getQueryParams()['id'];
+                $bus->deleteSuspendList($id);
+                return $response->withRedirect('/admin/bus/suspended?success');
+            }
+
+            $data = ['suspend_users' => $userList];
+
+            if (isset($request->getQueryParams()['success'])) {
+                $this->flash->addMessage('success', 'Operation Success !');
+            }
+
+            return $this->view->render($response, '/admin/bus.suspend.twig', $data);
+        })->setName('busSuspend');
+    });
+    //Admin Section
     $app->group('/users', function ($app) {
         $app->get('', function ($request, $response, $args) {
             $admin = new User();
