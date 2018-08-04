@@ -170,7 +170,9 @@ class Bus
         ];
         $select = ORM::forTable('bus_schedule')->selectMany($column);
         $rule = ['bus_schedule.id', '=', 'bus_reserve.bus_id'];
-        $buses = $select->join('bus_reserve', $rule)->where('bus_reserve.uid', $uid)->findArray();
+        $today = Carbon::today();
+        $buses = $select->join('bus_reserve', $rule)->where('bus_reserve.uid', $uid)->where_gte('departure_time',
+            $today)->findArray();
         return $buses;
     }
 

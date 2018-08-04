@@ -1,0 +1,132 @@
+{# TODO: Add expand effect on admin login form #}
+
+{% extends "/layouts/user.twig" %}
+{% block title %}User Dashboard{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-3">
+            {% include("partials/user.menu.twig") %}
+
+            <!-- /.card -->
+        </div>
+        <div class="col-md-9">
+            <div class="card card-outline card-info animated fadeInDown">
+                <div class="card-header d-flex p-0">
+                    <h3 class="card-title p-3">My Packages</h3>
+                    <ul class="nav nav-pills ml-auto p-2">
+                        <li class="nav-item"><a class="nav-link active show" href="#tab_1" data-toggle="tab">未領包裹</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="#tab_2" data-toggle="tab">包裹歷史</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ path_for('lostFound') }}">包裹招領</a></li>
+                    </ul>
+                </div>
+
+                <div class="card-body  table-responsive">
+                    <div class="tab-content">
+                        <div class="tab-pane active show" id="tab_1">
+                            <table class="table table-hover">
+                                <tbody>
+                                <tr>
+                                    <th>#</th>
+                                    <th>包裹類型</th>
+                                    <th>存放位置</th>
+                                    <th>包裹編號</th>
+                                    <th>抵達時間</th>
+                                    <th>操作</th>
+                                </tr>
+                                {% for package in packages %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>{{ package.ptype }}</td>
+                                        <td>{{ package.storage }}</td>
+                                        <td>{{ package.pid }}</td>
+                                        <td>{{ package.timestamp_arrive|date("Y-m-d H:i") }}</td>
+                                        <td>
+                                            <a class="mx-1" style="color: #00a65a" href="#" data-toggle="modal"
+                                               data-placement="top" data-target="#delete"
+                                               title="簽收" id="seleteId" data-pkg-id="{{ package.id }}"><i
+                                                        class="fas fa-check-double"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="tab_2">
+                            <table class="table table-hover">
+                                <tbody>
+                                <tr>
+                                    <th>#</th>
+                                    <th>包裹類型</th>
+                                    <th>存放位置</th>
+                                    <th>包裹編號</th>
+                                    <th>抵達時間</th>
+                                    <th>領取時間</th>
+                                </tr>
+                                {% for oldPackage in oldPackages %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>{{ oldPackage.ptype }}</td>
+                                        <td>{{ oldPackage.storage }}</td>
+                                        <td>{{ oldPackage.pid }}</td>
+                                        <td>{{ oldPackage.timestamp_arrive|date("Y-m-d H:i") }}</td>
+                                        <td>{{ oldPackage.timestamp_pickup|date("Y-m-d H:i") }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+    <!-- Delete Modal -->
+    <div class="modal fade" id="delete" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body mx-auto">
+                    <div class="row">
+                        <div class="col text-center">
+                            <i class="fas fa-check-double fa-7x m-md-4" style="color: #00a65a"></i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            確定簽收?
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="mx-auto">
+                        <form method="post">
+                            <input type="hidden" name="sign" value="true">
+                            <input type="hidden" id="id" name="id">
+                            <button type="button" class="btn btn-flat btn-secondary" data-dismiss="modal">取消
+                            </button>
+                            <button type="submit" class="btn btn-flat btn-success">簽收</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        var pid;
+        $("a#seleteId").click(function () {
+            pid = $(this).data("pkg-id")
+        });
+        $('#delete').on('show.bs.modal', function (e) {
+            $("input#id").val(pid);
+        });
+    </script>
+{% endblock %}
+

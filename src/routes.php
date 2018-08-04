@@ -6,6 +6,7 @@ use Respect\Validation\Validator as v;
 include 'Models/StudentModel.php';
 include 'Models/UserModel.php';
 include 'Models/BusModel.php';
+include 'Models/PackageModel.php';
 include 'Plugins/Mail.php';
 include 'Middleware/AdminSection.php';
 include 'Middleware/RedirectIfAuth.php';
@@ -26,8 +27,10 @@ include 'Middleware/RedirectIfAuth.php';
 
 $app->get('/', function ($request, $response, $args) {
 
+//    $this->flash->addMessage($messages);
+//    print_r($messages);
     $id = 'null';
-    $name = 's';
+    $name = '';
     $login = false;
     if ($this->session->exists('id')) {
         $id = $this->session->id;
@@ -50,9 +53,10 @@ $app->group('/user', function ($app) {
     $app->get('/index', function ($request, $response, $args) {
         $id = $this->session->id;
         $student = new Student();
-        $mail = $student->fetch($id)->getMail();
-        $mail2 = $student->fetch($id)->getSecondaryMail();
-//        var_dump($student->fetch($id)->getPrimaryMail());
+        $user = $student->fetch($id);
+        $mail = $user->getMail();
+        $mail2 = $user->getSecondaryMail();
+
         $data = ["email" => $mail, 'email2' => $mail2];
         if (isset($request->getQueryParams()['success'])) {
             $this->flash->addMessage('success', 'Info updated');
@@ -98,6 +102,35 @@ $app->group('/user', function ($app) {
         }
 //        return $response->withRedirect('/user/bus?success');
     })->setName('deleteBus');
+
+    $app->get('/package', function ($request, $response, $args) {
+        $name = $this->session->name;
+        $package = new Package();
+        $packages = $package->readUserUnpickedPackage($name);
+        $oldPackages = $package->readUserPickedPackage($name);
+        $data = ['packages' => $packages, 'oldPackages' => $oldPackages];
+        return $this->view->render($response, '/user/package.twig', $data);
+    })->setName('userPackage');
+
+    $app->post('/package', function ($request, $response, $args) {
+        $name = $this->session->name;
+        $package = new Package();
+        $action = $request->getParsedBody()['sign'];
+        if ((bool)$action) {
+            $id = $request->getParsedBody()['id'];
+            $package->signPackage($name, $id);
+        }
+
+        return $response->withRedirect('/user/package');
+    });
+
+    $app->get('/lostfound', function ($request, $response, $args) {
+        $package = new Package();
+        $packages = $package->lostFoundPackage();
+        $data = ['packages' => $packages];
+        return $this->view->render($response, '/user/lost.found.twig', $data);
+    })->setName('lostFound');
+
 });
 
 //bus
@@ -296,3 +329,21 @@ $app->group('/admin', function ($app) {
 
 //console
 $app->post('/console', 'RunTracy\Controllers\RunTracyConsole:index');
+
+$app->get('/test', function ($req, $res, $args) {
+    // Set flash message for next request
+    $this->flash->addMessage('error', 'This is a message');
+
+    // Redirect
+    return $res->withHeader('Location', '/');
+});
+
+//$app->get('/bar', function ($req, $res, $args) {
+//    // Get flash messages from previous request
+//    $messages = $this->flash->getMessages();
+//    print_r($messages);
+//
+//    // Get the first message from a specific key
+//    $test = $this->flash->getFirstMessage('error');
+//    print_r($test);
+//});

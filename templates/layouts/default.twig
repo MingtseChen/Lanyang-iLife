@@ -83,7 +83,7 @@
                         <a class="nav-link" href="#">線上報修</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">蘭陽掛包</a>
+                        <a class="nav-link" href="{{ path_for('userPackage') }}">蘭陽掛包</a>
                     </li>
                     <!-- Authentication Links -->
                     {% if not login %}
@@ -138,13 +138,31 @@
 <!-- Bootstrap-NotifyJS-->
 <script src="/js/bootstrap-notify.js"></script>
 <script>
-    {% for msg in flash('msg') %}
+    {% for error in flash('error') %}
     $.notify({
         // options
-        message: '{{ msg }}'
+        message: '{{ error }}'
     }, {
         // settings
         type: 'danger'
+    });
+    {% endfor %}
+    {% for info in flash('info') %}
+    $.notify({
+        // options
+        message: '{{ info }}'
+    }, {
+        // settings
+        type: 'info'
+    });
+    {% endfor %}
+    {% for info in flash('success') %}
+    $.notify({
+        // options
+        message: '{{ info }}'
+    }, {
+        // settings
+        type: 'success'
     });
     {% endfor %}
 </script>
