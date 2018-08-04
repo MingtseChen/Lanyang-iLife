@@ -71,7 +71,13 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-
+                {% if _session.group == 0 %}
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path_for('admin') }}">管理界面</a>
+                        </li>
+                    </ul>
+                {% endif %}
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path_for('busIndex') }}">交通車預約</a>
@@ -86,11 +92,6 @@
                         <a class="nav-link" href="{{ path_for('userPackage') }}">蘭陽掛包</a>
                     </li>
                     <!-- Authentication Links -->
-                    {% if _session.group == 0 %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path_for('admin') }}">管理界面</a>
-                        </li>
-                    {% endif %}
                     {% if not login %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path_for('loginForm') }}">登入</a>
@@ -101,13 +102,14 @@
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Hi,
                                 {{ name|default('') }}<span class="caret"></span>
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#"
-                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    Logout
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="{{ path_for('userIndex') }}">
+                                    <i class="fas fa-user-circle"></i> Profile
                                 </a>
-                                <form id="logout-form" action="#" method="POST" style="display: none;">
-                                </form>
+                                <a class="dropdown-item" href="{{ path_for('userBus') }}">
+                                    <i class="fas fa-bell"></i> My Bus
+                                </a>
+                                <a class="dropdown-item" href="{{ path_for('logout') }}">Logout</a>
                             </div>
                         </li>
                     {% endif %}

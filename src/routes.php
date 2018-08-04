@@ -53,6 +53,7 @@ $app->group('/user', function ($app) {
         $mail = $user->getMail();
         $mail2 = $user->getSecondaryMail();
         $data = ["email" => $mail, 'email2' => $mail2];
+        var_dump($_SESSION);
         return $this->view->render($response, '/user/index.twig', $data);
     })->setName('userIndex');
 
@@ -193,7 +194,7 @@ $app->group('/login', function ($app) {
 $app->get('/logout', function ($request, $response, $args) {
     $this->session::destroy();
     return $response->withRedirect('/');
-})->setName('recover');
+})->setName('logout');
 
 //admin
 
