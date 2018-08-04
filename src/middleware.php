@@ -10,7 +10,7 @@ $app->add(new \Zeuxisoo\Whoops\Provider\Slim\WhoopsMiddleware);
 //session
 $app->add(new \Slim\Middleware\Session([
     'name' => 'SSID',
-    'autorefresh' => true,
+    'autorefresh' => false,
     'lifetime' => '1 hour'
 ]));
 

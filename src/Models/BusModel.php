@@ -4,12 +4,11 @@ use Carbon\Carbon;
 
 class Bus
 {
-    private $flash;
+//    private $flash;
 
     public function __construct()
     {
         Carbon::now('Asia/Taipei');
-        $this->flash = new \Slim\Flash\Messages();
     }
 
     public function getSchedule()
@@ -55,11 +54,20 @@ class Bus
 
     public function find($from, $date)
     {
-        $setStartDay = Carbon::parse($date);
-        $setEndDay = Carbon::parse($date)->addHours(24);
-        $query = "`type` = " . $from . " AND `departure_time` BETWEEN '" . $setStartDay . "' AND '" . $setEndDay . "'";
-        $schedule = ORM::forTable('bus_schedule')->whereRaw($query)->findArray();
-        return $schedule;
+        try {
+            $setStartDay = Carbon::parse($date);
+            $setEndDay = Carbon::parse($date)->addHours(24);
+            if ($setStartDay->isToday()) {
+                $setStartDay = Carbon::now();
+            }
+            $query = "`type` = " . $from . " AND `departure_time` BETWEEN '" . $setStartDay . "' AND '" . $setEndDay . "'";
+            $schedule = ORM::forTable('bus_schedule')->whereRaw($query)->findArray();
+            return $schedule;
+        } catch (Exception $e) {
+            var_dump($e);
+            return false;
+        }
+
     }
 
     public function reserve($busId, $uid, $name, $dept, $room)
@@ -80,7 +88,7 @@ class Bus
         $duplicate = ORM::forTable('bus_reserve')->where(['bus_id' => $busId, 'uid' => $uid])->count();
 
         if ($duplicate > 1 || $this->isSuspend($uid)) {
-            $this->flash->addMessage('error', 'You have already reserve this bus');
+//            $this->flash->addMessage('error', 'You have already reserve this bus');
             return false;
         } else {
             if ((int)$capacity[0] > $reserveCount) {
@@ -96,7 +104,7 @@ class Bus
     {
         $suspend = ORM::forTable('bus_suspend')->where('uid', $uid)->count();
         if ($suspend != 0) {
-            $this->flash->addMessage('error', 'This account has been suspended');
+//            $this->flash->addMessage('error', 'This account has been suspended');
             return true;
         } else {
             return false;

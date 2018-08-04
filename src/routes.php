@@ -8,8 +8,8 @@ include 'Models/UserModel.php';
 include 'Models/BusModel.php';
 include 'Models/PackageModel.php';
 include 'Plugins/Mail.php';
-include 'Middleware/AdminSection.php';
-include 'Middleware/RedirectIfAuth.php';
+//include 'Middleware/AdminSection.php';
+//include 'Middleware/RedirectIfAuth.php';
 
 //use Slim\Http\Request;
 //use Slim\Http\Response;
@@ -24,11 +24,8 @@ include 'Middleware/RedirectIfAuth.php';
 //});
 
 //Home
-
 $app->get('/', function ($request, $response, $args) {
 
-//    $this->flash->addMessage($messages);
-//    print_r($messages);
     $id = 'null';
     $name = '';
     $login = false;
@@ -56,11 +53,7 @@ $app->group('/user', function ($app) {
         $user = $student->fetch($id);
         $mail = $user->getMail();
         $mail2 = $user->getSecondaryMail();
-
         $data = ["email" => $mail, 'email2' => $mail2];
-        if (isset($request->getQueryParams()['success'])) {
-            $this->flash->addMessage('success', 'Info updated');
-        }
         return $this->view->render($response, '/user/index.twig', $data);
     })->setName('userIndex');
 
@@ -69,7 +62,8 @@ $app->group('/user', function ($app) {
         $student = new Student();
         $id = $this->session->id;
         $student->addSecondaryMail($id, $email);
-        return $response->withRedirect('/user/index?success');
+        $this->flash->addMessage('success', 'Info updated');
+        return $response->withRedirect('/user/index');
     })->setName('userAddMail');
 
     $app->get('/bus', function ($request, $response, $args) {
@@ -77,14 +71,6 @@ $app->group('/user', function ($app) {
         $id = $this->session->id;
         $buses = $bus->readUserBus($id);
         $data = ['buses' => $buses];
-
-        if (isset($request->getQueryParams()['success'])) {
-            $this->flash->addMessage('success', 'operation success !');
-        }
-        if (isset($request->getQueryParams()['fail'])) {
-            $this->flash->addMessage('error', 'Invalid operation !');
-        }
-
         return $this->view->render($response, '/user/bus.twig', $data);
     })->setName('userBus');
 
@@ -94,13 +80,14 @@ $app->group('/user', function ($app) {
         $action = $request->getParsedBody()['delete'];
         if ((bool)$action) {
             $id = $request->getParsedBody()['id'];
-            if ($bus->deleteReserve($id, $uid)) {
-                return $response->withRedirect('/user/bus?success');
+            $status = $bus->deleteReserve($id, $uid);
+            if ($status) {
+                $this->flash->addMessage('success', 'operation success !');
             } else {
-                return $response->withRedirect('/user/bus?fail');
+                $this->flash->addMessage('error', 'Invalid operation !');
             }
         }
-//        return $response->withRedirect('/user/bus?success');
+        return $response->withRedirect('/user/bus');
     })->setName('deleteBus');
 
     $app->get('/package', function ($request, $response, $args) {
@@ -118,7 +105,12 @@ $app->group('/user', function ($app) {
         $action = $request->getParsedBody()['sign'];
         if ((bool)$action) {
             $id = $request->getParsedBody()['id'];
-            $package->signPackage($name, $id);
+            $status = $package->signPackage($name, $id);
+            if ($status) {
+                $this->flash->addMessage('success', 'operation success !');
+            } else {
+                $this->flash->addMessage('error', 'Invalid operation !');
+            }
         }
 
         return $response->withRedirect('/user/package');
@@ -154,7 +146,6 @@ $app->group('/bus', function ($app) {
                 return $response->withRedirect('/bus/status?action=false&status=null');
             }
         }
-
         return $this->view->render($response, '/bus/reserve.twig', $schedule);
     })->setName('busSearch');
 
@@ -329,21 +320,3 @@ $app->group('/admin', function ($app) {
 
 //console
 $app->post('/console', 'RunTracy\Controllers\RunTracyConsole:index');
-
-$app->get('/test', function ($req, $res, $args) {
-    // Set flash message for next request
-    $this->flash->addMessage('error', 'This is a message');
-
-    // Redirect
-    return $res->withHeader('Location', '/');
-});
-
-//$app->get('/bar', function ($req, $res, $args) {
-//    // Get flash messages from previous request
-//    $messages = $this->flash->getMessages();
-//    print_r($messages);
-//
-//    // Get the first message from a specific key
-//    $test = $this->flash->getFirstMessage('error');
-//    print_r($test);
-//});
