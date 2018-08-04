@@ -1,0 +1,108 @@
+{# TODO: Add expand effect on admin login form #}
+
+{% extends "/layouts/user.twig" %}
+{% block title %}User Dashboard{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-3">
+            {% include("partials/user.menu.twig") %}
+            <!-- /.card -->
+        </div>
+        <div class="col-md-9">
+            <div class="card card-outline card-info animated fadeInDown">
+                <div class="card-header">
+                    <h3 class="card-title">Profile</h3>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="inputName" class="col-sm-2 control-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" value="{{ _session.name }}" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputName" class="col-sm-2 control-label">ID</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" value="{{ _session.id }}" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail" class="col-sm-2 control-label">Default email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" value="{{ email|default('') }}"
+                                   disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail" class="col-sm-6 control-label">Primary email</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="email" id="test" class="form-control" value="{{ email2|default('') }}"
+                                       disabled>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-info" type="button" data-toggle="modal"
+                                            data-target="#email">
+                                        <i class="fas fa-plus"></i>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">
+                                We'll never share your email with anyone else.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+    <!-- Modal -->
+    <div class="modal fade" id="email" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{{ path_for('userAddMail') }}" id="form" role="form">
+                        {#<form method="post">#}
+                        <div class="form-group">
+                            <label for="inputEmail" class="col control-label">Primary email</label>
+                            <div class="col">
+                                <input type="email" class="form-control" id="mail" name="mail"
+                                       value="{{ email2|default('') }}">
+                                <div class="invalid-feedback">
+                                    Please enter valid email
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <button type="submit" id="submit" class="btn btn-success mt-2 float-right">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $("#form").validate({
+            rules: {
+                mail: {
+                    email: true,
+                },
+            },
+            errorPlacement: function (error, element) {
+                element.closest("input").addClass('is-invalid');
+            },
+        });
+    </script>
+{% endblock %}
+
