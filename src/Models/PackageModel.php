@@ -31,9 +31,15 @@ class Package
     public function signPackage($name, $id)
     {
         $packages = ORM::forTable('package_info')->where(['recipients' => $name, 'id' => $id])->findOne();
-        $packages->is_pick = true;
-        $packages->timestamp_pickup = Carbon::now();
-        $packages->save();
+        if ($packages == false) {
+            return false;
+        } else {
+            $packages->is_pick = true;
+            $packages->timestamp_pickup = Carbon::now();
+            $packages->save();
+            return true;
+        }
+
     }
 
 }
