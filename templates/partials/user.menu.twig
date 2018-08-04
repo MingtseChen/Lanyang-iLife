@@ -1,0 +1,28 @@
+{% block menu %}
+    <!-- Widget: user widget style 2 -->
+    <div class="card card-outline card-info">
+        <div class="card-header">
+            Personal settings
+        </div>
+        <div class="card-body p-0">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="{{ path_for('userIndex') }}" class="nav-link">
+                        Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path_for('userBus') }}" class="nav-link">
+                        My Bus
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        Report a bug
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- /.widget-user -->
+{% endblock %}

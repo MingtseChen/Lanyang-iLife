@@ -1,5 +1,5 @@
 <?php
-//Import the PHPMailer class into the global namespace
+
 use PHPMailer\PHPMailer\PHPMailer;
 
 class Mail
@@ -27,19 +27,25 @@ class Mail
         $this->mail->Username = 'a8271b91a3d227';
         //Password to use for SMTP authentication
         $this->mail->Password = 'fcb4929c039a1b';
+        //Set who the message is to be sent from
+        $this->mail->setFrom('no-reply@tku.edu.tw', 'no-reply');
+    }
+
+    public function busReserveConfirm($email)
+    {
+        $msg = "you have successfully made a reservation. for more detail please check https://sso.tku.edu/ilifelytest/user/bus .";
+        $this->send($email, 'iBus reservation notify', $msg);
     }
 
     public function send($email, $receiver, $msg)
     {
         try {
-            //Set who the message is to be sent from
-            $this->mail->setFrom('no-reply@tku.edu.tw', 'no-reply');
             //Set who the message is to be sent to
             $this->mail->addAddress($email, $receiver);
             //Set the subject line
             $this->mail->Subject = 'no-reply';
             //Replace the plain text body with one created manually
-            $this->mail->AltBody = $msg;
+            $this->mail->Body = (string)$msg;
 
 
             //send the message, check for errors
@@ -52,5 +58,4 @@ class Mail
             echo 'Message could not be sent. Mailer Error: ', $this->mail->ErrorInfo;
         }
     }
-
 }

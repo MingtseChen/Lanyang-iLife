@@ -45,4 +45,12 @@
 
     </form>
 {% endblock %}
+{% block scripts %}
+    <script>
+        $('#reservation').flatpickr({
+            minDate: 'today',
+            defaultDate: 'today'
+        });
 
+    </script>
+{% endblock %}

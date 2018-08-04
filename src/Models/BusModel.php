@@ -20,13 +20,25 @@ class Bus
 
     public function delete($id)
     {
-        $bus = ORM::for_table('bus_schedule')->findOne($id);
+        $bus = ORM::forTable('bus_schedule')->findOne($id);
         $bus->delete();
+    }
+
+    //use this function for secure
+    public function deleteReserve($busID, $userID)
+    {
+        $bus = ORM::forTable('bus_reserve')->where(['uid' => $userID, 'bus_id' => $busID])->findOne();
+        if ($bus == false) {
+            return false;
+        } else {
+            $bus->delete();
+            return true;
+        }
     }
 
     public function deleteUser($id)
     {
-        $bus = ORM::for_table('bus_reserve')->findOne($id);
+        $bus = ORM::forTable('bus_reserve')->findOne($id);
         $bus->delete();
     }
 
@@ -63,9 +75,9 @@ class Bus
 
     public function checkBusStatus($busId, $uid)
     {
-        $capacity = ORM::for_table('bus_schedule')->select('capacity')->where('id', $busId)->find_array();
-        $reserveCount = ORM::for_table('bus_reserve')->where('id', $busId)->count();
-        $duplicate = ORM::for_table('bus_reserve')->where(['bus_id' => $busId, 'uid' => $uid])->count();
+        $capacity = ORM::forTable('bus_schedule')->select('capacity')->where('id', $busId)->find_array();
+        $reserveCount = ORM::forTable('bus_reserve')->where('id', $busId)->count();
+        $duplicate = ORM::forTable('bus_reserve')->where(['bus_id' => $busId, 'uid' => $uid])->count();
 
         if ($duplicate > 1 || $this->isSuspend($uid)) {
             $this->flash->addMessage('error', 'You have already reserve this bus');
@@ -82,7 +94,7 @@ class Bus
 
     public function isSuspend($uid)
     {
-        $suspend = ORM::for_table('bus_suspend')->where('uid', $uid)->count();
+        $suspend = ORM::forTable('bus_suspend')->where('uid', $uid)->count();
         if ($suspend != 0) {
             $this->flash->addMessage('error', 'This account has been suspended');
             return true;
@@ -93,7 +105,7 @@ class Bus
 
     private function create($busId, $uid, $name, $dept, $room)
     {
-        $user = ORM::for_table('bus_reserve')->create();
+        $user = ORM::forTable('bus_reserve')->create();
         $user->bus_id = $busId;
         $user->uid = $uid;
         $user->username = $name;
@@ -146,6 +158,20 @@ class Bus
         $suspend->uid = $data["uid"];
         $suspend->description = $data["desc"];
         $suspend->save();
+    }
+
+    public function readUserBus($uid)
+    {
+        $column = [
+            'bus_schedule.*',
+            'bus_reserve.bus_id',
+            'bus_reserve.uid',
+            'bus_reserve.create_time'
+        ];
+        $select = ORM::forTable('bus_schedule')->selectMany($column);
+        $rule = ['bus_schedule.id', '=', 'bus_reserve.bus_id'];
+        $buses = $select->join('bus_reserve', $rule)->where('bus_reserve.uid', $uid)->findArray();
+        return $buses;
     }
 
 }
