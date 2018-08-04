@@ -111,16 +111,11 @@
 <!-- smartWizard-->
 <script type="text/javascript" src="/plugins/smartwizard/js/jquery.smartWizard.min.js"></script>
 <!--bootstrap-validate-->
-<script type="text/javascript" src="/js/bootstrap-validate.js"></script>
+{#<script src="https://cdn.rawgit.com/PascaleBeier/bootstrap-validate/v2.1.3/dist/bootstrap-validate.js" ></script>#}
+{#<script type="text/javascript" src="/js/bootstrap-validate.js"></script>#}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.min.js"></script>
 
 <script>
-    // bootstrapValidate('#input', 'email:Enter a valid email address');
-
-    $('#reservation').flatpickr({
-        minDate: 'today',
-        defaultDate: 'today'
-    });
-
     {% for error in flash('error') %}
     $.notify({
         // options
@@ -148,57 +143,7 @@
         type: 'success'
     });
     {% endfor %}
-
-    $(document).ready(function () {
-
-        $('input:radio[name="schedule"]').change(function () {
-            var selectVal = $('input[name=schedule]:checked').val();
-            $("[id=confirm]").not(".select-id-" + selectVal).hide();
-        });
-
-        $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
-            //alert("You are on step "+stepNumber+" now");
-            if (stepPosition === 'final') {
-                $(".btn-finish").show();
-                var name = $('#name').val();
-                var dept = $('#dept').val();
-                var room = $('#room').val();
-                $('#show-name').text(name);
-                $('#show-dept').text(dept);
-                $('#show-room').text(room);
-
-            } else {
-                $(".btn-finish").hide();
-            }
-        });
-        // Toolbar extra buttons
-        var btnFinish = $('<button></button>').text('Finish')
-            .addClass('btn btn-info btn-finish')
-            .on('click', function () {
-                $("#bus").submit();
-            });
-
-        // Smart Wizard
-        $('#smartwizard').smartWizard({
-            selected: 0,
-            theme: 'dots',
-            transitionEffect: 'fade',
-            showStepURLhash: false,
-            transitionSpeed: 500,
-            anchorSettings: {
-                anchorClickable: true, // Enable/Disable anchor navigation
-                enableAllAnchors: false, // Activates all anchors clickable all times
-                markDoneStep: true, // add done css
-                enableAnchorOnDoneStep: true // Enable/Disable the done steps navigation
-            },
-            toolbarSettings: {
-                toolbarPosition: 'bottom',
-                toolbarExtraButtons: [btnFinish]
-            },
-            ajaxSettings: {}
-
-        });
-    });
 </script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

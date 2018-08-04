@@ -6,6 +6,7 @@ use Respect\Validation\Validator as v;
 include 'Models/StudentModel.php';
 include 'Models/UserModel.php';
 include 'Models/BusModel.php';
+include 'Plugins/Mail.php';
 include 'Middleware/AdminSection.php';
 include 'Middleware/RedirectIfAuth.php';
 
@@ -44,6 +45,61 @@ $app->get('/', function ($request, $response, $args) {
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 
+$app->group('/user', function ($app) {
+
+    $app->get('/index', function ($request, $response, $args) {
+        $id = $this->session->id;
+        $student = new Student();
+        $mail = $student->fetch($id)->getMail();
+        $mail2 = $student->fetch($id)->getSecondaryMail();
+//        var_dump($student->fetch($id)->getPrimaryMail());
+        $data = ["email" => $mail, 'email2' => $mail2];
+        if (isset($request->getQueryParams()['success'])) {
+            $this->flash->addMessage('success', 'Info updated');
+        }
+        return $this->view->render($response, '/user/index.twig', $data);
+    })->setName('userIndex');
+
+    $app->post('/index', function ($request, $response, $args) {
+        $email = $request->getParsedBody()['mail'];
+        $student = new Student();
+        $id = $this->session->id;
+        $student->addSecondaryMail($id, $email);
+        return $response->withRedirect('/user/index?success');
+    })->setName('userAddMail');
+
+    $app->get('/bus', function ($request, $response, $args) {
+        $bus = new Bus();
+        $id = $this->session->id;
+        $buses = $bus->readUserBus($id);
+        $data = ['buses' => $buses];
+
+        if (isset($request->getQueryParams()['success'])) {
+            $this->flash->addMessage('success', 'operation success !');
+        }
+        if (isset($request->getQueryParams()['fail'])) {
+            $this->flash->addMessage('error', 'Invalid operation !');
+        }
+
+        return $this->view->render($response, '/user/bus.twig', $data);
+    })->setName('userBus');
+
+    $app->post('/bus', function ($request, $response, $args) {
+        $bus = new Bus();
+        $uid = $this->session->id;
+        $action = $request->getParsedBody()['delete'];
+        if ((bool)$action) {
+            $id = $request->getParsedBody()['id'];
+            if ($bus->deleteReserve($id, $uid)) {
+                return $response->withRedirect('/user/bus?success');
+            } else {
+                return $response->withRedirect('/user/bus?fail');
+            }
+        }
+//        return $response->withRedirect('/user/bus?success');
+    })->setName('deleteBus');
+});
+
 //bus
 $app->group('/bus', function ($app) {
 
@@ -79,6 +135,10 @@ $app->group('/bus', function ($app) {
             return $response->withRedirect('/bus/status?status=null');
         } else {
             $status = $bus->reserve($post['schedule'], $uid, $name, $post['dept'], $post['room']);
+            $student = new Student();
+            $email = $student->fetch($uid)->getPrimaryMail();
+            $mail = new Mail();
+            $mail->busReserveConfirm($email);
         }
         if ($status) {
             return $response->withRedirect('/bus/status?action=success');
