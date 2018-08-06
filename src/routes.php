@@ -53,7 +53,6 @@ $app->group('/user', function ($app) {
         $mail = $user->getMail();
         $mail2 = $user->getSecondaryMail();
         $data = ["email" => $mail, 'email2' => $mail2];
-        var_dump($_SESSION);
         return $this->view->render($response, '/user/index.twig', $data);
     })->setName('userIndex');
 
@@ -202,6 +201,23 @@ $app->group('/admin', function ($app) {
     $app->get('', function ($request, $response, $args) {
         return $this->view->render($response, '/admin/index.twig');
     })->setName('admin');
+
+    //package session
+    $app->group('/package', function ($app) {
+
+        $app->get('', function ($request, $response, $args) {
+            $package = new Package();
+            $allPackage = $package->readAllUnpickPackage();
+            $data = ['packages' => $allPackage];
+            return $this->view->render($response, '/admin/package.show.twig', $data);
+        })->setName('packageIndex');
+
+        $app->get('/history', function ($request, $response, $args) {
+
+        })->setName('packageHistory');
+
+    });
+
     //Bus Section
     $app->group('/bus', function ($app) {
         $app->get('', function ($request, $response, $args) {

@@ -42,4 +42,19 @@ class Package
 
     }
 
+    /**
+     * @return mixed
+     */
+    public function readAllUnpickPackage()
+    {
+        $packages = ORM::forTable('package_info')->where('is_pick', false)->findArray();
+        return $packages;
+    }
+
+    public function readHistoryPackage()
+    {
+        $packages = ORM::forTable('package_info')->where('is_pick', true)->findArray();
+        return $packages;
+    }
+
 }

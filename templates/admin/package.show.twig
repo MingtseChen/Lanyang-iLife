@@ -1,0 +1,273 @@
+{# TODO: Add expand effect on admin login form #}
+
+{% extends "/layouts/admin.twig" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block page_title %}Bus Schedule{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                    <h3 class="card-title d-inline">包裹登記</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="validationDefault01">收件人</label>
+                                <input type="text" class="form-control" id="validationDefault01" placeholder="收件人"
+                                       required
+                                       name="rcp" autocomplete="off">
+                                <div class="invalid-feedback">
+                                    Invalid
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="validationDefault02">包裹類型</label>
+                                <input type="text" class="form-control" id="validationDefault02" placeholder="包裹類型"
+                                       autocomplete="off"
+                                       required name="cat">
+                                <div class="invalid-feedback">
+                                    Invalid
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="validationDefault04">存放位置</label>
+                                <input type="text" class="form-control" id="validationDefault04" placeholder="存放位置"
+                                       autocomplete="off"
+                                       required name="strg">
+                                <div class="invalid-feedback">
+                                    Invalid
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="validationDefault03">包裹編號</label>
+                                <input type="text" class="form-control" id="validationDefault03" placeholder="包裹編號"
+                                       autocomplete="off"
+                                       name="pid">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="validationDefault05">抵達時間</label>
+                                <input type="text" class="form-control float-right" readonly="readonly" id="time"
+                                       value="">
+                                <div class="invalid-feedback">
+                                    Invalid
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-success btn-sm float-right" type="submit" name="add_pkg">送出</button>
+                    </form>
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                    <h3 class="card-title d-inline">包裹列表</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive">
+                    <table id="dataTable" class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>收件人</th>
+                            <th>包裹類型</th>
+                            <th>存放位置</th>
+                            <th>包裹編號</th>
+                            <th>抵達時間</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for package in packages %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ package.recipients }}</td>
+                                <td>{{ package.ptype }}</td>
+                                <td>{{ package.storage }}</td>
+                                <td>{{ package.pid }}</td>
+                                <td>{{ package.timestamp_arrive|date("Y-m-d H:i") }}</td>
+                                <td>
+                                    <a class="mx-1" style="color: #00c0ef" href="#" data-toggle="modal"
+                                       data-target="#edit" data-placement="top"
+                                       title="Edit" id="{{ loop.index0 }}"><i class="far fa-edit"></i></a>
+                                    <a class="mx-1" style="color: #f56954" href="#" data-toggle="modal"
+                                       data-placement="top" data-target="#delete"
+                                       title="Delete" id="seleteId" data-bus-id="{{ schedule.id }}"><i
+                                                class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    <!-- Edit Modal -->
+    <div class="modal fade" id="edit" role="dialog" aria-labelledby="edit" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Edit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <div class="col-md">
+                            <form method="get">
+                                <div class="form-group">
+                                    <label for="">Bus No.</label>
+                                    <input class="form-control" id="id" name="id" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Destination</label>
+                                    <select class="form-control" id="dest" name="dest">
+                                        <option value="1">礁溪 → 蘭陽校園</option>
+                                        <option value="2">蘭陽校園 → 礁溪</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Departure</label>
+                                    <input type="text" class="form-control" id="timepicker" name="depart">
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Capacity</label>
+                                    <input type="number" class="form-control" id="capacity" name="capacity" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Allow Reservation</label>
+                                    <select class="form-control" id="resere" name="reserve">
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="desc" name="desc" class="form-control" rows="3"
+                                              placeholder="Description..." required></textarea>
+                                </div>
+                                <input type="hidden" name="edit" value="true">
+                                <button type="submit" class="btn btn-info pull-right">Save changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal -->
+    <div class="modal fade" id="delete" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body mx-auto">
+                    <div class="row">
+                        <div class="col text-center">
+                            <i class="fas fa-minus-circle fa-7x m-md-4" style="color: #f56954"></i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Do you really want to delete these records?
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="mx-auto">
+                        <form>
+                            <input type="hidden" name="delete" value="true">
+                            <input type="hidden" id="id" name="id">
+                            <button type="button" class="btn btn-flat btn-secondary" data-dismiss="modal">Cancel
+                            </button>
+                            <button type="submit" class="btn btn-flat btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Create Modal -->
+    <div class="modal fade" id="create" role="dialog" aria-labelledby="create" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Edit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <div class="col-md">
+                            <form method="get">
+                                <div class="form-group">
+                                    <label for="">Destination</label>
+                                    <select class="form-control" id="dest" name="dest">
+                                        <option value="1">礁溪 → 蘭陽校園</option>
+                                        <option value="2">蘭陽校園 → 礁溪</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Departure</label>
+                                    <input type="text" class="form-control" id="timepicker" name="depart">
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Capacity</label>
+                                    <input type="number" class="form-control" id="capacity" name="capacity" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Allow Reservation</label>
+                                    <select class="form-control" id="resere" name="reserve">
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="desc" name="desc" class="form-control" rows="3"
+                                              placeholder="Description..." required></textarea>
+                                </div>
+                                <input type="hidden" name="create" value="true">
+                                <button type="submit" class="btn btn-info btn-flat pull-right">Save changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $('#time').flatpickr({
+            defaultDate: Date.now(),
+            enableTime: true,
+            time_24hr: true,
+
+        });
+        $('#dataTable').DataTable({
+            "paging": true,
+            // "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "pageLength": 5,
+            "lengthMenu": [5, 10, 15],
+            "order": [[5, "desc"]]
+        });
+    </script>
+{% endblock %}
