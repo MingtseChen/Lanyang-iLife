@@ -6,9 +6,10 @@ use Respect\Validation\Validator as v;
 include 'Models/StudentModel.php';
 include 'Models/UserModel.php';
 include 'Models/BusModel.php';
+include 'Models/PackageModel.php';
 include 'Plugins/Mail.php';
-include 'Middleware/AdminSection.php';
-include 'Middleware/RedirectIfAuth.php';
+//include 'Middleware/AdminSection.php';
+//include 'Middleware/RedirectIfAuth.php';
 
 //use Slim\Http\Request;
 //use Slim\Http\Response;
@@ -23,11 +24,10 @@ include 'Middleware/RedirectIfAuth.php';
 //});
 
 //Home
-
 $app->get('/', function ($request, $response, $args) {
 
     $id = 'null';
-    $name = 's';
+    $name = '';
     $login = false;
     if ($this->session->exists('id')) {
         $id = $this->session->id;
@@ -41,7 +41,6 @@ $app->get('/', function ($request, $response, $args) {
         'id' => $id,
         'name' => $name
     ];
-    var_dump($_SESSION);
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 
@@ -50,13 +49,10 @@ $app->group('/user', function ($app) {
     $app->get('/index', function ($request, $response, $args) {
         $id = $this->session->id;
         $student = new Student();
-        $mail = $student->fetch($id)->getMail();
-        $mail2 = $student->fetch($id)->getSecondaryMail();
-//        var_dump($student->fetch($id)->getPrimaryMail());
+        $user = $student->fetch($id);
+        $mail = $user->getMail();
+        $mail2 = $user->getSecondaryMail();
         $data = ["email" => $mail, 'email2' => $mail2];
-        if (isset($request->getQueryParams()['success'])) {
-            $this->flash->addMessage('success', 'Info updated');
-        }
         return $this->view->render($response, '/user/index.twig', $data);
     })->setName('userIndex');
 
@@ -65,7 +61,8 @@ $app->group('/user', function ($app) {
         $student = new Student();
         $id = $this->session->id;
         $student->addSecondaryMail($id, $email);
-        return $response->withRedirect('/user/index?success');
+        $this->flash->addMessage('success', 'Info updated');
+        return $response->withRedirect('/user/index');
     })->setName('userAddMail');
 
     $app->get('/bus', function ($request, $response, $args) {
@@ -73,14 +70,6 @@ $app->group('/user', function ($app) {
         $id = $this->session->id;
         $buses = $bus->readUserBus($id);
         $data = ['buses' => $buses];
-
-        if (isset($request->getQueryParams()['success'])) {
-            $this->flash->addMessage('success', 'operation success !');
-        }
-        if (isset($request->getQueryParams()['fail'])) {
-            $this->flash->addMessage('error', 'Invalid operation !');
-        }
-
         return $this->view->render($response, '/user/bus.twig', $data);
     })->setName('userBus');
 
@@ -90,14 +79,49 @@ $app->group('/user', function ($app) {
         $action = $request->getParsedBody()['delete'];
         if ((bool)$action) {
             $id = $request->getParsedBody()['id'];
-            if ($bus->deleteReserve($id, $uid)) {
-                return $response->withRedirect('/user/bus?success');
+            $status = $bus->deleteReserve($id, $uid);
+            if ($status) {
+                $this->flash->addMessage('success', 'operation success !');
             } else {
-                return $response->withRedirect('/user/bus?fail');
+                $this->flash->addMessage('error', 'Invalid operation !');
             }
         }
-//        return $response->withRedirect('/user/bus?success');
+        return $response->withRedirect('/user/bus');
     })->setName('deleteBus');
+
+    $app->get('/package', function ($request, $response, $args) {
+        $name = $this->session->name;
+        $package = new Package();
+        $packages = $package->readUserUnpickedPackage($name);
+        $oldPackages = $package->readUserPickedPackage($name);
+        $data = ['packages' => $packages, 'oldPackages' => $oldPackages];
+        return $this->view->render($response, '/user/package.twig', $data);
+    })->setName('userPackage');
+
+    $app->post('/package', function ($request, $response, $args) {
+        $name = $this->session->name;
+        $package = new Package();
+        $action = $request->getParsedBody()['sign'];
+        if ((bool)$action) {
+            $id = $request->getParsedBody()['id'];
+            $status = $package->signPackage($name, $id);
+            if ($status) {
+                $this->flash->addMessage('success', 'operation success !');
+            } else {
+                $this->flash->addMessage('error', 'Invalid operation !');
+            }
+        }
+
+        return $response->withRedirect('/user/package');
+    });
+
+    $app->get('/lostfound', function ($request, $response, $args) {
+        $package = new Package();
+        $packages = $package->lostFoundPackageRead();
+        $data = ['packages' => $packages];
+        return $this->view->render($response, '/user/lost.found.twig', $data);
+    })->setName('lostFound');
+
 });
 
 //bus
@@ -121,7 +145,6 @@ $app->group('/bus', function ($app) {
                 return $response->withRedirect('/bus/status?action=false&status=null');
             }
         }
-
         return $this->view->render($response, '/bus/reserve.twig', $schedule);
     })->setName('busSearch');
 
@@ -170,7 +193,7 @@ $app->group('/login', function ($app) {
 $app->get('/logout', function ($request, $response, $args) {
     $this->session::destroy();
     return $response->withRedirect('/');
-})->setName('recover');
+})->setName('logout');
 
 //admin
 
@@ -178,6 +201,128 @@ $app->group('/admin', function ($app) {
     $app->get('', function ($request, $response, $args) {
         return $this->view->render($response, '/admin/index.twig');
     })->setName('admin');
+
+    //package session
+    $app->group('/package', function ($app) {
+
+        $app->get('', function ($request, $response, $args) {
+            $package = new Package();
+            $allPackage = $package->readAllUnpickPackage();
+            $data = ['packages' => $allPackage];
+            return $this->view->render($response, '/admin/package.show.twig', $data);
+        })->setName('packageIndex');
+
+        $app->post('/edit', function ($request, $response, $args) {
+            // Get header from request object
+            $path = '';
+            $refererHeader = $request->getHeader('HTTP_REFERER');
+            if ($refererHeader) {
+                // Extract referer value
+                $uri = array_shift($refererHeader);
+                $path = parse_url($uri);
+            }
+            $data = $request->getParsedBody();
+            $package = new Package();
+            $status = $package->updatePackage($data['id'], $data['rcp'], $data['cat'], $data['strg'], $data['pid'],
+                $data['time']);
+            if ($status) {
+                $this->flash->addMessage('success', 'Package updated');
+            } else {
+                $this->flash->addMessage('error', 'invalid');
+            }
+            return $response->withRedirect($path['path']);
+        })->setName('packageUpdate');
+
+        $app->post('/create', function ($request, $response, $args) {
+            $mail = new Mail();
+            $student = new Student();
+
+            $data = $request->getParsedBody();
+            $package = new Package();
+            $status = $package->createPackage($data['rcp'], $data['cat'], $data['strg'], $data['pid'], $data['time']);
+            if ($status) {
+                $uid = $this->session->id;
+                $email = $student->fetch($uid)->getPrimaryMail();
+
+                $mail->packageConfirm($email);
+                $this->flash->addMessage('success', 'Package updated');
+            } else {
+                $this->flash->addMessage('error', 'Fail to insert data');
+            }
+            return $response->withRedirect('/admin/package');
+        })->setName('packageCreate');
+
+        $app->post('/delete', function ($request, $response, $args) {
+            // Get header from request object
+            $path = '';
+            $refererHeader = $request->getHeader('HTTP_REFERER');
+            if ($refererHeader) {
+                // Extract referer value
+                $uri = array_shift($refererHeader);
+                $path = parse_url($uri);
+            }
+            $data = $request->getParsedBody();
+            $package = new Package();
+            $status = $package->deletePackage($data['id']);
+            if ($status) {
+                $this->flash->addMessage('success', 'Package updated');
+            } else {
+                $this->flash->addMessage('error', 'Fail to insert data');
+            }
+            return $response->withRedirect($path['path']);
+        })->setName('packageDelete');
+
+        $app->post('/sign', function ($request, $response, $args) {
+            $data = $request->getParsedBody();
+            $package = new Package();
+            $status = $package->signPackage($data['name'], $data['id']);
+            if ($status) {
+                $this->flash->addMessage('success', 'Package updated');
+            } else {
+                $this->flash->addMessage('error', 'Fail to insert data');
+            }
+            return $response->withRedirect('/admin/package');
+        })->setName('packageSign');
+
+        $app->post('/unsign', function ($request, $response, $args) {
+            $data = $request->getParsedBody();
+            $package = new Package();
+            $status = $package->unsignPackage($data['name'], $data['id']);
+            if ($status) {
+                $this->flash->addMessage('success', 'Package updated');
+            } else {
+                $this->flash->addMessage('error', 'Fail to insert data');
+            }
+            return $response->withRedirect('/admin/package/history');
+        })->setName('packageUnsign');
+
+        $app->post('/lost', function ($request, $response, $args) {
+            $data = $request->getParsedBody();
+            $package = new Package();
+            if (isset($data['cancel']) && (bool)$data['cancel'] == true) {
+                $status = $package->lostFoundUndoPackage($data['id']);
+            } else {
+                $status = $package->lostFoundPackage($data['id']);
+            }
+
+            if ($status) {
+                $this->flash->addMessage('success', 'Package updated');
+            } else {
+                $this->flash->addMessage('error', 'Fail to insert data');
+            }
+            return $response->withRedirect('/admin/package/history');
+        })->setName('packageLost');
+
+        $app->get('/history', function ($request, $response, $args) {
+            $package = new Package();
+            $allPackage = $package->readHistoryPackage();
+            $data = ['packages' => $allPackage];
+            return $this->view->render($response, '/admin/package.history.twig', $data);
+        })->setName('packageHistory');
+
+
+    });
+
     //Bus Section
     $app->group('/bus', function ($app) {
         $app->get('', function ($request, $response, $args) {

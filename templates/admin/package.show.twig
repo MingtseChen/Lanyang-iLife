@@ -1,0 +1,253 @@
+{# TODO: Add expand effect on admin login form #}
+
+{% extends "/layouts/admin.twig" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block page_title %}包裹登記{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                    <h3 class="card-title d-inline">包裹登記</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <form method="POST" action="{{ path_for('packageCreate') }}" autocomplete="off">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="validationDefault01">收件人</label>
+                                <input type="text" class="form-control" id="" placeholder="收件人" name="rcp" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="validationDefault02">包裹類型</label>
+                                <input type="text" class="form-control" id="" placeholder="包裹類型" name="cat" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="validationDefault04">存放位置</label>
+                                <input type="text" class="form-control" id="" placeholder="存放位置" name="strg" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="validationDefault03">包裹編號</label>
+                                <input type="text" class="form-control" id="" placeholder="包裹編號" name="pid">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="validationDefault05">抵達時間</label>
+                                <input type="text" class="form-control" id="time" name="time" value="" readonly>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-success btn-sm float-right" type="submit" name="add_pkg">送出</button>
+                    </form>
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-success">
+                <div class="card-header">
+                    <h3 class="card-title d-inline">包裹列表</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive">
+                    <table id="dataTable" class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>收件人</th>
+                            <th>包裹類型</th>
+                            <th>存放位置</th>
+                            <th>包裹編號</th>
+                            <th>抵達時間</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for package in packages %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ package.recipients }}</td>
+                                <td>{{ package.ptype }}</td>
+                                <td>{{ package.storage }}</td>
+                                <td>{{ package.pid }}</td>
+                                <td>{{ package.timestamp_arrive|date("Y-m-d H:i") }}</td>
+                                <td>
+                                    <a class="mx-1" style="color: #00a65a" href="#" data-toggle="modal"
+                                       data-placement="top" data-target="#sign"
+                                       title="簽收" data-id="{{ package.id }}" data-name="{{ package.recipients }}">
+                                        <i class="fas fa-check-double"></i></a>
+                                    <a class="mx-1" style="color: #00c0ef" href="#" data-toggle="modal"
+                                       data-row="{{ loop.index0 }}" data-id="{{ package.id }}"
+                                       data-target="#edit" data-placement="top"
+                                       title="Edit"><i class="far fa-edit"></i></a>
+                                    <a class="mx-1" style="color: #f56954" href="#" data-toggle="modal"
+                                       data-target="#delete" data-placement="top"
+                                       title="Delete" data-id="{{ package.id }}">
+                                        <i class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    <!-- Edit Modal -->
+    <div class="modal fade" id="edit" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Edit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ path_for('packageUpdate') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="validationDefault01">收件人</label>
+                                <input type="text" class="form-control" id="rcp" placeholder="收件人" name="rcp" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="validationDefault02">包裹類型</label>
+                                <input type="text" class="form-control" id="cat" placeholder="包裹類型" name="cat" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="validationDefault04">存放位置</label>
+                                <input type="text" class="form-control" id="strg" placeholder="存放位置" name="strg"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="validationDefault03">包裹編號</label>
+                                <input type="text" class="form-control" id="pid" placeholder="包裹編號" name="pid">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="validationDefault05">抵達時間</label>
+                                <input type="text" class="form-control" id="time" name="time" value="" readonly>
+                            </div>
+                        </div>
+                        <input type="hidden" id="id" name="id" value="">
+                        <button type="submit" class="btn btn-info float-right">Save changes</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal -->
+    <div class="modal fade" id="delete" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body mx-auto">
+                    <div class="row">
+                        <div class="col text-center">
+                            <i class="fas fa-minus-circle fa-7x m-md-4" style="color: #f56954"></i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Do you really want to delete these records?
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="mx-auto">
+                        <form action="{{ path_for('packageDelete') }}" method="post">
+                            <input type="hidden" id="id" name="id">
+                            <button type="button" class="btn btn-flat btn-secondary" data-dismiss="modal">Cancel
+                            </button>
+                            <button type="submit" class="btn btn-flat btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal -->
+    <div class="modal fade" id="sign" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body mx-auto">
+                    <div class="row">
+                        <div class="col text-center">
+                            <i class="fas fa-check-double fa-7x m-md-4" style="color: #00a65a"></i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">確定簽收?</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="mx-auto">
+                        <form action="{{ path_for('packageSign') }}" method="post">
+                            <input type="hidden" id="id" name="id">
+                            <input type="hidden" id="name" name="name">
+                            <button type="button" class="btn btn-flat btn-secondary" data-dismiss="modal">取消
+                            </button>
+                            <button type="submit" class="btn btn-flat btn-success">簽收</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $("input[id=time]").flatpickr({
+            defaultDate: Date.now(),
+            enableTime: true,
+            time_24hr: true,
+
+        });
+        $('#dataTable').DataTable({
+            "paging": true,
+            // "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "pageLength": 5,
+            "lengthMenu": [5, 10, 15],
+            "order": [[5, "desc"]]
+        });
+
+
+        $('#edit').on('show.bs.modal', function (event) {
+            var row = $(event.relatedTarget);
+            var id = row.data('id');
+            elem = $('#dataTable').DataTable().row(row.data('row')).data();
+            var modal = $(this);
+            modal.find('#rcp').val(elem[1]);
+            modal.find('#id').val(id);
+            modal.find('#cat').val(elem[2]);
+            modal.find('#strg').val(elem[3]);
+            modal.find('#pid').val(elem[4]);
+        });
+        $('#sign').on('show.bs.modal', function (event) {
+            var row = $(event.relatedTarget);
+            var id = row.data('id');
+            var name = row.data('name');
+            var modal = $(this);
+            modal.find('#id').val(id);
+            modal.find('#name').val(name);
+        });
+
+        $('#delete').on('show.bs.modal', function (event) {
+            var row = $(event.relatedTarget);
+            var id = row.data('id');
+            var modal = $(this);
+            modal.find('#id').val(id);
+        });
+    </script>
+{% endblock %}
