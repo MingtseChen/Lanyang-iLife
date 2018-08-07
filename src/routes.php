@@ -44,6 +44,7 @@ $app->get('/', function ($request, $response, $args) {
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 
+//User
 $app->group('/user', function ($app) {
 
     $app->get('/index', function ($request, $response, $args) {
@@ -124,7 +125,7 @@ $app->group('/user', function ($app) {
 
 });
 
-//bus
+//iBus
 $app->group('/bus', function ($app) {
 
     $app->get('', function ($request, $response, $args) {
@@ -177,7 +178,7 @@ $app->group('/bus', function ($app) {
     })->setName('busStatus');
 });
 
-//login
+//Login
 $app->group('/login', function ($app) {
 
     $app->get('', function ($request, $response, $args) {
@@ -190,19 +191,18 @@ $app->group('/login', function ($app) {
 
 });
 
+//Logout
 $app->get('/logout', function ($request, $response, $args) {
     $this->session::destroy();
     return $response->withRedirect('/');
 })->setName('logout');
 
-//admin
-
+//Admin
 $app->group('/admin', function ($app) {
     $app->get('', function ($request, $response, $args) {
         return $this->view->render($response, '/admin/index.twig');
     })->setName('admin');
-
-    //package session
+    //Package session
     $app->group('/package', function ($app) {
 
         $app->get('', function ($request, $response, $args) {
@@ -322,7 +322,6 @@ $app->group('/admin', function ($app) {
 
 
     });
-
     //Bus Section
     $app->group('/bus', function ($app) {
         $app->get('', function ($request, $response, $args) {
@@ -407,17 +406,43 @@ $app->group('/admin', function ($app) {
             ];
             return $this->view->render($response, '/admin/user.show.twig', $data);
         })->setName('users');
-
-        $app->get('/create', function ($request, $response, $args) {
-            return $this->view->render($response, '/admin/user.create.twig');
-        })->setName('create');
+        //Update user
+        $app->post('/update', function ($request, $response, $args) {
+            $user = new User();
+            $data = $request->getParsedBody();
+            $id = $data['id'];
+            $role = $data['role'];
+            $active = $data['active'];
+            $status = $user->updateAdmin($id, $active, $role);
+            if($status){
+                $this->flash->addMessage('success', 'delete success');
+            }else{
+                $this->flash->addMessage('error', 'invalid');
+            }
+            return $response->withRedirect('/admin/users');
+        })->setNAme('userUpdate');
+        //Create user
+//        $app->post('/create', function ($request, $response, $args) {
+//        })->setName('');
+        //Delete user
+        $app->post('/delete', function ($request, $response, $args) {
+            $user = new User();
+            $data = $request->getParsedBody();
+            $status = $user->delete($data['id']);
+            if($status){
+                $this->flash->addMessage('success', 'delete success');
+            }else{
+                $this->flash->addMessage('error', 'invalid');
+            }
+            return $response->withRedirect('/admin/users');
+        })->setName('userDelete');
 
         //Validate Rules
         $uid = v::digit()->noWhitespace()->length(1, 10);
         $validators = array(
             'uid' => $uid,
         );
-        $app->post('/create/submit', function ($request, $response, $args) {
+        $app->post('/create', function ($request, $response, $args) {
             $user = new User();
             $userData = $request->getParsedBody();
             if ($request->getAttribute('has_errors')) {
@@ -435,9 +460,9 @@ $app->group('/admin', function ($app) {
                 $this->flash->addMessage('msg', 'error');
                 return $response->withRedirect('/admin/users/create');
             }
-        })->setName('submituser')->add(new \DavidePastore\Slim\Validation\Validation($validators));
+        })->setName('submitUser')->add(new \DavidePastore\Slim\Validation\Validation($validators));
     });
 });
 
-//console
+//Console
 $app->post('/console', 'RunTracy\Controllers\RunTracyConsole:index');

@@ -1,6 +1,7 @@
 <?php
 
 //namespace App\Models;
+use Carbon\Carbon;
 
 class User
 {
@@ -11,6 +12,7 @@ class User
         $user->uid = $dataArray['uid'];
         $user->active = $dataArray['active'];
         $user->role = $dataArray['role'];
+//        $user->create_time = Carbon::now();
         $user->save();
     }
 
@@ -24,14 +26,27 @@ class User
         }
     }
 
-    public function update()
+    public function updateAdmin($id, $active, $role)
     {
-
+        $user = ORM::forTable('groups_users')->findOne($id);
+        if ($user == false) {
+            return false;
+        }
+        $user->active = $active;
+        $user->role = $role;
+        $user->save();
+        return true;
     }
 
-    public function delete()
+    public function delete($id)
     {
-
+        $user = ORM::forTable('groups_users')->findOne($id);
+        if ($user == false) {
+            return false;
+        } else {
+            $user->delete();
+            return true;
+        }
     }
 
     public function read()
