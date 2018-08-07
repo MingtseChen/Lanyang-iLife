@@ -22,7 +22,7 @@ class Package
         return $packages;
     }
 
-    public function lostFoundPackage()
+    public function lostFoundPackageRead()
     {
         $packages = ORM::forTable('package_info')->where(['is_pick' => 0, 'lost_found' => 1])->findArray();
         return $packages;
@@ -42,6 +42,45 @@ class Package
 
     }
 
+    public function unsignPackage($name, $id)
+    {
+        $packages = ORM::forTable('package_info')->where(['recipients' => $name, 'id' => $id])->findOne();
+        if ($packages == false) {
+            return false;
+        } else {
+            $packages->is_pick = false;
+            $packages->save();
+            return true;
+        }
+
+    }
+
+    public function lostFoundPackage($id)
+    {
+        $packages = ORM::forTable('package_info')->where('id', $id)->findOne();
+        if ($packages == false) {
+            return false;
+        } else {
+            $packages->lost_found = true;
+            $packages->save();
+            return true;
+        }
+
+    }
+
+    public function lostFoundUndoPackage($id)
+    {
+        $packages = ORM::forTable('package_info')->where('id', $id)->findOne();
+        if ($packages == false) {
+            return false;
+        } else {
+            $packages->lost_found = false;
+            $packages->save();
+            return true;
+        }
+
+    }
+
     /**
      * @return mixed
      */
@@ -55,6 +94,55 @@ class Package
     {
         $packages = ORM::forTable('package_info')->where('is_pick', true)->findArray();
         return $packages;
+    }
+
+    public function updatePackage($id, $rcp, $cat, $strg, $pid, $time)
+    {
+        try {
+            $packageDetail = ORM::forTable('package_info')->findOne($id);
+            if ($packageDetail == false) {
+                return false;
+            }
+            $packageDetail->recipients = $rcp;
+            $packageDetail->ptype = $cat;
+            $packageDetail->storage = $strg;
+            $packageDetail->pid = $pid;
+            $packageDetail->timestamp_arrive = $time;
+            $packageDetail->save();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function createPackage($rcp, $cat, $strg, $pid, $time)
+    {
+        try {
+            $packageDetail = ORM::forTable('package_info')->create();
+            $packageDetail->recipients = $rcp;
+            $packageDetail->ptype = $cat;
+            $packageDetail->storage = $strg;
+            $packageDetail->pid = $pid;
+            $packageDetail->timestamp_arrive = $time;
+            $packageDetail->save();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function deletePackage($id)
+    {
+        try {
+            $packageDetail = ORM::forTable('package_info')->findOne($id);
+            if ($packageDetail == false) {
+                return false;
+            }
+            $packageDetail->delete();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
 }

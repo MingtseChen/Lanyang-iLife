@@ -22,6 +22,7 @@
                         <thead>
                         <tr>
                             <th>#</th>
+                            <th>收件人</th>
                             <th>包裹類型</th>
                             <th>存放位置</th>
                             <th>包裹編號</th>
@@ -32,6 +33,7 @@
                         {% for package in packages %}
                             <tr>
                                 <td>{{ loop.index }}</td>
+                                <td>{{ package.recipients }}</td>
                                 <td>{{ package.ptype }}</td>
                                 <td>{{ package.storage }}</td>
                                 <td>{{ package.pid }}</td>

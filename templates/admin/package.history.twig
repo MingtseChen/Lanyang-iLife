@@ -3,50 +3,9 @@
 {% extends "/layouts/admin.twig" %}
 {% block title %}Admin Dashboard{% endblock %}
 
-{% block page_title %}包裹登記{% endblock %}
+{% block page_title %}包裹歷史{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card card-outline card-success">
-                <div class="card-header">
-                    <h3 class="card-title d-inline">包裹登記</h3>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                    <form method="POST" action="{{ path_for('packageCreate') }}" autocomplete="off">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="validationDefault01">收件人</label>
-                                <input type="text" class="form-control" id="" placeholder="收件人" name="rcp" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="validationDefault02">包裹類型</label>
-                                <input type="text" class="form-control" id="" placeholder="包裹類型" name="cat" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="validationDefault04">存放位置</label>
-                                <input type="text" class="form-control" id="" placeholder="存放位置" name="strg" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="validationDefault03">包裹編號</label>
-                                <input type="text" class="form-control" id="" placeholder="包裹編號" name="pid">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="validationDefault05">抵達時間</label>
-                                <input type="text" class="form-control" id="time" name="time" value="" readonly>
-                            </div>
-                        </div>
-
-                        <button class="btn btn-success btn-sm float-right" type="submit" name="add_pkg">送出</button>
-                    </form>
-                </div>
-            </div>
-            <!-- /.card-body -->
-        </div>
-    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="card card-outline card-success">
@@ -63,7 +22,9 @@
                             <th>包裹類型</th>
                             <th>存放位置</th>
                             <th>包裹編號</th>
+                            <th>包裹招領</th>
                             <th>抵達時間</th>
+                            <th>簽收時間</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -75,12 +36,18 @@
                                 <td>{{ package.ptype }}</td>
                                 <td>{{ package.storage }}</td>
                                 <td>{{ package.pid }}</td>
+                                {% if package.lost_found == true %}
+                                    <td>是</td>
+                                {% else %}
+                                    <td>否</td>
+                                {% endif %}
                                 <td>{{ package.timestamp_arrive|date("Y-m-d H:i") }}</td>
+                                <td>{{ package.timestamp_pickup|date("Y-m-d H:i") }}</td>
                                 <td>
-                                    <a class="mx-1" style="color: #00a65a" href="#" data-toggle="modal"
+                                    <a class="mx-1" style="color: #f39c12" href="#" data-toggle="modal"
                                        data-placement="top" data-target="#sign"
-                                       title="簽收" data-id="{{ package.id }}" data-name="{{ package.recipients }}">
-                                        <i class="fas fa-check-double"></i></a>
+                                       title="取消簽收" data-id="{{ package.id }}" data-name="{{ package.recipients }}">
+                                        <i class="fas fa-ban"></i></a>
                                     <a class="mx-1" style="color: #00c0ef" href="#" data-toggle="modal"
                                        data-row="{{ loop.index0 }}" data-id="{{ package.id }}"
                                        data-target="#edit" data-placement="top"
@@ -89,6 +56,10 @@
                                        data-target="#delete" data-placement="top"
                                        title="Delete" data-id="{{ package.id }}">
                                         <i class="fas fa-trash"></i></a>
+                                    <a class="mx-1" style="color: #00c0ef" href="#" data-toggle="modal"
+                                       data-target="#lost" data-placement="top"
+                                       title="Lost and Found" data-id="{{ package.id }}">
+                                        <i class="fas fa-bullhorn"></i></a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -174,28 +145,56 @@
             </div>
         </div>
     </div>
-    <!-- Delete Modal -->
+    <!-- Sign Modal -->
     <div class="modal fade" id="sign" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-body mx-auto">
                     <div class="row">
                         <div class="col text-center">
-                            <i class="fas fa-check-double fa-7x m-md-4" style="color: #00a65a"></i>
+                            <i class="fas fa-ban fa-7x m-md-4" style="color: #00a65a"></i>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col">確定簽收?</div>
+                        <div class="col">取消簽收?</div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <div class="mx-auto">
-                        <form action="{{ path_for('packageSign') }}" method="post">
+                        <form action="{{ path_for('packageUnsign') }}" method="post">
                             <input type="hidden" id="id" name="id">
                             <input type="hidden" id="name" name="name">
                             <button type="button" class="btn btn-flat btn-secondary" data-dismiss="modal">取消
                             </button>
-                            <button type="submit" class="btn btn-flat btn-success">簽收</button>
+                            <button type="submit" class="btn btn-flat btn-success">確定</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- lost Modal -->
+    <div class="modal fade" id="lost" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body mx-auto">
+                    <div class="row">
+                        <div class="col text-center">
+                            <i class="fas fa-bullhorn fa-7x m-md-4" style="color: #00c0ef"></i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">開啓招領?</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="mx-auto">
+                        <form action="{{ path_for('packageLost') }}" method="post">
+                            <input type="hidden" id="id" name="id">
+                            <button type="submit" class="btn btn-flat btn-secondary" value="true" name="cancel">
+                                取消
+                            </button>
+                            <button type="submit" class="btn btn-flat btn-success">確定</button>
                         </form>
                     </div>
                 </div>
@@ -244,6 +243,13 @@
         });
 
         $('#delete').on('show.bs.modal', function (event) {
+            var row = $(event.relatedTarget);
+            var id = row.data('id');
+            var modal = $(this);
+            modal.find('#id').val(id);
+        });
+
+        $('#lost').on('show.bs.modal', function (event) {
             var row = $(event.relatedTarget);
             var id = row.data('id');
             var modal = $(this);

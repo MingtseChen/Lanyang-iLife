@@ -58,4 +58,10 @@ class Mail
             echo 'Message could not be sent. Mailer Error: ', $this->mail->ErrorInfo;
         }
     }
+
+    public function packageConfirm($email)
+    {
+        $msg = "New package arrived go check it out!";
+        $this->send($email, 'package notify', $msg);
+    }
 }
