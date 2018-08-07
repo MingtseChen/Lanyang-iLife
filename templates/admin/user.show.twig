@@ -66,12 +66,11 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Admin List
-                        <a class="btn btn-flat btn-success float-right btn-sm" href="{{ path_for('users') }}"><i
-                                    class="fas fa-plus"></i>
-                            Add new admin
+                        <a class="btn btn-flat btn-success float-right btn-sm" href="#" data-toggle="modal"
+                           data-placement="top" data-target="#create">
+                            <i class="fas fa-plus"></i> Add new admin
                         </a>
                     </h3>
-
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -110,12 +109,15 @@
                                 <td>{{ user.last_login|e }}</td>
                                 <td>{{ user.create_time|e }}</td>
                                 <td>
-                                <span class="mx-1" style="color: #00c0ef" data-toggle="tooltip" data-placement="top"
-                                      title="Edit"><i class="far fa-edit"></i></span>
-                                    <span class="mx-1" style="color: #f39e12" data-toggle="tooltip" data-placement="top"
-                                          title="Suspend"><i class="fas fa-ban"></i></span>
-                                    <span class="mx-1" style="color: #f56954" data-toggle="tooltip" data-placement="top"
-                                          title="Delete"><i class="fas fa-trash"></i></span>
+                                    <a class="mx-1" style="color: #00c0ef" href="#" data-toggle="modal"
+                                       data-placement="top" data-target="#edit" data-uid="{{ user.uid }}"
+                                       data-id="{{ user.id }}" data-role="{{ user.role }}"
+                                       data-active="{{ user.active }}" title="Edit">
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                    <a class="mx-1" style="color: #f56954" href="#" data-toggle="modal"
+                                       data-placement="top" data-target="#delete" data-id="{{ user.id }}"
+                                       title="Delete"><i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -165,6 +167,111 @@
             </div>
         </div>
     </div>
+    <!-- Create Modal -->
+    <div class="modal fade" id="create" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Create</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ path_for('submitUser') }}">
+                        <div class="form-group">
+                            <label for="Username" class="col-form-label">ID Number</label>
+                            <input type="text" class="form-control" id="username" name="uid">
+                        </div>
+                        <div class="form-group">
+                            <label for="role" class="col-form-label">User role</label>
+                            <select class="form-control" name="role" id="role">
+                                <option value="0">Superuser</option>
+                                <option value="1">Admin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="role" class=" col-form-label">Active status</label>
+                            <select class="form-control" name="active" id="active">
+                                <option value="1">Activate</option>
+                                <option value="0">Deactivate</option>
+                            </select>
+                        </div>
+                        <input type="hidden" id="id" name="id" value="">
+                        <button type="submit" class="btn btn-info float-right">Save</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Edit Modal -->
+    <div class="modal fade" id="edit" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Edit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{{ path_for('userUpdate') }}">
+                        <div class="form-group">
+                            <label for="Username" class="col-form-label">ID Number</label>
+                            <input type="text" class="form-control" id="username" name="uid" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="role" class="col-form-label">User role</label>
+                            <select class="form-control" name="role" id="role">
+                                <option value="0">Superuser</option>
+                                <option value="1">Admin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="role" class=" col-form-label">Active status</label>
+                            <select class="form-control" name="active" id="active">
+                                <option value="1">Activate</option>
+                                <option value="0">Deactivate</option>
+                            </select>
+                        </div>
+                        <input type="hidden" id="id" name="id" value="">
+                        <button type="submit" class="btn btn-info float-right">Save changes</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal -->
+    <div class="modal fade" id="delete" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body mx-auto">
+                    <div class="row">
+                        <div class="col text-center">
+                            <i class="fas fa-minus-circle fa-7x m-md-4" style="color: #f56954"></i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Do you really want to delete these records?
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="mx-auto">
+                        <form action="{{ path_for('userDelete') }}" method="POST">
+                            <input type="hidden" id="id" name="id">
+                            <button type="button" class="btn btn-flat btn-secondary" data-dismiss="modal">Cancel
+                            </button>
+                            <button type="submit" class="btn btn-flat btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 {% block scripts %}
     <script>
@@ -185,6 +292,26 @@
             "info": true,
             "pageLength": 5,
             "lengthMenu": [5, 10, 15]
+        });
+
+        $('#edit').on('show.bs.modal', function (event) {
+            var row = $(event.relatedTarget);
+            var id = row.data('id');
+            var uid = row.data('uid');
+            var role = row.data('role');
+            var active = row.data('active');
+            var modal = $(this);
+            modal.find('#username').val(uid);
+            modal.find('#id').val(id);
+            modal.find('#active').val(active);
+            modal.find('#role').val(role);
+        });
+
+        $('#delete').on('show.bs.modal', function (event) {
+            var row = $(event.relatedTarget);
+            var id = row.data('id');
+            var modal = $(this);
+            modal.find('#id').val(id);
         });
     </script>
 {% endblock %}
