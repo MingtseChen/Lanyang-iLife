@@ -7,14 +7,16 @@ include "Middleware/SSO.php";
 //whoops support (should be first to inject with)
 $app->add(new \Zeuxisoo\Whoops\Provider\Slim\WhoopsMiddleware);
 
-//session
+//SSO Login
+$app->add(new SSO());
+
+//Session
 $app->add(new \Slim\Middleware\Session([
     'name' => 'SSID',
-    'autorefresh' => false,
+    'autorefresh' => true,
     'lifetime' => '1 hour'
 ]));
 
-//debug bar
+//Debug bar
 $app->add(new RunTracy\Middlewares\TracyMiddleware($app));
 
-$app->add(new SSO());
