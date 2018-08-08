@@ -17,7 +17,6 @@ class SSO
         $ssoRole = '';
         $headers = apache_request_headers();
         $ssoLogin = array_key_exists("sso_userid", $headers);
-        $ssoLogin = true;
 
 
         //*****************************************//test only
@@ -29,6 +28,7 @@ class SSO
             $ssoRole = 1;
             $headers['sso_userid'] = $uid;
             $headers['sso_roletype'] = $ssoRole;
+            $ssoLogin = true;
         }
         //*****************************************//test only
 
