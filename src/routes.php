@@ -130,7 +130,6 @@ $app->group('/user', function ($app) {
 $app->group('/bus', function ($app) {
 
     $app->get('', function ($request, $response, $args) {
-        var_dump($request->getHost());
         return $this->view->render($response, '/bus/search.twig');
     })->setName('busIndex');
 
