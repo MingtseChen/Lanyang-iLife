@@ -42,6 +42,7 @@ $app->get('/', function ($request, $response, $args) {
         'name' => $name
     ];
     var_dump($_SESSION);
+    var_dump($request);
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 

@@ -48,6 +48,7 @@ class SSO
                 }
             }
         }
+        
         $response = $next($request, $response);
         //after response area
 
