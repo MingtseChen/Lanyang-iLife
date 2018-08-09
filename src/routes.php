@@ -42,7 +42,6 @@ $app->get('/', function ($request, $response, $args) {
         'name' => $name
     ];
     var_dump($_SESSION);
-    var_dump($request);
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 
@@ -131,6 +130,7 @@ $app->group('/user', function ($app) {
 $app->group('/bus', function ($app) {
 
     $app->get('', function ($request, $response, $args) {
+        var_dump($request->getHost());
         return $this->view->render($response, '/bus/search.twig');
     })->setName('busIndex');
 
