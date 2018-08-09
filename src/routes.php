@@ -41,7 +41,6 @@ $app->get('/', function ($request, $response, $args) {
         'id' => $id,
         'name' => $name
     ];
-    var_dump($_SESSION);
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 
@@ -415,9 +414,9 @@ $app->group('/admin', function ($app) {
             $role = $data['role'];
             $active = $data['active'];
             $status = $user->updateAdmin($id, $active, $role);
-            if($status){
+            if ($status) {
                 $this->flash->addMessage('success', 'delete success');
-            }else{
+            } else {
                 $this->flash->addMessage('error', 'invalid');
             }
             return $response->withRedirect('/admin/users');
@@ -430,9 +429,9 @@ $app->group('/admin', function ($app) {
             $user = new User();
             $data = $request->getParsedBody();
             $status = $user->delete($data['id']);
-            if($status){
+            if ($status) {
                 $this->flash->addMessage('success', 'delete success');
-            }else{
+            } else {
                 $this->flash->addMessage('error', 'invalid');
             }
             return $response->withRedirect('/admin/users');
