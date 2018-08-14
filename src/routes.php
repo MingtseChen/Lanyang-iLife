@@ -7,7 +7,10 @@ include 'Models/StudentModel.php';
 include 'Models/UserModel.php';
 include 'Models/BusModel.php';
 include 'Models/PackageModel.php';
+include 'Models/RepairModel.php';
 include 'Plugins/Mail.php';
+include 'Plugins/Upload.php';
+
 //include 'Middleware/AdminSection.php';
 //include 'Middleware/RedirectIfAuth.php';
 
@@ -176,6 +179,60 @@ $app->group('/bus', function ($app) {
 //        $result = $request->getQueryParams()['action'];
         return $this->view->render($response, '/bus/status.twig');
     })->setName('busStatus');
+});
+
+//Repair
+$app->group('/repair', function ($app) {
+    $app->get('', function ($request, $response, $args) {
+        return $this->view->render($response, '/repair/index.twig');
+    })->setName('repair');;
+    $app->get('/create', function ($request, $response, $args) {
+        $repair = new Repair();
+        $category = $repair->readCategory();
+        $buildings = $repair->readBuilding();
+        $data = ['categories' => $category, 'buildings' => $buildings];
+        return $this->view->render($response, '/repair/create.twig', $data);
+    })->setName('repairCreate');
+    $app->post('/create', function ($request, $response, $args) {
+        //TODO handle upload exceeds server's threshhold cause blank form send and 500 response
+        $repair = new Repair();
+        $upload = new FileUpload();
+        $params = $request->getParsedBody();
+        $filename = '';
+
+        $uid = $this->session->id;
+        $building = $params['building'];
+        $room = $params['room'];
+        $item_cat = $params['item_cat'];
+        $item = $params['item'];
+        $desc = $params['desc'];
+        $accompany = $params['accompany'];
+        $confirm = isset($params['confirm']) ? true : false;
+        //file upload
+
+        if ($_FILES['file']['size'] > 0 && $_FILES['file']['error'] == 0) {
+            $path = $this->get('repair_storage');
+            $uploadStatus = $upload->filePath('file', $path)->repairImageUpdate();
+            if ($uploadStatus['status']) {
+                $filename = $uploadStatus['file_name'];
+            } else {
+                $this->flash->addMessage('error', $uploadStatus['info']);
+                $uri = $request->getUri();
+                return $response->withRedirect($uri->getPath());
+            }
+        }
+        //pass form params
+        $status = $repair->createRepair($uid, $building, $room, $item_cat, $item, $desc, $accompany, $confirm,
+            $filename);
+        if ($status) {
+            $this->flash->addMessage('success', 'form submitted');
+            return $response->withRedirect('/');
+        } else {
+            $this->flash->addMessage('error', 'invalid operation');
+            $uri = $request->getUri();
+            return $response->withRedirect($uri->getPath());
+        }
+    })->setName('repairSubmit');
 });
 
 //Login
