@@ -68,7 +68,8 @@ $app->group('/user', function ($app) {
         $this->flash->addMessage('success', 'Info updated');
         return $response->withRedirect('/user/index');
     })->setName('userAddMail');
-
+    
+    //TODO no search option , use list instead
     $app->get('/bus', function ($request, $response, $args) {
         $bus = new Bus();
         $id = $this->session->id;
