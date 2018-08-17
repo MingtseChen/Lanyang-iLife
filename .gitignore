@@ -175,3 +175,7 @@ TKUPM
 !/logs/README.md
 /cache/
 /src/settings.php
+
+composer\.lock
+
+public/storage/repair/

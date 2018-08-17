@@ -36,6 +36,7 @@ $container['view'] = function ($c) {
     $view->addExtension(new Slim\Views\TwigExtension($c->get('router'), $c->get('request')->getUri()));
     $view->addExtension(new Knlv\Slim\Views\TwigMessages(new Slim\Flash\Messages()));
     $view->addExtension(new Twig_Extension_Profiler($c['twig_profile']));
+    $view->addExtension(new Twig_Extensions_Extension_Text());
     $view->addExtension(new Twig_Extension_Debug());
     //add global for twig(can access php vars)
     $view->getEnvironment()->addGlobal('_session', $_SESSION);
@@ -52,15 +53,13 @@ $container['flash'] = function () {
 // database
 ORM::configure($container->get('settings')['db']);
 
-// auth
-//require __DIR__ . '/../src/auth.php';
-
-//$container['auth'] = function () {
-////    $auth = new Auth();
-//    return new App\Auth();
-//};
-
 //session
 $container['session'] = function ($c) {
     return new \SlimSession\Helper;
+};
+
+//Storage setting
+$container['repair_storage'] = function ($c) {
+    $settings = $c->get('settings')['storage'];
+    return $settings['repair_path'];
 };

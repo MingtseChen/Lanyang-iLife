@@ -1,0 +1,146 @@
+{# TODO: Add expand effect on admin login form #}
+
+{% extends "/layouts/admin.twig" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block page_title %}Repair     Manager{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <!-- Custom Tabs -->
+            <div class="card card-outline card-info">
+                <div class="card-header d-flex p-0">
+                    <h3 class="card-title p-3">Tabs</h3>
+                    <ul class="nav nav-pills ml-auto p-2">
+                        <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">未簽收</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#tab_2" data-toggle="tab">待處理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#tab_3" data-toggle="tab">完工待確任</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#tab_4" data-toggle="tab">已待確完成</a></li>
+                    </ul>
+                </div><!-- /.card-header -->
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_1">
+                            <table id="userTable" class="table table-hover compact nowrap" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>編號</th>
+                                    <th>分類</th>
+                                    <th>報修人</th>
+                                    <th>館別</th>
+                                    <th>房號</th>
+                                    <th>物品名稱</th>
+                                    <th>故障描述</th>
+                                    <th>催件</th>
+                                    <th>報修時間</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in tab1 %}
+                                    <tr>
+                                        <td>{{ item.id }}</td>
+                                        <td>{{ item.cat_name }}</td>
+                                        <td>{{ item.note_man }}</td>
+                                        <td>{{ item.building }}</td>
+                                        <td>{{ item.location }}</td>
+                                        <td>{{ item.item }}</td>
+                                        <td>{{ item.item_desc|truncate(5) }}</td>
+                                        <td>{{ item.item_calls|default(0) }}</td>
+                                        <td>{{ item.note_time|date("Y-m-d") }}</td>
+                                        <td>
+                                            <a class="btn btn-outline-info btn-sm"
+                                               href="{{ path_for('repairSign',{ 'id': item.id }) }}">
+                                                簽收/編輯
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane" id="tab_2">
+                            <table id="userTable" class="table table-hover compact nowrap" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>編號</th>
+                                    <th>分類</th>
+                                    <th>報修人</th>
+                                    <th>館別</th>
+                                    <th>房號</th>
+                                    <th>物品名稱</th>
+                                    <th>進度</th>
+                                    <th>故障描述</th>
+                                    <th>催件</th>
+                                    <th>報修時間</th>
+                                    <th>預計完成</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in tab2 %}
+                                    <tr>
+                                        <td>{{ item.id }}</td>
+                                        <td>{{ item.cat_name }}</td>
+                                        <td>{{ item.note_man }}</td>
+                                        <td>{{ item.building }}</td>
+                                        <td>{{ item.location }}</td>
+                                        <td>{{ item.item }}</td>
+                                        <td>{{ item.item_status_name }}</td>
+                                        <td>{{ item.item_desc|truncate(5) }}</td>
+                                        <td>{{ item.item_calls|default(0) }}</td>
+                                        <td>{{ item.note_time|date("Y-m-d") }}</td>
+                                        <td>{{ item.expect_time|default('N/A')|date("Y-m-d") }}</td>
+                                        <td>
+                                            {% if item.item_status == 1 %}
+                                                <a class="btn btn-outline-warning btn-sm"
+                                                   href="{{ path_for('repairDispatch',{ 'id': item.id }) }}">
+                                                    派工
+                                                </a>
+                                            {% else %}
+                                                <a class="btn btn-outline-success btn-sm"
+                                                   href="{{ path_for('repairFinish',{ 'id': item.id }) }}">
+                                                    申報完工
+                                                </a>
+                                            {% endif %}
+
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane" id="tab_3">
+
+                        </div>
+                        <div class="tab-pane" id="tab_4">
+                        </div>
+                        <!-- /.tab-pane -->
+                    </div>
+                    <!-- /.tab-content -->
+                </div><!-- /.card-body -->
+            </div>
+            <!-- ./card -->
+        </div>
+        <!-- /.col -->
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            $('[id=userTable]').DataTable({
+                responsive: true,
+                "paging": true,
+                // "lengthChange": false,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "pageLength": 5,
+                "lengthMenu": [5, 10, 15]
+            });
+        });
+    </script>
+{% endblock %}

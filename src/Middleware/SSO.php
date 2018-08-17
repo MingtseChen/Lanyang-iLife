@@ -28,7 +28,7 @@ class SSO
             $ssoRole = 1;
             $headers['sso_userid'] = $uid;
             $headers['sso_roletype'] = $ssoRole;
-            $ssoLogin = false;
+            $ssoLogin = true;
         }
         //*****************************************//test only
 
@@ -38,6 +38,9 @@ class SSO
             $uid = $headers['sso_userid'];
             $ssoRole = $headers['sso_roletype'];
             $name = $this->username($uid);
+            if ($path == '/login') {
+                return $response->withRedirect('/');
+            }
             if (!isset($_SESSION['id']) || $this->isIDChange($uid)) {
                 if ($this->isAdmin($uid)) {
                     $group = $this->userGroup($uid);
@@ -54,7 +57,7 @@ class SSO
             $response = $next($request, $response);
             return $response;
         } else {
-            return $response = $response->withRedirect('/login?status=refuse');
+            return $response->withRedirect('/login?status=refuse');
         }
     }
 
