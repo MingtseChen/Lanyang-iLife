@@ -6,7 +6,7 @@ class Repair
 {
     public function readCategory()
     {
-        $category = ORM::forTable('repair_cat')->orderByAsc('id')->findArray();
+        $category = ORM::forTable('repair_cat')->orderByAsc('soc')->findArray();
         return $category;
     }
 
@@ -66,6 +66,52 @@ class Repair
         }
     }
 
+    public function userEditRepair($id, $building, $room, $item_cat, $item, $desc, $accompany, $confirm, $filename)
+    {
+        try {
+            $repairItem = ORM::forTable('repair_item')->findOne($id);
+            $repairItem->building = $building;
+            $repairItem->location = $room;
+            $repairItem->item_cat = $item_cat;
+            $repairItem->item = $item;
+            $repairItem->item_desc = $desc;
+            $repairItem->request_need_accompany = $accompany;
+            $repairItem->request_need_confirm = $confirm;
+            $repairItem->photo = $filename;
+            $repairItem->item_calls = 0;
+            $repairItem->save();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function userConfirm($id, $uid, $confirmNotes, $evaluation, $evaluationNotes)
+    {
+        try {
+            $repairItem = ORM::forTable('repair_item')->where('note_man', $uid)->findOne($id);
+            $repairItem->evaluation = $evaluation;
+            $repairItem->evaluation_notes = $evaluationNotes;
+            $repairItem->confirm_time = Carbon::now();
+            $repairItem->confirm_notes = $confirmNotes;
+            $repairItem->confirm = true;
+            $repairItem->item_status = 4;
+            $repairItem->save();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function getItemUserID($itemID)
+    {
+        $data = ORM::forTable('repair_item')->select('note_man')->findOne($itemID);
+        if (!$data) {
+            return false;
+        }
+        return $data['note_man'];
+    }
+
     public function edit($id, $building, $cat)
     {
         $row = ORM::forTable('repair_item')->findOne($id);
@@ -100,12 +146,17 @@ class Repair
         return $row[0];
     }
 
-    public function readWork($admin, $status)
+    public function readUserWork($uid, $workID = null)
     {
-        $selectClause = ['repair_cat.cat_name', 'repair_cat.admin_id', 'repair_item.*'];
+        $selectClause = ['repair_cat.*', 'repair_item.*'];
         $joinClause = ['repair_item.item_cat', '=', 'repair_cat.id'];
         $query = ORM::forTable('repair_item')->selectMany($selectClause)->innerJoin('repair_cat', $joinClause);
-        $items = $query->where(['item_status' => $status, 'repair_cat.admin_id' => $admin])->findArray();
+        if (is_null($workID)) {
+            $items = $query->where(['note_man' => $uid])->whereNotEqual('item_status', '99')->findArray();
+        } else {
+            $items = $query->where(['note_man' => $uid, 'id' => $workID])->whereNotEqual('item_status',
+                '99')->findArray();
+        }
         foreach ($items as $key => $item) {
             $building = $items[$key]['building'];
             $category = $items[$key]['item_cat'];
@@ -126,7 +177,7 @@ class Repair
 
     private function getCategory($value)
     {
-        $cat = ORM::forTable('repair_cat')->selectMany('cat_name')->findOne($value);
+        $cat = ORM::forTable('repair_cat')->select('cat_name')->findOne($value);
         return $cat['cat_name'];
     }
 
@@ -134,6 +185,58 @@ class Repair
     {
         $building = ORM::forTable('repair_status')->select('status_name')->findOne($value);
         return $building['status_name'];
+    }
+
+    public function deleteUserItem($id)
+    {
+        if ($this->allowDelete($id)) {
+            $this->deleteRepairItem($id);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function allowDelete($id)
+    {
+        $status = ORM::forTable('repair_item')->select('item_status')->where('id', $id)->findArray()[0];
+        if ($status['item_status'] != 0) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
+    private function deleteRepairItem($id)
+    {
+        $item = ORM::forTable('repair_item')->findOne($id);
+        $item->item_status = 99;
+        $item->save();
+    }
+
+    public function readUserDetail($id, $uid)
+    {
+        $item = ORM::forTable('repair_item')->where(['id' => $id, 'note_man' => $uid])->findArray();
+        return $item;
+    }
+
+    public function readWork($admin, $status)
+    {
+        $selectClause = ['repair_cat.cat_name', 'repair_cat.admin_id', 'repair_item.*'];
+        $joinClause = ['repair_item.item_cat', '=', 'repair_cat.id'];
+        $query = ORM::forTable('repair_item')->selectMany($selectClause)->innerJoin('repair_cat', $joinClause);
+        $items = $query->where(['item_status' => $status, 'repair_cat.admin_id' => $admin])->findArray();
+        foreach ($items as $key => $item) {
+            $building = $items[$key]['building'];
+            $category = $items[$key]['item_cat'];
+            $state = $items[$key]['item_status'];
+
+            $items[$key]['building'] = $this->getBuilding($building);
+            $items[$key]['item_cat'] = $this->getCategory($category);
+            $items[$key]['item_status_name'] = $this->getItemStatus($state);
+        }
+        return $items;
     }
 
 

@@ -105,6 +105,10 @@
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/datatables.min.js"></script>
 <!-- SweetAlert2 -->
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+{#<!-- HTML5Sortable -->#}
+{#<script src="/js/html5sortable.js"></script>#}
+<!-- jsDelivr :: Sortable (https://www.jsdelivr.com/package/npm/sortablejs) -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.6.1/Sortable.min.js"></script>
 <script>
     {% for error in flash('error') %}
     $.notify({
