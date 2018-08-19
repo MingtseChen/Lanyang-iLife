@@ -11,7 +11,7 @@
             <!-- Custom Tabs -->
             <div class="card card-outline card-info">
                 <div class="card-header d-flex p-0">
-                    <h3 class="card-title p-3">Tabs</h3>
+                    <h3 class="card-title p-3">報修任務</h3>
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">未簽收</a></li>
                         <li class="nav-item"><a class="nav-link" href="#tab_2" data-toggle="tab">待處理</a></li>
@@ -60,7 +60,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        <!-- /.tab-pane -->
                         <div class="tab-pane" id="tab_2">
                             <table id="userTable" class="table table-hover compact nowrap" style="width:100%">
                                 <thead>
@@ -112,11 +111,103 @@
                                 </tbody>
                             </table>
                         </div>
-                        <!-- /.tab-pane -->
                         <div class="tab-pane" id="tab_3">
-
+                            <table id="userTable" class="table table-hover compact nowrap" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>編號</th>
+                                    <th>分類</th>
+                                    <th>報修人</th>
+                                    <th>館別</th>
+                                    <th>房號</th>
+                                    <th>物品名稱</th>
+                                    <th>進度</th>
+                                    <th>故障描述</th>
+                                    <th>報修時間</th>
+                                    <th>預計完成</th>
+                                    <th>完成時間</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in tab3 %}
+                                    <tr>
+                                        <td>{{ item.id }}</td>
+                                        <td>{{ item.cat_name }}</td>
+                                        <td>{{ item.note_man }}</td>
+                                        <td>{{ item.building }}</td>
+                                        <td>{{ item.location|truncate(5) }}</td>
+                                        <td>{{ item.item|truncate(5) }}</td>
+                                        <td>{{ item.item_status_name }}</td>
+                                        <td>{{ item.item_desc|truncate(5) }}</td>
+                                        <td>{{ item.note_time|date("Y-m-d") }}</td>
+                                        <td>{{ item.expect_time|date("Y-m-d")|default('N/A') }}</td>
+                                        <td>{{ item.expect_time|date("Y-m-d") }}</td>
+                                        <td>
+                                            <a class="btn btn-outline-warning btn-sm"
+                                               href="{{ path_for('repairResult',{ 'id': item.id }) }}">
+                                                查看
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                         <div class="tab-pane" id="tab_4">
+                            <table id="userTable" class="table table-hover compact nowrap" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>編號</th>
+                                    <th>分類</th>
+                                    <th>報修人</th>
+                                    <th>館別</th>
+                                    <th>房號</th>
+                                    <th>物品名稱</th>
+                                    <th>滿意度</th>
+                                    <th>故障描述</th>
+                                    <th>報修時間</th>
+                                    <th>預計完成</th>
+                                    <th>完成時間</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in tab4 %}
+                                    <tr>
+                                        <td>{{ item.id }}</td>
+                                        <td>{{ item.cat_name }}</td>
+                                        <td>{{ item.note_man }}</td>
+                                        <td>{{ item.building }}</td>
+                                        <td>{{ item.location }}</td>
+                                        <td>{{ item.item|truncate(5) }}</td>
+                                        <td>{% if item.evaluation == 6 %}
+                                                非常滿意
+                                            {% elseif item.evaluation == 5 %}
+                                                滿意
+                                            {% elseif item.evaluation == 4 %}
+                                                有點滿意
+                                            {% elseif item.evaluation == 3 %}
+                                                有點不滿意
+                                            {% elseif item.evaluation == 2 %}
+                                                不滿意
+                                            {% else %}
+                                                非常不滿意
+                                            {% endif %}</td>
+                                        <td>{{ item.item_desc|truncate(5) }}</td>
+                                        <td>{{ item.note_time|date("Y-m-d") }}</td>
+                                        <td>{{ item.expect_time|date("Y-m-d")|default('N/A') }}</td>
+                                        <td>{{ item.expect_time|date("Y-m-d") }}</td>
+                                        <td>
+                                            <a class="btn btn-outline-warning btn-sm"
+                                               href="{{ path_for('repairResult',{ 'id': item.id }) }}">
+                                                查看
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                         <!-- /.tab-pane -->
                     </div>

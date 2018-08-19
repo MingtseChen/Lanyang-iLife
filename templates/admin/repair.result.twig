@@ -1,0 +1,180 @@
+{% extends "/layouts/admin.twig" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block page_title %}Repair Manager{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <!-- Custom Tabs -->
+            <div class="card card-outline card-info">
+                <div class="card-header d-flex p-0">
+                    <h3 class="card-title p-3">案件#{{ item.id }} 維修記錄</h3>
+                </div><!-- /.card-header -->
+                <div class="card-body">
+                    <form method="post" action="{{ path_for('repairAction') }}">
+                        <div class="form-group row">
+                            <label for="name" class="col-sm-2 col-form-label">報修人/Name</label>
+                            <div class="col-sm-3">
+                                <input type="text" id="name" class="form-control" value="{{ item.note_man }}" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="item_cat" class="col-sm-2 col-form-label">報修人/Name</label>
+                            <div class="col-sm-3 my-auto">
+                                <select class="form-control" name="item_cat" id="item_cat" disabled>
+                                    {% for cat in cats %}
+                                        {% if cat.id == item.item_cat %}
+                                            <option value="{{ cat.id }}" selected>{{ cat.cat_name }}</option>
+                                        {% else %}
+                                            <option value="{{ cat.id }}">{{ cat.cat_name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">館別/Building</label>
+                            <div class="col-sm my-auto">
+                                {% for building in buildings %}
+                                    <div class="form-check form-check-inline">
+                                        <label class="form-check-label">
+                                            {% if building.id == item.building %}
+                                                <input class="form-check-input" type="radio" name="building"
+                                                       id="building" value="{{ building.id }}" checked disabled>
+                                            {% else %}
+                                                <input class="form-check-input" type="radio" name="building"
+                                                       id="building" value="{{ building.id }}" disabled>
+                                            {% endif %}
+                                            {{ building.building_name }} ({{ building.building_char }})
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="location" class="col-sm-2 col-form-label">所在位置/Room No.</label>
+                            <div class="col-sm-3">
+                                <input type="text" id="location" class="form-control" value="{{ item.location }}"
+                                       disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="item" class="col-sm-2 col-form-label">物品名稱/Item</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="item" value="{{ item.item }}" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="desc">狀況描述/Description</label>
+                            <div class="col-sm-3">
+                                <textarea class="form-control" id="desc" rows="5"
+                                          disabled>{{ item.item_desc }}</textarea>
+                            </div>
+                        </div>
+                        <div class="callout callout-warning">
+                            <h6>維修條件/Options</h6>
+                            <ul>
+                                {% if item.request_need_accompany %}
+                                    <li>報修人不在時，請宿舍幹部陪同維修人員進入/Enter with Dorm Manager</li>
+                                {% else %}
+                                    <li>報修人不在時，維修人員可直接進入/Anytime</li>
+                                {% endif %}
+                                {% if item.request_need_confirm %}
+                                    <li>將至維修人員辦公室確認問題及維修時間/Confirm with Staff</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        {% if item.photo != '' %}
+                            <div class="form-group row">
+                                <label for="" class="col-sm-2 col-form-label">照片</label>
+                                <img src="{{ base_url()~'/storage/repair/'~item.photo }}" class="img-thumbnail"
+                                     style="width:auto;max-width:300px;max-height:300px">
+                            </div>
+                        {% endif %}
+                        <hr>
+                        <div class="form-group row">
+                            <label for="assign" class="col-sm-2 col-form-label">派工情況</label>
+                            <div class="col-sm-3">
+                                {% if item.assign == 1 %}
+                                    <input type="text" class="form-control" id="assign" value="可自行處理" disabled>
+                                {% else %}
+                                    <input type="text" class="form-control" id="assign" value="將請廠商前來維修 " disabled>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="assign_notes">受理說明(留言及準備工作)</label>
+                            <div class="col-sm-3">
+                                <textarea class="form-control" rows="3" id="assign_notes"
+                                          disabled>{{ item.assign_notes|default("無") }}</textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="repair_man" class="col-sm-2 col-form-label">維修廠商</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="repair_man"
+                                       value="{{ item.repair_man|default("無") }}" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="time" class="col-sm-2 col-form-label">預計完成工時</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="time" value="{{ item.expect_time }}"
+                                       disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="repair_notes">維修情形(紀錄)</label>
+                            <div class="col-sm-3">
+                                <textarea class="form-control" rows="3" id="repair_notes"
+                                          name="repair_notes" disabled>{{ item.repair_notes }}</textarea>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="confirm_notes">修繕狀況註記</label>
+                            <div class="col-sm-6">
+                                <textarea class="form-control" rows="3" id="confirm_notes"
+                                          name="confirm_notes" disabled>{{ item.confirm_notes }}</textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="item_cat" class="col-sm-2 col-form-label">我想給的評價</label>
+                            <div class="col-sm my-auto">
+                                {% if item.evaluation == 6 %}
+                                    <span>非常滿意</span>
+                                {% elseif item.evaluation == 5 %}
+                                    <span>滿意</span>
+                                {% elseif item.evaluation == 4 %}
+                                    <span>有點滿意</span>
+                                {% elseif item.evaluation == 3 %}
+                                    <span>有點不滿意</span>
+                                {% elseif item.evaluation == 2 %}
+                                    <span>不滿意</span>
+                                {% else %}
+                                    <span>非常不滿意</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="evaluation_notes">鼓勵或建議</label>
+                            <div class="col-sm-6">
+                                <textarea class="form-control" rows="3" id="evaluation_notes"
+                                          name="evaluation_notes" disabled>{{ item.evaluation_notes }}</textarea>
+                            </div>
+                        </div>
+                        <a class="btn btn-default float-right mx-1" onclick="cancel()">返回</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        function cancel() {
+            window.location.href = "{{ path_for('repairWork') }}";
+        }
+    </script>
+{% endblock %}
