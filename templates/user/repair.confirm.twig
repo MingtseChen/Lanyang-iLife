@@ -1,0 +1,73 @@
+{% extends "/layouts/repair.twig" %}
+{% block title %}iRepair{% endblock %}
+
+{% block page_title %}確認完工{% endblock %}
+
+{% block content %}
+    <!-- SmartWizard html -->
+    <form class="" id="repair" action="{{ path_for('repairConfirm',{'id': item.id}) }}" method="POST">
+        <div class="card card-outline card-success">
+            <h5 class="card-header">維修案件 #{{ item.id }}</h5>
+            <div class="card-body">
+                <div class="col-sm">
+                    <p>館別：{{ item.building }} &nbsp;&nbsp;&nbsp;&nbsp;房號：{{ item.location }}
+                        &nbsp;&nbsp;&nbsp;&nbsp;物品名稱：{{ item.item }}
+                    </p>
+                    <p>故障描述：{{ item.item_desc }}</p>
+                    <p>通知時間：{{ item.note_time|date("Y-m-d") }}</p>
+                    <p>承辦人：{{ item.admin_name }}</p>
+                    <p>預計完成：{{ item.expect_time|date("Y-m-d") }}&nbsp;&nbsp;&nbsp;&nbsp;
+                        完成時間：{{ item.expect_time|date("Y-m-d")|default('N/A') }}</p>
+                </div>
+                <hr>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="confirm_notes">修繕狀況註記</label>
+                    <div class="col-sm-6">
+                                <textarea class="form-control" rows="3" id="confirm_notes"
+                                          name="confirm_notes"></textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="item_cat" class="col-sm-2 col-form-label">我想給的評價</label>
+                    <div class="col-sm my-auto">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="evaluation" id="6" value="6" checked>
+                            <label class="form-check-label" for="6">非常滿意</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="evaluation" id="5" value="5">
+                            <label class="form-check-label" for="5">滿意</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="evaluation" id="4" value="4">
+                            <label class="form-check-label" for="4">有點滿意</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="evaluation" id="3" value="3">
+                            <label class="form-check-label" for="3">有點不滿意</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="evaluation" id="2" value="2">
+                            <label class="form-check-label" for="2">不滿意</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="evaluation" id="1" value="1">
+                            <label class="form-check-label" for="1">非常不滿意 </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="evaluation_notes">鼓勵或建議</label>
+                    <div class="col-sm-6">
+                                <textarea class="form-control" rows="3" id="evaluation_notes"
+                                          name="evaluation_notes"></textarea>
+                    </div>
+                </div>
+                <div class="float-right">
+                    <button type="submit" class="btn btn-success">送出</button>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+{% block scripts %}{% endblock %}

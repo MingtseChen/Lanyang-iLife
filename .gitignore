@@ -177,3 +177,5 @@ TKUPM
 /src/settings.php
 
 composer\.lock
+
+public/storage/repair/

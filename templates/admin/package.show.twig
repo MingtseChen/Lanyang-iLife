@@ -17,25 +17,26 @@
                     <form method="POST" action="{{ path_for('packageCreate') }}" autocomplete="off">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="validationDefault01">收件人</label>
-                                <input type="text" class="form-control" id="" placeholder="收件人" name="rcp" required>
+                                <label for="rcp">收件人</label>
+                                <input type="text" class="form-control" id="rcp" placeholder="收件人" name="rcp" required>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="validationDefault02">包裹類型</label>
-                                <input type="text" class="form-control" id="" placeholder="包裹類型" name="cat" required>
+                                <label for="cat">包裹類型</label>
+                                <input type="text" class="form-control" id="cat" placeholder="包裹類型" name="cat" required>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="validationDefault04">存放位置</label>
-                                <input type="text" class="form-control" id="" placeholder="存放位置" name="strg" required>
+                                <label for="strg">存放位置</label>
+                                <input type="text" class="form-control" id="strg" placeholder="存放位置" name="strg"
+                                       required>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="validationDefault03">包裹編號</label>
-                                <input type="text" class="form-control" id="" placeholder="包裹編號" name="pid">
+                                <label for="pid">包裹編號</label>
+                                <input type="text" class="form-control" id="pid" placeholder="包裹編號" name="pid">
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="validationDefault05">抵達時間</label>
+                                <label for="time">抵達時間</label>
                                 <input type="text" class="form-control" id="time" name="time" value="" readonly>
                             </div>
                         </div>
@@ -114,26 +115,26 @@
                     <form method="POST" action="{{ path_for('packageUpdate') }}">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="validationDefault01">收件人</label>
+                                <label for="rcp">收件人</label>
                                 <input type="text" class="form-control" id="rcp" placeholder="收件人" name="rcp" required>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="validationDefault02">包裹類型</label>
+                                <label for="cat">包裹類型</label>
                                 <input type="text" class="form-control" id="cat" placeholder="包裹類型" name="cat" required>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="validationDefault04">存放位置</label>
+                                <label for="strg">存放位置</label>
                                 <input type="text" class="form-control" id="strg" placeholder="存放位置" name="strg"
                                        required>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="validationDefault03">包裹編號</label>
+                                <label for="pid">包裹編號</label>
                                 <input type="text" class="form-control" id="pid" placeholder="包裹編號" name="pid">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="validationDefault05">抵達時間</label>
+                                <label for="time">抵達時間</label>
                                 <input type="text" class="form-control" id="time" name="time" value="" readonly>
                             </div>
                         </div>

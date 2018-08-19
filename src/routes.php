@@ -69,6 +69,7 @@ $app->group('/user', function ($app) {
         return $response->withRedirect('/user/index');
     })->setName('userAddMail');
 
+    //TODO no search option , use list instead
     $app->get('/bus', function ($request, $response, $args) {
         $bus = new Bus();
         $id = $this->session->id;
@@ -118,6 +119,127 @@ $app->group('/user', function ($app) {
 
         return $response->withRedirect('/user/package');
     });
+
+    $app->get('/repair', function ($request, $response, $args) {
+        $repair = new Repair();
+        $uid = $this->session->id;
+        $items = $repair->readUserWork($uid);
+        $data = ['items' => $items];
+        return $this->view->render($response, '/user/repair.twig', $data);
+    })->setName('repairStatus');
+
+    $app->get('/repair/edit/{id}', function ($request, $response, $args) {
+        $repair = new Repair();
+        $uid = $this->session->id;
+        $id = $args['id'];
+        $category = $repair->readCategory();
+        $buildings = $repair->readBuilding();
+
+        $item = $repair->readUserDetail($id, $uid);
+        //check if user want to hack other's data
+        if (empty($item)) {
+            $this->flash->addMessage('info', 'Bang! Gotcha !');
+            $this->flash->addMessage('error', 'Invalid Request !');
+            return $response->withRedirect('/user/repair');
+        }
+        $data = ['item' => $item[0], 'categories' => $category, 'buildings' => $buildings];
+        return $this->view->render($response, '/user/repair.edit.twig', $data);
+    })->setName('repairEditShow');
+
+    $app->post('/repair/edit/{id}', function ($request, $response, $args) {
+        $repair = new Repair();
+        $currentUserID = $this->session->id;
+        $itemUser = $repair->getItemUserID($args['id']);
+        //validate edit user
+        if ($itemUser != $currentUserID) {
+            $this->flash->addMessage('info', 'Bang! Gotcha !');
+            $this->flash->addMessage('error', 'Invalid Request !');
+            return $response->withRedirect('/user/repair');
+        }
+        //store data
+        $upload = new FileUpload();
+        $params = $request->getParsedBody();
+        $filename = '';
+
+        $building = $params['building'];
+        $room = $params['room'];
+        $item_cat = $params['item_cat'];
+        $item = $params['item'];
+        $desc = $params['desc'];
+        $accompany = $params['accompany'];
+        $confirm = isset($params['confirm']) ? true : false;
+        //file upload
+        if ($_FILES['file']['size'] > 0 && $_FILES['file']['error'] == 0) {
+            $path = $this->get('repair_storage');
+            $uploadStatus = $upload->filePath('file', $path)->repairImageUpdate();
+            if ($uploadStatus['status']) {
+                $filename = $uploadStatus['file_name'];
+            } else {
+                $this->flash->addMessage('error', $uploadStatus['info']);
+                $uri = $request->getUri();
+                return $response->withRedirect($uri->getPath());
+            }
+        }
+        //pass form params
+        $status = $repair->userEditRepair($args['id'], $building, $room, $item_cat, $item, $desc, $accompany, $confirm,
+            $filename);
+        if ($status) {
+            $this->flash->addMessage('success', 'form submitted');
+            return $response->withRedirect('/user/repair');
+        } else {
+            $this->flash->addMessage('error', 'invalid operation');
+            $uri = $request->getUri();
+            return $response->withRedirect($uri->getPath());
+        }
+
+
+    })->setName('repairEdit');
+
+    $app->get('/repair/confirm/{id}', function ($request, $response, $args) {
+        $repair = new Repair();
+        $uid = $this->session->id;
+        $id = $args['id'];
+
+        $item = $repair->readUserWork($uid, $id);
+        if (empty($item)) {
+            $this->flash->addMessage('info', 'Bang! Gotcha !');
+            $this->flash->addMessage('error', 'Invalid Request !');
+            return $response->withRedirect('/user/repair');
+        }
+        $data = ['item' => $item[0]];
+
+        return $this->view->render($response, '/user/repair.confirm.twig', $data);
+    })->setName('repairConfirmShow');
+
+    $app->post('/repair/confirm/{id}', function ($request, $response, $args) {
+        $confirmNotes = $request->getParsedBody()['confirm_notes'];
+        $evaluation = $request->getParsedBody()['evaluation'];
+        $evaluationNotes = $request->getParsedBody()['evaluation_notes'];
+        $repair = new Repair();
+        $uid = $this->session->id;
+        $status = $repair->userConfirm($args['id'], $uid, $confirmNotes, $evaluation, $evaluationNotes);
+        if($status){
+            $this->flash->addMessage('success', 'form send');
+            return $response->withRedirect('/user/repair');
+        }else{
+            $this->flash->addMessage('error', 'Invalid Request !');
+            $uri = $request->getUri();
+            return $response->withRedirect($uri->getPath());
+        }
+    })->setName('repairConfirm');
+
+    $app->get('/repair/cancel/{id}', function ($request, $response, $args) {
+        $repair = new Repair();
+        $id = $args['id'];
+        $status = $repair->deleteUserItem($id);
+        if ($status) {
+            $this->flash->addMessage('success', 'delete successful');
+            return $response->withRedirect('/user/repair');
+        } else {
+            $this->flash->addMessage('error', 'invalid ');
+            return $response->withRedirect('/user/repair');
+        }
+    })->setName('repairCancel');
 
     $app->get('/lostfound', function ($request, $response, $args) {
         $package = new Package();
@@ -185,7 +307,8 @@ $app->group('/bus', function ($app) {
 $app->group('/repair', function ($app) {
     $app->get('', function ($request, $response, $args) {
         return $this->view->render($response, '/repair/index.twig');
-    })->setName('repair');;
+    })->setName('repair');
+
     $app->get('/create', function ($request, $response, $args) {
         $repair = new Repair();
         $category = $repair->readCategory();
@@ -193,6 +316,7 @@ $app->group('/repair', function ($app) {
         $data = ['categories' => $category, 'buildings' => $buildings];
         return $this->view->render($response, '/repair/create.twig', $data);
     })->setName('repairCreate');
+
     $app->post('/create', function ($request, $response, $args) {
         //TODO handle upload exceeds server's threshhold cause blank form send and 500 response
         $repair = new Repair();
@@ -518,6 +642,162 @@ $app->group('/admin', function ($app) {
                 return $response->withRedirect('/admin/users/create');
             }
         })->setName('submitUser')->add(new \DavidePastore\Slim\Validation\Validation($validators));
+    });
+    //Repair Section
+    $app->group('/repair', function ($app) {
+        $app->get('', function ($request, $response, $args) {
+            $uid = $this->session->id;
+            $item = new Repair();
+            //for status please check at 'repair_status' table
+            $itemStatus0 = $item->readWork($uid, 0);
+            $itemStatus1 = $item->readWork($uid, 1);
+            $itemStatus2 = $item->readWork($uid, 2);
+            $itemStatus3 = $item->readWork($uid, 3);
+            $itemStatus4 = $item->readWork($uid, 4);
+            $data = [
+                'tab1' => $itemStatus0,
+                'tab2' => array_merge($itemStatus1, $itemStatus2),
+                'tab3' => $itemStatus3,
+                'tab4' => $itemStatus4,
+            ];
+            return $this->view->render($response, '/admin/repair.work.twig', $data);
+        })->setName('repairWork');
+
+        $app->get('/sign/{id}', function ($request, $response, $args) {
+            $item = new Repair();
+            $id = $args['id'];
+            $detail = $item->showRepairDetail($id);
+            if (!$detail) {
+                $this->flash->addMessage('error', 'invalid ');
+                return $response->withRedirect('/admin/repair');
+            }
+            $data = [
+                'item' => $detail,
+                'cats' => $item->readCategory(),
+                'buildings' => $item->readBuilding()
+            ];
+
+            return $this->view->render($response, '/admin/repair.sign.twig', $data);
+        })->setName('repairSign');
+
+        $app->get('/result/{id}', function ($request, $response, $args) {
+            $item = new Repair();
+            $id = $args['id'];
+            $detail = $item->showRepairDetail($id);
+            if (!$detail) {
+                $this->flash->addMessage('error', 'invalid ');
+                return $response->withRedirect('/admin/repair');
+            }
+            $data = [
+                'item' => $detail,
+                'cats' => $item->readCategory(),
+                'buildings' => $item->readBuilding()
+            ];
+
+            return $this->view->render($response, '/admin/repair.result.twig', $data);
+        })->setName('repairResult');
+
+        $app->get('/dispatch/{id}', function ($request, $response, $args) {
+            $item = new Repair();
+            $id = $args['id'];
+            $detail = $item->showRepairDetail($id);
+            if (!$detail) {
+                $this->flash->addMessage('error', 'invalid ');
+                return $response->withRedirect('/admin/repair');
+            }
+            $data = [
+                'item' => $detail,
+                'cats' => $item->readCategory(),
+                'buildings' => $item->readBuilding()
+            ];
+
+            return $this->view->render($response, '/admin/repair.dispatch.twig', $data);
+        })->setName('repairDispatch');
+
+        $app->get('/finish/{id}', function ($request, $response, $args) {
+            $item = new Repair();
+            $id = $args['id'];
+            $detail = $item->showRepairDetail($id);
+            if (!$detail) {
+                $this->flash->addMessage('error', 'invalid ');
+                return $response->withRedirect('/admin/repair');
+            }
+            $data = [
+                'item' => $detail,
+                'cats' => $item->readCategory(),
+                'buildings' => $item->readBuilding()
+            ];
+
+            return $this->view->render($response, '/admin/repair.finish.twig', $data);
+        })->setName('repairFinish');
+
+        $app->post('/actions', function ($request, $response, $args) {
+            $item = new Repair();
+            $action = $request->getParsedBody()['action'];
+
+            //sign
+            if ($action == 'sign') {
+                $id = $request->getParsedBody()['id'];
+                $status = $item->signWork($id);
+                if ($status) {
+                    return 'success';
+                } else {
+                    return 'error';
+                }
+            }
+            //edit
+            if ($action == 'edit') {
+                $building = $request->getParsedBody()['building'];
+                $cat = $request->getParsedBody()['item_cat'];
+                $id = $request->getParsedBody()['id'];
+                $status = $item->edit($id, $building, $cat);
+                if ($status) {
+                    $this->flash->addMessage('success', 'data saves ');
+                    return $response->withRedirect('/admin/repair');
+                } else {
+                    $this->flash->addMessage('error', 'invalid ');
+                    return $response->withRedirect('/admin/repair');
+                }
+            }
+            //dispatch
+            if ($action == 'dispatch') {
+                $id = $request->getParsedBody()['id'];
+                $assign = $request->getParsedBody()['assign'];
+                $assign_notes = $request->getParsedBody()['assign_notes'];
+                $repair_man = $request->getParsedBody()['repair_man'];
+                $expect_mod = $request->getParsedBody()['expect_mod'];
+
+                $status = $item->dispatchItem($id, $assign, $assign_notes, $repair_man, $expect_mod);
+                if ($status) {
+                    $this->flash->addMessage('success', 'data saves');
+                    return $response->withRedirect('/admin/repair');
+                } else {
+                    $this->flash->addMessage('error', 'invalid ');
+                    return $response->withRedirect('/admin/repair');
+                }
+            }
+            //finish
+            if ($action == 'finish') {
+                $id = $request->getParsedBody()['id'];
+                $repair_notes = $request->getParsedBody()['repair_notes'];
+                $status = $item->finishItem($id, $repair_notes);
+                if ($status) {
+                    $this->flash->addMessage('success', 'data saves ');
+                    return $response->withRedirect('/admin/repair');
+                } else {
+                    $this->flash->addMessage('error', 'invalid ');
+                    return $response->withRedirect('/admin/repair');
+                }
+            }
+        })->setName('repairAction');
+        $app->get('/category', function ($request, $response, $args) {
+            $item = new Repair();
+            $data = [
+                'cats' => $item->readCategory(),
+            ];
+
+            return $this->view->render($response, '/admin/repair.category.twig', $data);
+        })->setName('repairCategory');
     });
 });
 

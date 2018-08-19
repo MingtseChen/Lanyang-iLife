@@ -1,0 +1,58 @@
+{% extends "/layouts/admin.twig" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block page_title %}Repair Category{% endblock %}
+
+{% block content %}
+    <style>
+        .handle {
+            cursor: move;
+            cursor: -webkit-grabbing;
+        }
+    </style>
+    <div class="row">
+        <div class="col-12">
+            <!-- Custom Tabs -->
+            <div class="card card-outline card-info">
+                <div class="card-header d-flex p-0">
+                    <h3 class="card-title p-3">Categories</h3>
+                </div><!-- /.card-header -->
+                <div class="card-body">
+                    <table id="userTable" class="table table-hover compact nowrap" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>編號</th>
+                            <th>分類</th>
+                            <th>姓名</th>
+                            <th>人員代號</th>
+                            <th>承辦項目</th>
+                            <th>分機</th>
+                        </tr>
+                        </thead>
+                        <tbody id="sort">
+                        {% for cat in cats %}
+                            <tr data-id="{{ cat.id }}">
+                                <td><i class="fas fa-bars handle"></i></td>
+                                <td>{{ cat.id }}</td>
+                                <td>{{ cat.cat_name }}</td>
+                                <td>{{ cat.admin_name }}</td>
+                                <td>{{ cat.admin_id }}</td>
+                                <td>{{ cat.work_desc }}</td>
+                                <td>{{ cat.admin_tel }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        var sortable = new Sortable.create(sort, {
+            handle: ".handle",
+        });
+    </script>
+{% endblock %}

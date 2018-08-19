@@ -1,0 +1,140 @@
+{% extends "/layouts/user.twig" %}
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
+               aria-controls="nav-home" aria-selected="true">報修項目(結案前)</a>
+            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
+               aria-controls="nav-profile" aria-selected="false">已完工/已確認</a>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            {% for item in items %}
+                {% if item.item_status == 4 %}
+                {% else %}
+                    <div class="col">
+                        <div class="card card-info card-outline my-2">
+                            <div class="card-header">
+                                <h3 class="card-title">維修案件 #{{ item.id }}</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-widget="collapse"><i
+                                                class="fa fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body" style="display: block;">
+                                <p>館別：{{ item.building }} &nbsp;&nbsp;&nbsp;&nbsp;房號：{{ item.location }}
+                                    &nbsp;&nbsp;&nbsp;&nbsp;物品名稱：{{ item.item }}
+                                </p>
+                                <p>故障描述：{{ item.item_desc }}</p>
+                                <p>通知時間：{{ item.note_time|date("Y-m-d") }}</p>
+                                <p>修繕進度：{{ item.item_status_name }}</p>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped bg-success progress-bar-animated"
+                                         role="progressbar" style="width: {{ (item.item_status)/4*100 }}%"></div>
+                                </div>
+                                <p></p>
+                                <p>承辦人：{{ item.admin_name }} &nbsp;&nbsp;&nbsp;&nbsp;分機：{{ item.admin_tel }} &nbsp;&nbsp;&nbsp;&nbsp;電子郵件：{{ item.admin_mail }}</p>
+                                <p>預計完成：{{ item.expect_time|date("Y-m-d") }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    完成時間：{{ item.expect_time|date("Y-m-d")|default('N/A') }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    {% if item.item_status == 0 %}
+                                        <a class="btn btn-secondary"
+                                           href="{{ path_for('repairEdit',{ 'id': item.id }) }}">
+                                            修改
+                                        </a>
+                                        <a class="btn btn-danger confirm"
+                                           href="{{ path_for('repairCancel',{ 'id': item.id }) }}">
+                                            取消報修
+                                        </a>
+                                    {% elseif item.item_status == 1 or item.item_status == 2 %}
+                                        <a class="btn btn-info" href="#">催件(留言)</a>
+                                    {% elseif item.item_status == 3 %}
+                                        <a class="btn btn-success"
+                                           href="{{ path_for('repairConfirmShow',{ 'id': item.id }) }}">確認完工&評價(建議)</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+            {% for item in items %}
+                {% if item.item_status != 4 %}
+                {% else %}
+                    <div class="col">
+                        <div class="card card-info card-outline collapsed-card my-2">
+                            <div class="card-header">
+                                <h3 class="card-title">維修案件 #{{ item.id }}</h3>
+                                <div class="card-tools">
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-widget="collapse"><i
+                                                    class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p>館別：{{ item.building }} &nbsp;&nbsp;&nbsp;&nbsp;房號：{{ item.location }}
+                                    &nbsp;&nbsp;&nbsp;&nbsp;物品名稱：{{ item.item }}
+                                </p>
+                                <p>故障描述：{{ item.item_desc }}</p>
+                                <p>通知時間：{{ item.note_time|date("Y-m-d") }}</p>
+                                <p>修繕進度：{{ item.item_status_name }}</p>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped bg-success progress-bar-animated"
+                                         role="progressbar" style="width: {{ (item.item_status)/4*100 }}%"></div>
+                                </div>
+                                <p></p>
+                                <p>承辦人：{{ item.admin_name }} &nbsp;&nbsp;&nbsp;&nbsp;分機：{{ item.admin_tel }} &nbsp;&nbsp;&nbsp;&nbsp;電子郵件：{{ item.admin_mail }}</p>
+                                <p>預計完成：{{ item.expect_time|date("Y-m-d") }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    完成時間：{{ item.expect_time|date("Y-m-d")|default('N/A') }}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+    </div>
+
+
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        $('.confirm').on('click', function (e) {
+            var href = $(this).attr('href');
+            e.preventDefault();
+            swal({
+                icon: "info",
+                title: "確定取消？",
+                buttons: {
+                    cancel: {
+                        visible: true,
+                        text: "取消",
+                    },
+                    confirm: {
+                        text: "確定",
+                        value: true,
+                        // closeModal: false,
+                    },
+                },
+            }).then((value) => {
+                if (value) {
+                    location.href = href;
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
