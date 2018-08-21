@@ -218,15 +218,32 @@ $app->group('/user', function ($app) {
         $repair = new Repair();
         $uid = $this->session->id;
         $status = $repair->userConfirm($args['id'], $uid, $confirmNotes, $evaluation, $evaluationNotes);
-        if($status){
+        if ($status) {
             $this->flash->addMessage('success', 'form send');
             return $response->withRedirect('/user/repair');
-        }else{
+        } else {
             $this->flash->addMessage('error', 'Invalid Request !');
             $uri = $request->getUri();
             return $response->withRedirect($uri->getPath());
         }
     })->setName('repairConfirm');
+
+    $app->post('/repair/call/{id}', function ($request, $response, $args) {
+        $repair = new Repair();
+        $call = $request->getParsedBody()['call'];
+        $id = $args['id'];
+        $callUser = $repair->readWorkSID($id);
+        $currentUser = $this->session->id;
+        if ($callUser != $currentUser) {
+            return $response->withJson(['status' => 'error']);
+        }
+        $status = $repair->userCall($id, $call);
+        if ($status) {
+            return $response->withJson(['status' => 'ok']);
+        } else {
+            return $response->withJson(['status' => 'error']);
+        }
+    })->setName('repairCall');
 
     $app->get('/repair/cancel/{id}', function ($request, $response, $args) {
         $repair = new Repair();
@@ -798,6 +815,13 @@ $app->group('/admin', function ($app) {
 
             return $this->view->render($response, '/admin/repair.category.twig', $data);
         })->setName('repairCategory');
+
+        $app->get('/calls/{id}', function ($request, $response, $args) {
+            $item = new Repair();
+            $calls = $item->readCall($args['id']);
+            return $response->withJson($calls);
+        })->setName('repairCallShow');
+
     });
 });
 
