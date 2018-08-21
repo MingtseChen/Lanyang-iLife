@@ -53,7 +53,7 @@
                                             取消報修
                                         </a>
                                     {% elseif item.item_status == 1 or item.item_status == 2 %}
-                                        <a class="btn btn-info" href="#">催件(留言)</a>
+                                        <a class="btn btn-info" id="call" data-id="{{ item.id }}" href="#">催件(留言)</a>
                                     {% elseif item.item_status == 3 %}
                                         <a class="btn btn-success"
                                            href="{{ path_for('repairConfirmShow',{ 'id': item.id }) }}">確認完工&評價(建議)</a>
@@ -134,6 +134,52 @@
                     location.href = href;
                 }
             });
+        });
+        // var input = document.createElement("input");
+        // input.className = "form-control";
+        $("#call").click(function () {
+            var id = $(this).data("id")
+            console.log($(this).data("id"));
+            swal({
+                title: '我要留言',
+                button: {
+                    text: "送出",
+                    closeModal: false,
+                },
+                content: {
+                    element: "input",
+                    attributes: {
+                        className: "form-control",
+                        type: "text",
+                    },
+                }
+            }).then((value) => {
+                if (!value) throw null;
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ base_url()~path_for('repairCall',{ 'id': '' }) }}" + id,
+                    data: "call=" + value,
+                    // success: success,
+                }).done(function (data) {
+                    console.log(data);
+                    if (data.status === 'ok') {
+                        swal("好的!", "我門將儘快處理!", "success");
+                    }
+                    else {
+                        swal("Oops!", "操作錯誤", "error");
+                    }
+                }).fail(function () {
+                    swal("Oops!", "請求失敗", "error");
+                });
+
+            }).catch(err => {
+                    if (err) {
+                        swal("Oops!", "請求失敗", "error");
+                    } else {
+                        swal.stopLoading();
+                        swal.close();
+                    }
+                });
         });
     </script>
 {% endblock %}

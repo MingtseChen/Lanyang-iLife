@@ -86,6 +86,25 @@ class Repair
         }
     }
 
+    public function userCall($workID, $desc)
+    {
+        try {
+            $data = ORM::forTable('repair_call')->create();
+            $data->call_content = $desc;
+            $data->repair_id = $workID;
+            $data->save();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function readWorkSID($workID)
+    {
+        $id = ORM::forTable('repair_item')->select('note_man')->findOne($workID);
+        return $id["note_man"];
+    }
+
     public function userConfirm($id, $uid, $confirmNotes, $evaluation, $evaluationNotes)
     {
         try {
@@ -231,12 +250,26 @@ class Repair
             $building = $items[$key]['building'];
             $category = $items[$key]['item_cat'];
             $state = $items[$key]['item_status'];
+            $id = $items[$key]['id'];
 
             $items[$key]['building'] = $this->getBuilding($building);
             $items[$key]['item_cat'] = $this->getCategory($category);
             $items[$key]['item_status_name'] = $this->getItemStatus($state);
+            $items[$key]['item_call'] = $this->getCall($id);
         }
         return $items;
+    }
+
+    public function getCall($itemID)
+    {
+        $count = ORM::forTable('repair_call')->where('repair_id', $itemID)->count();
+        return $count;
+    }
+
+    public function readCall($Item)
+    {
+        $call = ORM::forTable('repair_call')->where('repair_id', $Item)->findArray();
+        return $call;
     }
 
 
