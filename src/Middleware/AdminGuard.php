@@ -1,6 +1,6 @@
 <?php
 
-class RedirectIfAuth
+class AdminGuard
 {
     private $session;
 
@@ -14,9 +14,9 @@ class RedirectIfAuth
 
     public function __invoke($request, $response, $next)
     {
-        $isLogin = isset($this->session['uname']);
-        if ($isLogin) {
-            return $response->withRedirect('/');
+        $group = $this->session->group;
+        if ($group == -1) {
+            return $response->withRedirect('/', 403);
         }
         $response = $next($request, $response);
         return $response;

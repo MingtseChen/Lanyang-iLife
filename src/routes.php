@@ -10,21 +10,8 @@ include 'Models/PackageModel.php';
 include 'Models/RepairModel.php';
 include 'Plugins/Mail.php';
 include 'Plugins/Upload.php';
-
-//include 'Middleware/AdminSection.php';
-//include 'Middleware/RedirectIfAuth.php';
-
-//use Slim\Http\Request;
-//use Slim\Http\Response;
-
-// Routes
-
-//$app->get('/', function (Request $request, Response $response, array $args) {
-//    // Sample log message
-//    $this->logger->info("'/' route");
-//    // Render index view
-//    return $this->renderer->render($response, 'home.php', $args);
-//});
+include 'Middleware/Permission.php';
+include 'Middleware/AdminGuard.php';
 
 //Home
 $app->get('/', function ($request, $response, $args) {
@@ -267,7 +254,7 @@ $app->group('/user', function ($app) {
 
 });
 
-//iBus
+//Bus
 $app->group('/bus', function ($app) {
 
     $app->get('', function ($request, $response, $args) {
@@ -519,7 +506,7 @@ $app->group('/admin', function ($app) {
         })->setName('packageHistory');
 
 
-    });
+    })->add(new Permission('package'));
     //Bus Section
     $app->group('/bus', function ($app) {
         $app->get('', function ($request, $response, $args) {
@@ -587,7 +574,7 @@ $app->group('/admin', function ($app) {
 
             return $this->view->render($response, '/admin/bus.suspend.twig', $data);
         })->setName('busSuspend');
-    });
+    })->add(new Permission('bus'));
     //Admin Section
     $app->group('/users', function ($app) {
         $app->get('', function ($request, $response, $args) {
@@ -659,7 +646,7 @@ $app->group('/admin', function ($app) {
                 return $response->withRedirect('/admin/users/create');
             }
         })->setName('submitUser')->add(new \DavidePastore\Slim\Validation\Validation($validators));
-    });
+    })->add(new Permission('admin'));
     //Repair Section
     $app->group('/repair', function ($app) {
         $app->get('', function ($request, $response, $args) {
@@ -822,8 +809,8 @@ $app->group('/admin', function ($app) {
             return $response->withJson($calls);
         })->setName('repairCallShow');
 
-    });
-});
+    })->add(new Permission('repair'));
+})->add(new AdminGuard());
 
 //Console
 $app->post('/console', 'RunTracy\Controllers\RunTracyConsole:index');

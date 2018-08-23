@@ -1,11 +1,13 @@
 <?php
 // Application middleware
 include "Middleware/SSO.php";
-
 // e.g: $app->add(new \Slim\Csrf\Guard);
 
 //whoops support (should be first to inject with)
 $app->add(new \Zeuxisoo\Whoops\Provider\Slim\WhoopsMiddleware);
+
+//Debug bar
+$app->add(new RunTracy\Middlewares\TracyMiddleware($app));
 
 //SSO Login
 $app->add(new SSO());
@@ -16,7 +18,3 @@ $app->add(new \Slim\Middleware\Session([
     'autorefresh' => true,
     'lifetime' => '1 hour'
 ]));
-
-//Debug bar
-$app->add(new RunTracy\Middlewares\TracyMiddleware($app));
-
