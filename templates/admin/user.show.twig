@@ -101,11 +101,7 @@
                                                     class="fas fa-circle fa-xs"></i> Deactivate</span>
                                     {% endif %}
                                 </td>
-                                {% if user.role == 0 %}
-                                    <td>Superuser</td>
-                                {% else %}
-                                    <td>Admin</td>
-                                {% endif %}
+                                <td>{{ user.role_name }}</td>
                                 <td>{{ user.last_login|e }}</td>
                                 <td>{{ user.create_time|e }}</td>
                                 <td>
@@ -186,8 +182,9 @@
                         <div class="form-group">
                             <label for="role" class="col-form-label">User role</label>
                             <select class="form-control" name="role" id="role">
-                                <option value="0">Superuser</option>
-                                <option value="1">Admin</option>
+                                {% for role in roles %}
+                                    <option value="{{ role.id }}" {{ loop.first ? 'selected' }}>{{ role.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="form-group">

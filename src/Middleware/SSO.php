@@ -106,7 +106,6 @@ class SSO
         $this->session->set('name', trim($name, '　'));
         $this->session->set('ssoRole', $ssoRole);
         $this->session->set('group', $group);
-//        $this->session->set('group', 1);
     }
 
     public function updateAdminLogin($uid)

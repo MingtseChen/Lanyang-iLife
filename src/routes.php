@@ -588,6 +588,7 @@ $app->group('/admin', function ($app) {
                 'student_count' => $admin->statistic()[0],
                 'user_count' => $admin->statistic()[1],
                 'user_active' => $admin->statistic()[3],
+                'roles' => $admin->readAdminRoleList(),
             ];
             return $this->view->render($response, '/admin/user.show.twig', $data);
         })->setName('users');
