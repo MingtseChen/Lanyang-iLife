@@ -45,12 +45,12 @@ $container['view'] = function ($c) {
     return $view;
 };
 
-//slim flash
+//Slim flash
 $container['flash'] = function () {
     return new \Slim\Flash\Messages();
 };
 
-// database
+// Database
 ORM::configure($container->get('settings')['db']);
 
 //session
