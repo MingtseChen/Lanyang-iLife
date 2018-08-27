@@ -125,8 +125,8 @@ $app->group('/user', function ($app) {
         $item = $repair->readUserDetail($id, $uid);
         //check if user want to hack other's data
         if (empty($item)) {
-            $this->flash->addMessage('info', 'Bang! Gotcha !');
-            $this->flash->addMessage('error', 'Invalid Request !');
+            $this->flash->addMessage('info', 'Bang!');
+            $this->flash->addMessage('error', '抓到惹~');
             return $response->withRedirect('/user/repair');
         }
         $data = ['item' => $item[0], 'categories' => $category, 'buildings' => $buildings];
@@ -139,8 +139,8 @@ $app->group('/user', function ($app) {
         $itemUser = $repair->getItemUserID($args['id']);
         //validate edit user
         if ($itemUser != $currentUserID) {
-            $this->flash->addMessage('info', 'Bang! Gotcha !');
-            $this->flash->addMessage('error', 'Invalid Request !');
+            $this->flash->addMessage('info', 'Bang!');
+            $this->flash->addMessage('error', '抓到惹~');
             return $response->withRedirect('/user/repair');
         }
         //store data
@@ -171,10 +171,10 @@ $app->group('/user', function ($app) {
         $status = $repair->userEditRepair($args['id'], $building, $room, $item_cat, $item, $desc, $accompany, $confirm,
             $filename);
         if ($status) {
-            $this->flash->addMessage('success', 'form submitted');
+            $this->flash->addMessage('success', '資料已送出');
             return $response->withRedirect('/user/repair');
         } else {
-            $this->flash->addMessage('error', 'invalid operation');
+            $this->flash->addMessage('error', '資料有誤！');
             $uri = $request->getUri();
             return $response->withRedirect($uri->getPath());
         }
@@ -189,8 +189,8 @@ $app->group('/user', function ($app) {
 
         $item = $repair->readUserWork($uid, $id);
         if (empty($item)) {
-            $this->flash->addMessage('info', 'Bang! Gotcha !');
-            $this->flash->addMessage('error', 'Invalid Request !');
+            $this->flash->addMessage('info', 'Bang!');
+            $this->flash->addMessage('error', '抓到惹~');
             return $response->withRedirect('/user/repair');
         }
         $data = ['item' => $item[0]];
@@ -206,10 +206,10 @@ $app->group('/user', function ($app) {
         $uid = $this->session->id;
         $status = $repair->userConfirm($args['id'], $uid, $confirmNotes, $evaluation, $evaluationNotes);
         if ($status) {
-            $this->flash->addMessage('success', 'form send');
+            $this->flash->addMessage('success', '資料已送出');
             return $response->withRedirect('/user/repair');
         } else {
-            $this->flash->addMessage('error', 'Invalid Request !');
+            $this->flash->addMessage('error', '資料有誤 !');
             $uri = $request->getUri();
             return $response->withRedirect($uri->getPath());
         }
@@ -237,10 +237,10 @@ $app->group('/user', function ($app) {
         $id = $args['id'];
         $status = $repair->deleteUserItem($id);
         if ($status) {
-            $this->flash->addMessage('success', 'delete successful');
+            $this->flash->addMessage('success', '已取消報修');
             return $response->withRedirect('/user/repair');
         } else {
-            $this->flash->addMessage('error', 'invalid ');
+            $this->flash->addMessage('error', '資料有誤 !');
             return $response->withRedirect('/user/repair');
         }
     })->setName('repairCancel');
@@ -344,7 +344,7 @@ $app->group('/repair', function ($app) {
             if ($uploadStatus['status']) {
                 $filename = $uploadStatus['file_name'];
             } else {
-                $this->flash->addMessage('error', $uploadStatus['info']);
+                $this->flash->addMessage('error', "資料有誤!");
                 $uri = $request->getUri();
                 return $response->withRedirect($uri->getPath());
             }
@@ -353,14 +353,20 @@ $app->group('/repair', function ($app) {
         $status = $repair->createRepair($uid, $building, $room, $item_cat, $item, $desc, $accompany, $confirm,
             $filename);
         if ($status) {
-            $this->flash->addMessage('success', 'form submitted');
-            return $response->withRedirect('/');
+            $this->flash->addMessage('success', '資料已送出，將儘快處理');
+            return $response->withRedirect('/repair');
         } else {
-            $this->flash->addMessage('error', 'invalid operation');
+            $this->flash->addMessage('error', '資料有誤！');
             $uri = $request->getUri();
             return $response->withRedirect($uri->getPath());
         }
     })->setName('repairSubmit');
+
+    $app->get('/static', function ($request, $response, $args) {
+        $repair = new Repair();
+        $items = $repair->readAllWork();
+        return $this->view->render($response, '/repair/static.twig', ['items' => $items]);
+    })->setName('repairStatic');
 });
 
 //Login

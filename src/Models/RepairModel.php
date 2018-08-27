@@ -58,7 +58,6 @@ class Repair
             $repairItem->request_need_accompany = $accompany;
             $repairItem->request_need_confirm = $confirm;
             $repairItem->photo = $filename;
-            $repairItem->item_calls = 0;
             $repairItem->save();
             return true;
         } catch (Exception $e) {
@@ -78,7 +77,6 @@ class Repair
             $repairItem->request_need_accompany = $accompany;
             $repairItem->request_need_confirm = $confirm;
             $repairItem->photo = $filename;
-            $repairItem->item_calls = 0;
             $repairItem->save();
             return true;
         } catch (Exception $e) {
@@ -272,5 +270,19 @@ class Repair
         return $call;
     }
 
+    public function readAllWork()
+    {
+        $items = ORM::forTable('repair_item')->whereNotEqual('item_status', '99')->findArray();
+        foreach ($items as $key => $item) {
+            $building = $items[$key]['building'];
+            $category = $items[$key]['item_cat'];
+            $state = $items[$key]['item_status'];
+
+            $items[$key]['building'] = $this->getBuilding($building);
+            $items[$key]['item_cat'] = $this->getCategory($category);
+            $items[$key]['item_status_name'] = $this->getItemStatus($state);
+        }
+        return $items;
+    }
 
 }
