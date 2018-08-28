@@ -12,6 +12,7 @@ include 'Plugins/Mail.php';
 include 'Plugins/Upload.php';
 include 'Middleware/Permission.php';
 include 'Middleware/AdminGuard.php';
+include 'Middleware/BusTimeRestriction.php';
 
 //Home
 $app->get('/', function ($request, $response, $args) {
@@ -96,12 +97,7 @@ $app->group('/user', function ($app) {
         $action = $request->getParsedBody()['sign'];
         if ((bool)$action) {
             $id = $request->getParsedBody()['id'];
-            $status = $package->signPackage($name, $id);
-            if ($status) {
-                $this->flash->addMessage('success', 'operation success !');
-            } else {
-                $this->flash->addMessage('error', 'Invalid operation !');
-            }
+            $package->signPackage($name, $id);
         }
 
         return $response->withRedirect('/user/package');
@@ -256,51 +252,30 @@ $app->group('/user', function ($app) {
 
 //Bus
 $app->group('/bus', function ($app) {
-
     $app->get('', function ($request, $response, $args) {
-        return $this->view->render($response, '/bus/search.twig');
-    })->setName('busIndex');
-
-    $app->get('/search', function ($request, $response, $args) {
-        $from = $request->getQueryParams()['from'];
-        $date = $request->getQueryParams()['date'];
         $bus = new Bus();
-        $schedule = ['schedules' => $bus->find($from, $date)];
-        $uid = $this->session->id;
+        $data = $bus->getWeekSchedule();
+        return $this->view->render($response, '/bus/search.twig', ['schedules' => $data]);
+    })->setName('busIndex')->add(new BusTimeRestriction());
 
+    $app->post('', function ($request, $response, $args) {
+        $bus = new Bus();
+        $uid = $this->session->id;
+        $uname = $this->session->name;
+        $busID = $request->getParsedBody()["bus"];
+        //suspend list check
         if ($bus->isSuspend($uid)) {
             return $response->withRedirect('/bus/status?action=fail&status=suspend');
-        } else {
-            if (empty($schedule['schedules'])) {
-                return $response->withRedirect('/bus/status?action=false&status=null');
-            }
         }
-        return $this->view->render($response, '/bus/reserve.twig', $schedule);
-    })->setName('busSearch');
 
-    $app->post('/reserve', function ($request, $response, $args) {
-        $post = $request->getParsedBody();
-        $bus = new Bus();
-        $uid = $this->session->id;
-        $name = $this->session->name;
-
-        if (!isset($post['schedule'])) {
-            return $response->withRedirect('/bus/status?status=null');
-        } else {
-            $status = $bus->reserve($post['schedule'], $uid, $name, $post['dept'], $post['room']);
-            $student = new Student();
-            $email = $student->fetch($uid)->getPrimaryMail();
-            $mail = new Mail();
-            $mail->busReserveConfirm($email);
-        }
+        $status = $bus->reserve($uid, $uname, $busID);
         if ($status) {
-            return $response->withRedirect('/bus/status?action=success');
+            return "success";
         } else {
-            return $response->withRedirect('/bus/status?action=fail');
+            return "error";
         }
-
-    })->setName('busReserve');
-
+//        return $this->view->render($response, '/bus/search.twig', ['schedules' => $data]);
+    })->setName('busIndex')->add(new BusTimeRestriction());
     $app->get('/status', function ($request, $response, $args) {
 //        $result = $request->getQueryParams()['action'];
         return $this->view->render($response, '/bus/status.twig');
@@ -385,7 +360,7 @@ $app->group('/login', function ($app) {
 //Logout
 $app->get('/logout', function ($request, $response, $args) {
     $this->session::destroy();
-    return $response->withRedirect('/');
+    return $response->withRedirect('http://sso.tku.edu.tw/pkmslogout', 301);
 })->setName('logout');
 
 //Admin
@@ -430,7 +405,8 @@ $app->group('/admin', function ($app) {
 
             $data = $request->getParsedBody();
             $package = new Package();
-            $status = $package->createPackage($data['rcp'], $data['cat'], $data['strg'], $data['pid'], $data['time']);
+            $status = $package->createPackage($data['rcp'], $data['cat'], $data['strg'], $data['pid'],
+                $data['time']);
             if ($status) {
                 $uid = $this->session->id;
                 $email = $student->fetch($uid)->getPrimaryMail();
