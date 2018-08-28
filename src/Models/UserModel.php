@@ -1,7 +1,6 @@
 <?php
 
 //namespace App\Models;
-use Carbon\Carbon;
 
 class User
 {
@@ -24,6 +23,12 @@ class User
         } else {
             return true;
         }
+    }
+
+    public function readAdminRoleList()
+    {
+        $list = ORM::forTable('user_role')->findArray();
+        return $list;
     }
 
     public function updateAdmin($id, $active, $role)
@@ -55,7 +60,17 @@ class User
         $row = $table->selectMany('user_group.id', 'user_group.uid', 'active', 'role', 'create_time',
             'user_group.last_login', 'students.name');
         $data = $row->leftOuterJoin('students', array('user_group.uid', '=', 'students.uname'))->find_array();
+        foreach ($data as $key => $value) {
+            $role = $data[$key]['role'];
+            $data[$key]['role_name'] = $this->getRole($role);
+        }
         return $data;
+    }
+
+    public function getRole($role)
+    {
+        $role = ORM::forTable('user_role')->select('name')->findOne($role);
+        return $role['name'];
     }
 
     public function statistic()

@@ -1,0 +1,62 @@
+{% extends "/layouts/user.twig" %}
+{% block title %}iRepair{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-info card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">報修統計</h3>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <table id="userTable" class="table table-hover compact nowrap" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>編號</th>
+                                <th>分類</th>
+                                <th>館別</th>
+                                <th>房號</th>
+                                <th>物品名稱</th>
+                                <th>故障描述</th>
+                                <th>狀態</th>
+                                <th>報修時間</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in items %}
+                                <tr>
+                                    <td>{{ item.id }}</td>
+                                    <td>{{ item.item_cat }}</td>
+                                    <td>{{ item.building }}</td>
+                                    <td>{{ item.location|truncate(5) }}</td>
+                                    <td>{{ item.item|truncate(5) }}</td>
+                                    <td>{{ item.item_desc|truncate(15) }}</td>
+                                    <td>{{ item.item_status_name }}</td>
+                                    <td>{{ item.note_time|date("Y-m-d") }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            $('[id=userTable]').DataTable({
+                "order": [[0, 'desc']],
+                responsive: true,
+                "paging": true,
+                // "lengthChange": false,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "pageLength": 10,
+                "lengthMenu": [10, 15, 20, 50]
+            });
+        });
+    </script>
+{% endblock %}

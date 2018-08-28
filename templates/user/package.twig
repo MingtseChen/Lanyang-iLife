@@ -1,20 +1,13 @@
-{# TODO: Add expand effect on admin login form #}
-
 {% extends "/layouts/user.twig" %}
 {% block title %}User Dashboard{% endblock %}
 
 
 {% block content %}
     <div class="row">
-        <div class="col-md-3">
-            {% include("partials/user.menu.twig") %}
-
-            <!-- /.card -->
-        </div>
-        <div class="col-md-9">
+        <div class="col-md-12">
             <div class="card card-outline card-info animated fadeInDown">
                 <div class="card-header d-flex p-0">
-                    <h3 class="card-title p-3">My Packages</h3>
+                    <h3 class="card-title p-3">我的包裹</h3>
                     <ul class="nav nav-pills ml-auto p-2">
                         <li class="nav-item"><a class="nav-link active show" href="#tab_1" data-toggle="tab">未領包裹</a>
                         </li>
@@ -44,10 +37,10 @@
                                         <td>{{ package.pid }}</td>
                                         <td>{{ package.timestamp_arrive|date("Y-m-d H:i") }}</td>
                                         <td>
-                                            <a class="mx-1" style="color: #00a65a" href="#" data-toggle="modal"
-                                               data-placement="top" data-target="#delete"
-                                               title="簽收" id="seleteId" data-pkg-id="{{ package.id }}"><i
-                                                        class="fas fa-check-double"></i></a>
+                                            <button type="button" class="btn btn-success btn-sm" id="sign"
+                                                    data-id="{{ package.id }}">
+                                                簽收
+                                            </button>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -80,50 +73,43 @@
                         </div>
                     </div>
                 </div>
-                <!-- /.card-body -->
-            </div>
-        </div>
-        <!-- /.col -->
-    </div>
-    <!-- /.row -->
-    <!-- Delete Modal -->
-    <div class="modal fade" id="delete" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body mx-auto">
-                    <div class="row">
-                        <div class="col text-center">
-                            <i class="fas fa-check-double fa-7x m-md-4" style="color: #00a65a"></i>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">確定簽收?</div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="mx-auto">
-                        <form method="post">
-                            <input type="hidden" name="sign" value="true">
-                            <input type="hidden" id="id" name="id">
-                            <button type="button" class="btn btn-flat btn-secondary" data-dismiss="modal">取消
-                            </button>
-                            <button type="submit" class="btn btn-flat btn-success">簽收</button>
-                        </form>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
-
 {% endblock %}
 {% block scripts %}
     <script>
-        var pid;
-        $("a#seleteId").click(function () {
-            pid = $(this).data("pkg-id")
-        });
-        $('#delete').on('show.bs.modal', function (e) {
-            $("input#id").val(pid);
+        $('[id=sign]').click(function () {
+            swal({
+                title: "確定簽收",
+                icon: "info",
+                buttons: {
+                    cancel: "取消",
+                    yes: {
+                        text: "確定",
+                        value: true,
+                        closeModal: false,
+                    },
+                },
+                dangerMode: true,
+            }).then((value) => {
+                if (value) {
+                    var id = $(this).data('id');
+                    $.post(window.location, {sign: true, id: id}).done(function () {
+                        swal({
+                            title: "已簽收",
+                            icon: "success",
+                        }).then(function () {
+                                location.reload();
+                            }
+                        );
+                    }).fail(function () {
+                        swal("系統錯誤", {
+                            icon: "error",
+                        });
+                    });
+                }
+            });
         });
     </script>
 {% endblock %}

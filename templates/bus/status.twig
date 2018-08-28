@@ -1,50 +1,38 @@
-{# TODO: Add expand effect on admin login form #}
-
-{% extends "/layouts/bus.twig" %}
+{% extends "/layouts/user.twig" %}
 {% block title %}iBus{% endblock %}
-
-{% block page_title %}Bus info{% endblock %}
-
+{% block page_title %}{% endblock %}
 {% block content %}
-<!-- SmartWizard html -->
-<div class="row animated fadeInDown">
-    <div class="col-lg-6 offset-lg-3">
-        {% if _get.action == 'success' %}
-        <div class="card card-success card-outline">
-            {% else %}
+    <div class="row animated fadeInDown">
+        <div class="col-lg-6 offset-lg-3">
             <div class="card card-danger card-outline">
-                {% endif %}
                 <div class="card-header">
-                    <h3 class="card-title">{% if _get.action == 'success' %}Success{% else %}Warning {% endif %}</h3>
+                    <h3 class="card-title">警告</h3>
                 </div>
                 <div class="card-body">
-                    {% if _get.action == 'success' %}
-                        A reservation has been confirmed
-                        <div class="m3 justify-content-center">
-                            <a class="btn btn-success m-3 float-right" href="{{ path_for('home') }}">Return</a>
+                    {% if _get.status == 'null' %}
+                        目前系統無車班資料
+                        <div class="m3">
+                            <a class="btn btn-default m-3 float-right" href="{{ path_for('home') }}">返回</a>
+                        </div>
+                    {% elseif _get.status == 'suspend' %}
+                        您目前已被停權，詳情請聯繫系統管理員
+                        <div class="m3">
+                            <a class="btn btn-default m-3 float-right" href="{{ path_for('home') }}">返回</a>
+                        </div>
+                    {% elseif _get.status == 'close' %}
+                        目前系統暫時關閉中
+                        <div class="m3">
+                            <a class="btn btn-default m-3 float-right" href="{{ path_for('home') }}">返回</a>
                         </div>
                     {% else %}
-                        {% if _get.status == 'null' %}
-                            No schedule found
-                            <div class="m3 justify-content-center">
-                                <a class="btn btn-default m-3 float-right" href="{{ path_for('busIndex') }}">Return</a>
-                            </div>
-                        {% elseif _get.status == 'suspend' %}
-                            Your account has been suspended due to violation of regulations,please contact web admin.
-                            <div class="m3 justify-content-center">
-                                <a class="btn btn-default m-3 float-right" href="{{ path_for('busIndex') }}">Return</a>
-                            </div>
-                        {% else %}
-                            An error occur during process, please try again
-                            <div class="m3 justify-content-center">
-                                <a class="btn btn-danger m-3 float-right" href="{{ path_for('busIndex') }}">Return</a>
-                            </div>
-                        {% endif %}
+                        系統錯誤
+                        <div class="m3">
+                            <a class="btn btn-danger m-3 float-right" href="{{ path_for('home') }}">返回</a>
+                        </div>
                     {% endif %}
                 </div>
-                <!-- /.card-body -->
             </div>
         </div>
     </div>
-    {% endblock %}
+{% endblock %}
 
