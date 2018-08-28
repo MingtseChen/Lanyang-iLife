@@ -18,7 +18,7 @@
     {% endif %}
     <div class="card">
         <div class="card-body login-card-body">
-            <p class="login-box-msg">Sign in to start your session</p>
+            <p class="login-box-msg">請先登入</p>
             {#fix fontawsome confict with original css#}
             {#<form action="{{ path_for('loginAuth') }}" method="post">#}
                 {#<div class="input-group mb-3">#}
@@ -56,14 +56,14 @@
             <div class="social-auth-links text-center m-3">
                 {#<p>- OR -</p>#}
                 <a href="https://sso.tku.edu.tw/ilifelytest" class="btn btn-block btn-info">
-                    <i class="fas fa-sign-in-alt mr-2"></i> Sign in using TKU SSO
+                    <i class="fas fa-sign-in-alt mr-2"></i>使用TKU SSO登入(淡江單一登入)
                 </a>
             </div>
             <!-- /.social-auth-links -->
 
-            <p class="mb-1">
-                <a href="{{ path_for('recover') }}">I forgot my password</a>
-            </p>
+            {#<p class="mb-1">#}
+                {#<a href="{{ path_for('recover') }}"></a>#}
+            {#</p>#}
         </div>
         <!-- /.login-card-body -->
     </div>

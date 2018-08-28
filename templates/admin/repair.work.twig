@@ -34,7 +34,7 @@
                                     <th>故障描述</th>
                                     <th>催件</th>
                                     <th>報修時間</th>
-                                    <th>操作</th>
+                                    <th class="all">操作</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -47,12 +47,16 @@
                                         <td>{{ item.location }}</td>
                                         <td>{{ item.item }}</td>
                                         <td>{{ item.item_desc|truncate(5) }}</td>
-                                        <td>{{ item.item_calls|default(0) }}</td>
+                                        <td>{{ item.item_call|default(0) }}</td>
                                         <td>{{ item.note_time|date("Y-m-d") }}</td>
                                         <td>
                                             <a class="btn btn-outline-info btn-sm"
                                                href="{{ path_for('repairSign',{ 'id': item.id }) }}">
                                                 簽收/編輯
+                                            </a>
+                                            <a class="btn btn-outline-success btn-sm" href="#" id="call"
+                                               data-id="{{ item.id }}">
+                                                訊息
                                             </a>
                                         </td>
                                     </tr>
@@ -75,7 +79,7 @@
                                     <th>催件</th>
                                     <th>報修時間</th>
                                     <th>預計完成</th>
-                                    <th>操作</th>
+                                    <th class="all">操作</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -89,7 +93,7 @@
                                         <td>{{ item.item }}</td>
                                         <td>{{ item.item_status_name }}</td>
                                         <td>{{ item.item_desc|truncate(5) }}</td>
-                                        <td>{{ item.item_calls|default(0) }}</td>
+                                        <td>{{ item.item_call|default(0) }}</td>
                                         <td>{{ item.note_time|date("Y-m-d") }}</td>
                                         <td>{{ item.expect_time|date("Y-m-d")|default('N/A') }}</td>
                                         <td>
@@ -104,7 +108,10 @@
                                                     申報完工
                                                 </a>
                                             {% endif %}
-
+                                            <a class="btn btn-outline-success btn-sm" href="#" data-id="{{ item.id }} "
+                                               id="call">
+                                                訊息
+                                            </a>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -126,7 +133,7 @@
                                     <th>報修時間</th>
                                     <th>預計完成</th>
                                     <th>完成時間</th>
-                                    <th>操作</th>
+                                    <th class="all">操作</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -166,10 +173,11 @@
                                     <th>物品名稱</th>
                                     <th>滿意度</th>
                                     <th>故障描述</th>
+                                    <th>催件</th>
                                     <th>報修時間</th>
                                     <th>預計完成</th>
                                     <th>完成時間</th>
-                                    <th>操作</th>
+                                    <th class="all">操作</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -195,6 +203,7 @@
                                                 非常不滿意
                                             {% endif %}</td>
                                         <td>{{ item.item_desc|truncate(5) }}</td>
+                                        <td>{{ item.item_call|default(0) }}</td>
                                         <td>{{ item.note_time|date("Y-m-d") }}</td>
                                         <td>{{ item.expect_time|date("Y-m-d")|default('N/A') }}</td>
                                         <td>{{ item.expect_time|date("Y-m-d") }}</td>
@@ -202,6 +211,10 @@
                                             <a class="btn btn-outline-warning btn-sm"
                                                href="{{ path_for('repairResult',{ 'id': item.id }) }}">
                                                 查看
+                                            </a>
+                                            <a class="btn btn-outline-success btn-sm" href="#" data-id="{{ item.id }}"
+                                               id="call">
+                                                訊息
                                             </a>
                                         </td>
                                     </tr>
@@ -231,6 +244,32 @@
                 "info": true,
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 15]
+            });
+            $("a[id=call]").click(function () {
+                var id = $(this).data("id");
+                el = document.createElement('table');
+               $(el).addClass('table table-hover').append("<tbody></tbody>");
+                console.log(id);
+                $.ajax({
+                    type: 'GET',
+                    url: "{{ base_url()~path_for('repairCallShow',{ 'id': '' }) }}" + id,
+                    // data: "call=" + value,
+                    // success: success,
+                }).done(function (data) {
+                    $.each(eval(data), function(key, value) {
+                        console.log(value.call_content+":"+value.call_time);
+                        var row = $('<tr></tr>').appendTo(el);
+                        $('<td></td>').text(value.call_content).appendTo(row);
+                        $('<td></td>').text(value.call_time).appendTo(row);
+                    });
+                    swal({
+                            content:{
+                                element:el
+                            }
+                        });
+                }).fail(function () {
+                    swal("Oops!", "請求失敗", "error");
+                });
             });
         });
     </script>

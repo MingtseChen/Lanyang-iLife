@@ -1,6 +1,6 @@
 {% extends "/layouts/user.twig" %}
-{% block title %}User Dashboard{% endblock %}
-
+{% block title %}iRepair{% endblock %}
+{% block page_title %}我的報修{% endblock %}
 {% block content %}
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -33,13 +33,20 @@
                                 <p>通知時間：{{ item.note_time|date("Y-m-d") }}</p>
                                 <p>修繕進度：{{ item.item_status_name }}</p>
                                 <div class="progress">
-                                    <div class="progress-bar progress-bar-striped bg-success progress-bar-animated"
+                                    <div class="progress-bar progress-bar-striped bg-warning progress-bar-animated"
                                          role="progressbar" style="width: {{ (item.item_status)/4*100 }}%"></div>
                                 </div>
                                 <p></p>
                                 <p>承辦人：{{ item.admin_name }} &nbsp;&nbsp;&nbsp;&nbsp;分機：{{ item.admin_tel }} &nbsp;&nbsp;&nbsp;&nbsp;電子郵件：{{ item.admin_mail }}</p>
-                                <p>預計完成：{{ item.expect_time|date("Y-m-d") }}&nbsp;&nbsp;&nbsp;&nbsp;
-                                    完成時間：{{ item.expect_time|date("Y-m-d")|default('N/A') }}</p>
+                                <p>
+                                    {% if item.expect_time %}
+                                        預計完成：{{ item.expect_time|date("Y-m-d") }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                        完成時間：{{ item.ok_time|date("Y-m-d") }}
+                                    {% else %}
+                                        預計完成：{{ item.expect_time|default('N/A') }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                        完成時間：{{ item.ok_time|default('N/A') }}
+                                    {% endif %}
+                                </p>
                             </div>
                             <div class="card-footer">
                                 <div class="float-right">
@@ -53,7 +60,7 @@
                                             取消報修
                                         </a>
                                     {% elseif item.item_status == 1 or item.item_status == 2 %}
-                                        <a class="btn btn-info" href="#">催件(留言)</a>
+                                        <a class="btn btn-info" id="call" data-id="{{ item.id }}" href="#">催件(留言)</a>
                                     {% elseif item.item_status == 3 %}
                                         <a class="btn btn-success"
                                            href="{{ path_for('repairConfirmShow',{ 'id': item.id }) }}">確認完工&評價(建議)</a>
@@ -96,7 +103,7 @@
                                 <p></p>
                                 <p>承辦人：{{ item.admin_name }} &nbsp;&nbsp;&nbsp;&nbsp;分機：{{ item.admin_tel }} &nbsp;&nbsp;&nbsp;&nbsp;電子郵件：{{ item.admin_mail }}</p>
                                 <p>預計完成：{{ item.expect_time|date("Y-m-d") }}&nbsp;&nbsp;&nbsp;&nbsp;
-                                    完成時間：{{ item.expect_time|date("Y-m-d")|default('N/A') }}</p>
+                                    完成時間：{{ item.ok_time|date("Y-m-d")|default('N/A') }}</p>
                             </div>
                         </div>
 
@@ -132,6 +139,52 @@
             }).then((value) => {
                 if (value) {
                     location.href = href;
+                }
+            });
+        });
+        // var input = document.createElement("input");
+        // input.className = "form-control";
+        $("#call").click(function () {
+            var id = $(this).data("id")
+            console.log($(this).data("id"));
+            swal({
+                title: '我要留言',
+                button: {
+                    text: "送出",
+                    closeModal: false,
+                },
+                content: {
+                    element: "input",
+                    attributes: {
+                        className: "form-control",
+                        type: "text",
+                    },
+                }
+            }).then((value) => {
+                if (!value) throw null;
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ base_url()~path_for('repairCall',{ 'id': '' }) }}" + id,
+                    data: "call=" + value,
+                    // success: success,
+                }).done(function (data) {
+                    console.log(data);
+                    if (data.status === 'ok') {
+                        swal("好的!", "我門將儘快處理!", "success");
+                    }
+                    else {
+                        swal("Oops!", "操作錯誤", "error");
+                    }
+                }).fail(function () {
+                    swal("Oops!", "請求失敗", "error");
+                });
+
+            }).catch(err => {
+                if (err) {
+                    swal("Oops!", "請求失敗", "error");
+                } else {
+                    swal.stopLoading();
+                    swal.close();
                 }
             });
         });

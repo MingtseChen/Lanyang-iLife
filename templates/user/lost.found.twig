@@ -1,24 +1,15 @@
-{# TODO: Add expand effect on admin login form #}
-
 {% extends "/layouts/user.twig" %}
 {% block title %}User Dashboard{% endblock %}
-
-
 {% block content %}
     <div class="row">
-        <div class="col-md-3">
-            {% include("partials/user.menu.twig") %}
-
-            <!-- /.card -->
-        </div>
-        <div class="col-md-9">
+        <div class="col">
             <div class="card card-outline card-info animated fadeInDown">
                 <div class="card-header">
                     <h3 class="card-title">招領包裹</h3>
                 </div>
 
-                <div class="card-body  table-responsive">
-                    <table class="table table-hover" id="package">
+                <div class="card-body">
+                    <table class="table table-hover dt-responsive nowrap" id="package">
                         <thead>
                         <tr>
                             <th>#</th>
@@ -53,13 +44,14 @@
 {% block scripts %}
     <script>
         $('#package').DataTable({
+            responsive: true,
             "paging": true,
             // "lengthChange": false,
             "searching": true,
             "ordering": true,
             "info": true,
-            "pageLength": 5,
-            "lengthMenu": [5, 10, 15]
+            "pageLength": 10,
+            "lengthMenu": [10, 15, 20]
         });
     </script>
 {% endblock %}

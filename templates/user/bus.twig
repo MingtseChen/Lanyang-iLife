@@ -1,32 +1,30 @@
-{# TODO: Add expand effect on admin login form #}
-
 {% extends "/layouts/user.twig" %}
 {% block title %}User Dashboard{% endblock %}
 
 
 {% block content %}
     <div class="row">
-        <div class="col-md-3">
-            {% include("partials/user.menu.twig") %}
+        {#<div class="col-md-3">#}
+            {#{% include("partials/user.menu.twig") %}#}
 
-            <!-- /.card -->
-        </div>
-        <div class="col-md-9">
+            {#<!-- /.card -->#}
+        {#</div>#}
+        <div class="col-md-12">
             <div class="card card-outline card-info animated fadeInDown">
                 <div class="card-header">
-                    <h3 class="card-title">My Reservations</h3>
+                    <h3 class="card-title">我的預約</h3>
                 </div>
 
                 <div class="card-body  table-responsive">
                     <table class="table table-hover">
                         <tbody>
                         <tr>
-                            <th>Destination</th>
-                            <th>Departure</th>
-                            <th>Capacity</th>
-                            <th>Reservation</th>
-                            <th>Description</th>
-                            <th>Action</th>
+                            <th>路線</th>
+                            <th>出發時間</th>
+                            <th>座位</th>
+                            <th>是否需要預約</th>
+                            <th>備註</th>
+                            <th>操作</th>
                         </tr>
                         {% for bus in buses %}
                             <tr>

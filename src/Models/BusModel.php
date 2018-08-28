@@ -4,11 +4,35 @@ use Carbon\Carbon;
 
 class Bus
 {
-//    private $flash;
-
-    public function __construct()
+    public function getWeekSchedule()
     {
-        Carbon::now('Asia/Taipei');
+        //sunday will be the first day of the week
+        //add 10 minute for the policy 'can not reserve seats 60 min before departure'
+        $now = Carbon::now('Asia/Taipei')->addMinutes(60);
+        $endOfWeek = Carbon::now('Asia/Taipei')->endOfWeek();
+        $whereClause = 'departure_time BETWEEN \'' . $now . '\' AND \'' . $endOfWeek . '\'';
+        //find schedule in given range
+        $time = ORM::forTable('bus_schedule')->where_raw($whereClause);
+        //find opened schedule
+        $buses = $time->whereGte('departure_time', $now)->findArray();
+        foreach ($buses as $key => $bus) {
+            $id = $buses[$key]['id'];
+            $buses[$key]['reserved_seats'] = $this->getRemainSeats($id);
+            if ((int)$buses[$key]['capacity'] - (int)$this->getRemainSeats($id) == 0) {
+                $buses[$key]['can_reserve'] = false;
+            }
+            if ((int)$buses[$key]['capacity'] - (int)$this->getRemainSeats($id) == 0) {
+                $buses[$key]['can_reserve'] = true;
+            }
+
+        }
+        return $buses;
+    }
+
+    public function getRemainSeats($id)
+    {
+        $count = ORM::forTable('bus_reserve')->where(['bus_id' => $id])->count();
+        return $count;
     }
 
     public function getSchedule()
@@ -52,28 +76,28 @@ class Bus
         $bus->save();
     }
 
-    public function find($from, $date)
-    {
-        try {
-            $setStartDay = Carbon::parse($date);
-            $setEndDay = Carbon::parse($date)->addHours(24);
-            if ($setStartDay->isToday()) {
-                $setStartDay = Carbon::now();
-            }
-            $query = "`type` = " . $from . " AND `departure_time` BETWEEN '" . $setStartDay . "' AND '" . $setEndDay . "'";
-            $schedule = ORM::forTable('bus_schedule')->whereRaw($query)->findArray();
-            return $schedule;
-        } catch (Exception $e) {
-            var_dump($e);
-            return false;
-        }
+//    public function find($from, $date)
+//    {
+//        try {
+//            $setStartDay = Carbon::parse($date);
+//            $setEndDay = Carbon::parse($date)->addHours(24);
+//            if ($setStartDay->isToday()) {
+//                $setStartDay = Carbon::now();
+//            }
+//            $query = "`type` = " . $from . " AND `departure_time` BETWEEN '" . $setStartDay . "' AND '" . $setEndDay . "'";
+//            $schedule = ORM::forTable('bus_schedule')->whereRaw($query)->findArray();
+//            return $schedule;
+//        } catch (Exception $e) {
+//            var_dump($e);
+//            return false;
+//        }
+//
+//    }
 
-    }
-
-    public function reserve($busId, $uid, $name, $dept, $room)
+    public function reserve($uid, $name, $busId)
     {
         if ($this->checkBusStatus($busId, $uid)) {
-            $this->create($busId, $uid, $name, $dept, $room);
+            $this->create($uid, $name, $busId);
             return true;
         } else {
             return false;
@@ -84,14 +108,15 @@ class Bus
     public function checkBusStatus($busId, $uid)
     {
         $capacity = ORM::forTable('bus_schedule')->select('capacity')->where('id', $busId)->find_array();
-        $reserveCount = ORM::forTable('bus_reserve')->where('id', $busId)->count();
+        $reserveCount = ORM::forTable('bus_reserve')->where('bus_id', $busId)->count();
         $duplicate = ORM::forTable('bus_reserve')->where(['bus_id' => $busId, 'uid' => $uid])->count();
 
         if ($duplicate > 1 || $this->isSuspend($uid)) {
 //            $this->flash->addMessage('error', 'You have already reserve this bus');
             return false;
         } else {
-            if ((int)$capacity[0] > $reserveCount) {
+            $capacity = (int)$capacity[0]['capacity'];
+            if ($capacity > $reserveCount) {
                 return true;
             } else {
                 return false;
@@ -111,14 +136,12 @@ class Bus
         }
     }
 
-    private function create($busId, $uid, $name, $dept, $room)
+    private function create($uid, $name, $busId)
     {
         $user = ORM::forTable('bus_reserve')->create();
         $user->bus_id = $busId;
         $user->uid = $uid;
         $user->username = $name;
-        $user->department = $dept;
-        $user->dorm_no = $room;
         $user->save();
     }
 

@@ -10,21 +10,9 @@ include 'Models/PackageModel.php';
 include 'Models/RepairModel.php';
 include 'Plugins/Mail.php';
 include 'Plugins/Upload.php';
-
-//include 'Middleware/AdminSection.php';
-//include 'Middleware/RedirectIfAuth.php';
-
-//use Slim\Http\Request;
-//use Slim\Http\Response;
-
-// Routes
-
-//$app->get('/', function (Request $request, Response $response, array $args) {
-//    // Sample log message
-//    $this->logger->info("'/' route");
-//    // Render index view
-//    return $this->renderer->render($response, 'home.php', $args);
-//});
+include 'Middleware/Permission.php';
+include 'Middleware/AdminGuard.php';
+include 'Middleware/BusTimeRestriction.php';
 
 //Home
 $app->get('/', function ($request, $response, $args) {
@@ -109,12 +97,7 @@ $app->group('/user', function ($app) {
         $action = $request->getParsedBody()['sign'];
         if ((bool)$action) {
             $id = $request->getParsedBody()['id'];
-            $status = $package->signPackage($name, $id);
-            if ($status) {
-                $this->flash->addMessage('success', 'operation success !');
-            } else {
-                $this->flash->addMessage('error', 'Invalid operation !');
-            }
+            $package->signPackage($name, $id);
         }
 
         return $response->withRedirect('/user/package');
@@ -138,8 +121,8 @@ $app->group('/user', function ($app) {
         $item = $repair->readUserDetail($id, $uid);
         //check if user want to hack other's data
         if (empty($item)) {
-            $this->flash->addMessage('info', 'Bang! Gotcha !');
-            $this->flash->addMessage('error', 'Invalid Request !');
+            $this->flash->addMessage('info', 'Bang!');
+            $this->flash->addMessage('error', '抓到惹~');
             return $response->withRedirect('/user/repair');
         }
         $data = ['item' => $item[0], 'categories' => $category, 'buildings' => $buildings];
@@ -152,8 +135,8 @@ $app->group('/user', function ($app) {
         $itemUser = $repair->getItemUserID($args['id']);
         //validate edit user
         if ($itemUser != $currentUserID) {
-            $this->flash->addMessage('info', 'Bang! Gotcha !');
-            $this->flash->addMessage('error', 'Invalid Request !');
+            $this->flash->addMessage('info', 'Bang!');
+            $this->flash->addMessage('error', '抓到惹~');
             return $response->withRedirect('/user/repair');
         }
         //store data
@@ -184,10 +167,10 @@ $app->group('/user', function ($app) {
         $status = $repair->userEditRepair($args['id'], $building, $room, $item_cat, $item, $desc, $accompany, $confirm,
             $filename);
         if ($status) {
-            $this->flash->addMessage('success', 'form submitted');
+            $this->flash->addMessage('success', '資料已送出');
             return $response->withRedirect('/user/repair');
         } else {
-            $this->flash->addMessage('error', 'invalid operation');
+            $this->flash->addMessage('error', '資料有誤！');
             $uri = $request->getUri();
             return $response->withRedirect($uri->getPath());
         }
@@ -202,8 +185,8 @@ $app->group('/user', function ($app) {
 
         $item = $repair->readUserWork($uid, $id);
         if (empty($item)) {
-            $this->flash->addMessage('info', 'Bang! Gotcha !');
-            $this->flash->addMessage('error', 'Invalid Request !');
+            $this->flash->addMessage('info', 'Bang!');
+            $this->flash->addMessage('error', '抓到惹~');
             return $response->withRedirect('/user/repair');
         }
         $data = ['item' => $item[0]];
@@ -218,25 +201,42 @@ $app->group('/user', function ($app) {
         $repair = new Repair();
         $uid = $this->session->id;
         $status = $repair->userConfirm($args['id'], $uid, $confirmNotes, $evaluation, $evaluationNotes);
-        if($status){
-            $this->flash->addMessage('success', 'form send');
+        if ($status) {
+            $this->flash->addMessage('success', '資料已送出');
             return $response->withRedirect('/user/repair');
-        }else{
-            $this->flash->addMessage('error', 'Invalid Request !');
+        } else {
+            $this->flash->addMessage('error', '資料有誤 !');
             $uri = $request->getUri();
             return $response->withRedirect($uri->getPath());
         }
     })->setName('repairConfirm');
+
+    $app->post('/repair/call/{id}', function ($request, $response, $args) {
+        $repair = new Repair();
+        $call = $request->getParsedBody()['call'];
+        $id = $args['id'];
+        $callUser = $repair->readWorkSID($id);
+        $currentUser = $this->session->id;
+        if ($callUser != $currentUser) {
+            return $response->withJson(['status' => 'error']);
+        }
+        $status = $repair->userCall($id, $call);
+        if ($status) {
+            return $response->withJson(['status' => 'ok']);
+        } else {
+            return $response->withJson(['status' => 'error']);
+        }
+    })->setName('repairCall');
 
     $app->get('/repair/cancel/{id}', function ($request, $response, $args) {
         $repair = new Repair();
         $id = $args['id'];
         $status = $repair->deleteUserItem($id);
         if ($status) {
-            $this->flash->addMessage('success', 'delete successful');
+            $this->flash->addMessage('success', '已取消報修');
             return $response->withRedirect('/user/repair');
         } else {
-            $this->flash->addMessage('error', 'invalid ');
+            $this->flash->addMessage('error', '資料有誤 !');
             return $response->withRedirect('/user/repair');
         }
     })->setName('repairCancel');
@@ -250,53 +250,32 @@ $app->group('/user', function ($app) {
 
 });
 
-//iBus
+//Bus
 $app->group('/bus', function ($app) {
-
     $app->get('', function ($request, $response, $args) {
-        return $this->view->render($response, '/bus/search.twig');
-    })->setName('busIndex');
-
-    $app->get('/search', function ($request, $response, $args) {
-        $from = $request->getQueryParams()['from'];
-        $date = $request->getQueryParams()['date'];
         $bus = new Bus();
-        $schedule = ['schedules' => $bus->find($from, $date)];
-        $uid = $this->session->id;
+        $data = $bus->getWeekSchedule();
+        return $this->view->render($response, '/bus/search.twig', ['schedules' => $data]);
+    })->setName('busIndex')->add(new BusTimeRestriction());
 
+    $app->post('', function ($request, $response, $args) {
+        $bus = new Bus();
+        $uid = $this->session->id;
+        $uname = $this->session->name;
+        $busID = $request->getParsedBody()["bus"];
+        //suspend list check
         if ($bus->isSuspend($uid)) {
             return $response->withRedirect('/bus/status?action=fail&status=suspend');
-        } else {
-            if (empty($schedule['schedules'])) {
-                return $response->withRedirect('/bus/status?action=false&status=null');
-            }
         }
-        return $this->view->render($response, '/bus/reserve.twig', $schedule);
-    })->setName('busSearch');
 
-    $app->post('/reserve', function ($request, $response, $args) {
-        $post = $request->getParsedBody();
-        $bus = new Bus();
-        $uid = $this->session->id;
-        $name = $this->session->name;
-
-        if (!isset($post['schedule'])) {
-            return $response->withRedirect('/bus/status?status=null');
-        } else {
-            $status = $bus->reserve($post['schedule'], $uid, $name, $post['dept'], $post['room']);
-            $student = new Student();
-            $email = $student->fetch($uid)->getPrimaryMail();
-            $mail = new Mail();
-            $mail->busReserveConfirm($email);
-        }
+        $status = $bus->reserve($uid, $uname, $busID);
         if ($status) {
-            return $response->withRedirect('/bus/status?action=success');
+            return "success";
         } else {
-            return $response->withRedirect('/bus/status?action=fail');
+            return "error";
         }
-
-    })->setName('busReserve');
-
+//        return $this->view->render($response, '/bus/search.twig', ['schedules' => $data]);
+    })->setName('busIndex')->add(new BusTimeRestriction());
     $app->get('/status', function ($request, $response, $args) {
 //        $result = $request->getQueryParams()['action'];
         return $this->view->render($response, '/bus/status.twig');
@@ -340,7 +319,7 @@ $app->group('/repair', function ($app) {
             if ($uploadStatus['status']) {
                 $filename = $uploadStatus['file_name'];
             } else {
-                $this->flash->addMessage('error', $uploadStatus['info']);
+                $this->flash->addMessage('error', "資料有誤!");
                 $uri = $request->getUri();
                 return $response->withRedirect($uri->getPath());
             }
@@ -349,14 +328,20 @@ $app->group('/repair', function ($app) {
         $status = $repair->createRepair($uid, $building, $room, $item_cat, $item, $desc, $accompany, $confirm,
             $filename);
         if ($status) {
-            $this->flash->addMessage('success', 'form submitted');
-            return $response->withRedirect('/');
+            $this->flash->addMessage('success', '資料已送出，將儘快處理');
+            return $response->withRedirect('/repair');
         } else {
-            $this->flash->addMessage('error', 'invalid operation');
+            $this->flash->addMessage('error', '資料有誤！');
             $uri = $request->getUri();
             return $response->withRedirect($uri->getPath());
         }
     })->setName('repairSubmit');
+
+    $app->get('/static', function ($request, $response, $args) {
+        $repair = new Repair();
+        $items = $repair->readAllWork();
+        return $this->view->render($response, '/repair/static.twig', ['items' => $items]);
+    })->setName('repairStatic');
 });
 
 //Login
@@ -375,7 +360,7 @@ $app->group('/login', function ($app) {
 //Logout
 $app->get('/logout', function ($request, $response, $args) {
     $this->session::destroy();
-    return $response->withRedirect('/');
+    return $response->withRedirect('http://sso.tku.edu.tw/pkmslogout', 301);
 })->setName('logout');
 
 //Admin
@@ -420,7 +405,8 @@ $app->group('/admin', function ($app) {
 
             $data = $request->getParsedBody();
             $package = new Package();
-            $status = $package->createPackage($data['rcp'], $data['cat'], $data['strg'], $data['pid'], $data['time']);
+            $status = $package->createPackage($data['rcp'], $data['cat'], $data['strg'], $data['pid'],
+                $data['time']);
             if ($status) {
                 $uid = $this->session->id;
                 $email = $student->fetch($uid)->getPrimaryMail();
@@ -502,7 +488,7 @@ $app->group('/admin', function ($app) {
         })->setName('packageHistory');
 
 
-    });
+    })->add(new Permission('package'));
     //Bus Section
     $app->group('/bus', function ($app) {
         $app->get('', function ($request, $response, $args) {
@@ -570,7 +556,7 @@ $app->group('/admin', function ($app) {
 
             return $this->view->render($response, '/admin/bus.suspend.twig', $data);
         })->setName('busSuspend');
-    });
+    })->add(new Permission('bus'));
     //Admin Section
     $app->group('/users', function ($app) {
         $app->get('', function ($request, $response, $args) {
@@ -584,6 +570,7 @@ $app->group('/admin', function ($app) {
                 'student_count' => $admin->statistic()[0],
                 'user_count' => $admin->statistic()[1],
                 'user_active' => $admin->statistic()[3],
+                'roles' => $admin->readAdminRoleList(),
             ];
             return $this->view->render($response, '/admin/user.show.twig', $data);
         })->setName('users');
@@ -642,7 +629,7 @@ $app->group('/admin', function ($app) {
                 return $response->withRedirect('/admin/users/create');
             }
         })->setName('submitUser')->add(new \DavidePastore\Slim\Validation\Validation($validators));
-    });
+    })->add(new Permission('admin'));
     //Repair Section
     $app->group('/repair', function ($app) {
         $app->get('', function ($request, $response, $args) {
@@ -798,8 +785,15 @@ $app->group('/admin', function ($app) {
 
             return $this->view->render($response, '/admin/repair.category.twig', $data);
         })->setName('repairCategory');
-    });
-});
+
+        $app->get('/calls/{id}', function ($request, $response, $args) {
+            $item = new Repair();
+            $calls = $item->readCall($args['id']);
+            return $response->withJson($calls);
+        })->setName('repairCallShow');
+
+    })->add(new Permission('repair'));
+})->add(new AdminGuard());
 
 //Console
 $app->post('/console', 'RunTracy\Controllers\RunTracyConsole:index');

@@ -58,7 +58,6 @@ class Repair
             $repairItem->request_need_accompany = $accompany;
             $repairItem->request_need_confirm = $confirm;
             $repairItem->photo = $filename;
-            $repairItem->item_calls = 0;
             $repairItem->save();
             return true;
         } catch (Exception $e) {
@@ -78,12 +77,30 @@ class Repair
             $repairItem->request_need_accompany = $accompany;
             $repairItem->request_need_confirm = $confirm;
             $repairItem->photo = $filename;
-            $repairItem->item_calls = 0;
             $repairItem->save();
             return true;
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    public function userCall($workID, $desc)
+    {
+        try {
+            $data = ORM::forTable('repair_call')->create();
+            $data->call_content = $desc;
+            $data->repair_id = $workID;
+            $data->save();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function readWorkSID($workID)
+    {
+        $id = ORM::forTable('repair_item')->select('note_man')->findOne($workID);
+        return $id["note_man"];
     }
 
     public function userConfirm($id, $uid, $confirmNotes, $evaluation, $evaluationNotes)
@@ -231,6 +248,35 @@ class Repair
             $building = $items[$key]['building'];
             $category = $items[$key]['item_cat'];
             $state = $items[$key]['item_status'];
+            $id = $items[$key]['id'];
+
+            $items[$key]['building'] = $this->getBuilding($building);
+            $items[$key]['item_cat'] = $this->getCategory($category);
+            $items[$key]['item_status_name'] = $this->getItemStatus($state);
+            $items[$key]['item_call'] = $this->getCall($id);
+        }
+        return $items;
+    }
+
+    public function getCall($itemID)
+    {
+        $count = ORM::forTable('repair_call')->where('repair_id', $itemID)->count();
+        return $count;
+    }
+
+    public function readCall($Item)
+    {
+        $call = ORM::forTable('repair_call')->where('repair_id', $Item)->findArray();
+        return $call;
+    }
+
+    public function readAllWork()
+    {
+        $items = ORM::forTable('repair_item')->whereNotEqual('item_status', '99')->findArray();
+        foreach ($items as $key => $item) {
+            $building = $items[$key]['building'];
+            $category = $items[$key]['item_cat'];
+            $state = $items[$key]['item_status'];
 
             $items[$key]['building'] = $this->getBuilding($building);
             $items[$key]['item_cat'] = $this->getCategory($category);
@@ -238,6 +284,5 @@ class Repair
         }
         return $items;
     }
-
 
 }

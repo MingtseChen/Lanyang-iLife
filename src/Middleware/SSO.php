@@ -25,10 +25,10 @@ class SSO
 
         if ($host == "localhost") {
             $uid = 403840308;
-            $ssoRole = 1;
-            $headers['sso_userid'] = $uid;
-            $headers['sso_roletype'] = $ssoRole;
-            $ssoLogin = true;
+//            $ssoRole = 1;
+//            $headers['sso_userid'] = $uid;
+//            $headers['sso_roletype'] = $ssoRole;
+//            $ssoLogin = true;
         }
         //*****************************************//test only
 
@@ -84,7 +84,7 @@ class SSO
 
     public function isAdmin($uid)
     {
-        $data = ORM::forTable('groups_users')->where('uid', $uid)->count();
+        $data = ORM::forTable('user_group')->where('uid', $uid)->count();
         if ($data != 0) {
             return true;
         } else {
@@ -94,7 +94,7 @@ class SSO
 
     public function userGroup($uid)
     {
-        $table = ORM::forTable('groups_users')->select(['uid', 'role']);
+        $table = ORM::forTable('user_group')->select(['uid', 'role']);
         $data = $table->where(['uid' => $uid])->findArray();
         $group = $data[0]['role'];
         return $group;
@@ -111,16 +111,18 @@ class SSO
     public function updateAdminLogin($uid)
     {
         $now = Carbon::now();
-        $record = ORM::for_table('groups_users')->where('uid', $uid)->findOne();
+        $record = ORM::for_table('user_group')->where('uid', $uid)->findOne();
         $record->set('last_login', $now);
         $record->save();
     }
 
+    //not admin's user group would be -1
     public function setUserSession($uid, $name, $ssoRole)
     {
         $this->session->set('id', $uid);
         $this->session->set('name', trim($name, '　'));
         $this->session->set('ssoRole', $ssoRole);
+        $this->session->set('group', -1);
     }
 
     public function updateUserLogin($uid)
