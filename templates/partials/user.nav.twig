@@ -1,6 +1,6 @@
 {#TODO add hover effect on dropdown#}
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-lg navbar-dark {{ nav_color=="trans" ? 'bg-transparent' : 'bg-dark' }} fixed-top">
     <div class="container">
         <a class="navbar-brand" href="{{ path_for('home') }}">iLanyang</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -49,15 +49,23 @@
                     </div>
                 </li>
                 <!-- Authentication Links -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                        Hi, {{ _session.name|default('') }}
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{{ path_for('userIndex') }}">個人設定</a>
-                        <a class="dropdown-item" href="{{ path_for('logout') }}">登出</a>
-                    </div>
-                </li>
+                {% if login %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" data-toggle="dropdown" href="#">
+                            Hi, {{ _session.name|default('') }}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{ path_for('userIndex') }}">個人設定</a>
+                            <a class="dropdown-item" href="{{ path_for('logout') }}">登出</a>
+                        </div>
+                    </li>
+                {% else %}
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path_for('loginForm') }}">登入</a>
+                        </li>
+                    </ul>
+                {% endif %}
             </ul>
         </div>
     </div>

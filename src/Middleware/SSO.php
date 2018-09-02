@@ -25,10 +25,10 @@ class SSO
 
         if ($host == "localhost") {
             $uid = 403840308;
-//            $ssoRole = 1;
-//            $headers['sso_userid'] = $uid;
-//            $headers['sso_roletype'] = $ssoRole;
-//            $ssoLogin = true;
+            $ssoRole = 1;
+            $headers['sso_userid'] = $uid;
+            $headers['sso_roletype'] = $ssoRole;
+            $ssoLogin = true;
         }
         //*****************************************//test only
 
