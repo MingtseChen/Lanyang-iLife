@@ -17,86 +17,17 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     <!-- AnimatedCSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.6.2/animate.css" rel="stylesheet">
-    <style>
-        .bg {
-            /* The image used */;
-            background: url("assets/repair.jpg") no-repeat fixed center;
-            /* Full height */
-            height: 100vh;
-            /* Center and scale the image nicely */
-            background-size: cover;
-        }
-
-        .search {
-            /* The image used */;
-            background: url("assets/search.jpg") no-repeat fixed center;
-            /* Full height */
-            height: 100vh;
-            /* Center and scale the image nicely */
-            background-size: cover;
-        }
-
-        .alert {
-            width:100%;
-        }
-
-    </style>
+    {% block css %}{% endblock %}
 
 </head>
 
 <body>
 <div class="wrapper">
     <div class="bg">
-        {% include("partials/user.nav.twig") %}
-        {#<img src="assets/repair.jpg" class="bg">#}
-        <div class="d-flex w-100 h-100 p-sm-3 mx-auto flex-column text-white container">
-
-            <main role="main" class="my-auto">
-                <div class="row">
-                    <div class="col-sm-4 animated fadeInLeft">
-                        <h1 class="cover-heading">線上報修</h1>
-                        <p class="lead">簡化報修流程，報修更容易快速</p>
-                        <p class="lead">
-                            <a href="{{ path_for('repairCreate') }}" class="btn btn-lg btn-secondary">
-                                我要報修 <i class="fas fas fa-chevron-right"></i>
-                            </a>
-                        </p>
-                    </div>
-                    <div class="col-sm-4 offset-sm-4 animated fadeInLeft delay-2s">
-                        <h1 class="cover-heading">我的報修</h1>
-                        <p class="lead">進度一目瞭然，輕鬆追蹤</p>
-                        <p class="lead">
-                            <a href="{{ path_for('repairStatus') }}" class="btn btn-lg btn-default">
-                                我的報修 <i class="far fa-calendar-check"></i>
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-    <div class="container">
         {% block content %}{% endblock %}
     </div>
-    <div class="search">
-        {#<img src="assets/repair.jpg" class="bg">#}
-        <div class="d-flex w-100 h-100 p-sm-3 mx-auto flex-column text-white container">
-            <main role="main" class="my-auto">
-                <div class="col-sm-4 offset-sm-4 animated fadeInLeft">
-                    <h1 class="cover-heading">想知道更多？</h1>
-                    <p class="lead">來看看那些已經登記了吧！</p>
-                    <p class="lead">
-                        <a href="{{ path_for('repairStatic') }}" class="btn btn-lg btn-info">
-                            案件統計 <i class="fas fas fa-chevron-right"></i>
-                        </a>
-                    </p>
-                </div>
-            </main>
-        </div>
-    </div>
+    {% block extend %}{% endblock %}
 </div>
-
-
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -114,6 +45,7 @@
 <script src="/js/bootstrap-notify.js"></script>
 <!-- smoothscroll JS-->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.6/SmoothScroll.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.9"></script>
 <script>
     {% for error in flash('error') %}
     $.notify({

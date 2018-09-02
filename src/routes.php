@@ -17,21 +17,21 @@ include 'Middleware/BusTimeRestriction.php';
 //Home
 $app->get('/', function ($request, $response, $args) {
 
-    $id = 'null';
-    $name = '';
-    $login = false;
     if ($this->session->exists('id')) {
         $id = $this->session->id;
         $name = $this->session->name;
         $login = true;
+        $data = [
+            'login' => $login,
+            'id' => $id,
+            'name' => $name
+        ];
+
     } else {
         $login = false;
+        $data = ['login' => $login];
     }
-    $data = [
-        'login' => $login,
-        'id' => $id,
-        'name' => $name
-    ];
+
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 

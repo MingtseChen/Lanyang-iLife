@@ -1,23 +1,49 @@
-{% extends "/layouts/default.twig" %}
+{% extends "/layouts/full.cover.twig" %}
+{% block css %}
+    <style>
+        .bg {
+            /* The image used */;
+            background: url("assets/bg.jpg") no-repeat fixed center;
+            /* Full height */
+            height: 100vh;
+            /* Center and scale the image nicely */
+            background-size: cover;
+        }
+
+        .typed-cursor {
+            color: white;
+            animation: blink 0.7s infinite;
+        }
+    </style>
+{% endblock %}
 {% block title %}Lanyang iLife{% endblock %}
 
 {% block content %}
-    <header class="masthead">
-    </header>
-
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h2 class="">We've got what you need!</h2>
-                    <hr class="light my-4">
-                    <p class="mb-4">NCTU+是一個交大非官方的資訊組織，有鑑於目前校園系統仍有許多改善空間，我們從改寫校園系統開始，擴展出許多更便利、更友善且更美觀的服務。
-                        <br>
-                        我們一方面向校方請求開放Data及API，另一方面聆聽同學們的需求並不斷發想新的點子，我們不僅純粹的coding，我們希望結合行銷、設計、工程等不同領域的人才，不斷地進步使平台變的更好。
-                    </p>
-                    <a class="btn btn-light btn-xl js-scroll-trigger" href="#">Get Started!</a>
-                </div>
+    {{ include('partials/user.nav.twig', {nav_color: 'trans'}) }}
+    <div class="d-flex w-100 h-100 p-sm-3 mx-auto flex-column text-white container">
+        <main role="main" class="my-auto">
+            <div class="col-sm-8 offset-sm-2 text-center">
+                <h1><span class="typed"></span></h1>
+                <hr>
+                <p class="lead">有鑑於之前蘭陽i生活仍有許多改善空間，於是展開了爲期三月的系統改造計劃<br/>
+                現在我們推出更友善且更美觀的i生活2.0 服務。簡潔易用的界面使操作更快速容易！</p>
             </div>
-        </div>
-    </section>
+        </main>
+    </div>
+{% endblock %}
+{% block extend %}
+    <footer class="fixed-bottom bg-transparent p-sm-2 text-white text-center text-muted">
+        © 2018 Hand Crafted by MT.Chen | Lanyang 2.0
+    </footer>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        var typed = new Typed('.typed', {
+            strings: ["蘭陽i生活全新上線！", "Lanyang iLifely", "Lanyang iLife <strong>2.0</strong> ",],
+            backSpeed: 30,
+            smartBackspace: true,
+            typeSpeed: 60,
+        });
+    </script>
 {% endblock %}
