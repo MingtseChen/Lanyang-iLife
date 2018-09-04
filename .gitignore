@@ -179,3 +179,5 @@ TKUPM
 composer\.lock
 
 public/storage/repair/
+
+public/webfonts/

@@ -49,7 +49,7 @@
                     </div>
                 </li>
                 <!-- Authentication Links -->
-                {% if login %}
+                {% if _session.name %}
                     <li class="nav-item dropdown">
                         <a class="nav-link" data-toggle="dropdown" href="#">
                             Hi, {{ _session.name|default('') }}
