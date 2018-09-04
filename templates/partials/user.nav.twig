@@ -9,7 +9,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <!-- Left navbar links -->
-            {% if _session.group != -1 %}
+            {% if _session.group != -1 and not (_session.group is empty) %}
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path_for('admin') }}">管理界面</a>
