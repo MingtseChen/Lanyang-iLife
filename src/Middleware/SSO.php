@@ -24,7 +24,7 @@ class SSO
         $host = $uri->getHost();
 
         if ($host == "localhost") {
-            $uid = 403840308;
+            $uid = 403840307;
             $ssoRole = 1;
             $headers['sso_userid'] = $uid;
             $headers['sso_roletype'] = $ssoRole;
@@ -34,10 +34,19 @@ class SSO
 
         $path = $request->getUri()->getPath();
         //retrieve value from sso
+        if ($path == '/error') {
+            $response = $next($request, $response);
+            return $response;
+        }
         if ($ssoLogin) {
             $uid = $headers['sso_userid'];
             $ssoRole = $headers['sso_roletype'];
             $name = $this->username($uid);
+            //user not found error
+            //block user
+            if (!$name) {
+                return $response->withRedirect('/error');
+            }
             if ($path == '/login') {
                 return $response->withRedirect('/');
             }
@@ -66,7 +75,7 @@ class SSO
         $table = ORM::forTable('students')->selectMany(['uname', 'name']);
         $data = $table->where(['uname' => $uid])->findArray();
         if (empty($data)) {
-            return 'user not found in database';
+            return false;
         }
         $name = trim($data[0]['name'], '　');
         return $name;
