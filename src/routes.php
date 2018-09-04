@@ -35,6 +35,10 @@ $app->get('/', function ($request, $response, $args) {
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 
+$app->get('/error', function ($request, $response, $args) {
+    return $this->view->render($response, '/errors/status.twig');
+})->setName('error');
+
 //User
 $app->group('/user', function ($app) {
 
