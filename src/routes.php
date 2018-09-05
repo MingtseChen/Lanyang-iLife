@@ -15,7 +15,6 @@ include 'Middleware/AdminGuard.php';
 
 //Home
 $app->get('/', function ($request, $response, $args) {
-
     if ($this->session->exists('id')) {
         $id = $this->session->id;
         $name = $this->session->name;
@@ -30,7 +29,6 @@ $app->get('/', function ($request, $response, $args) {
         $login = false;
         $data = ['login' => $login];
     }
-
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 

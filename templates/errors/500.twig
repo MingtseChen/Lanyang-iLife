@@ -1,12 +1,12 @@
 {% extends "/layouts/user.twig" %}
-{% block title %}404{% endblock %}
+{% block title %}500{% endblock %}
 {% block page_title %}{% endblock %}
 {% block content %}
     <div class="error-page">
-        <h2 class="headline text-info"> 404</h2>
+        <h2 class="headline text-danger"> 500</h2>
 
         <div class="error-content">
-            <h3><i class="fas fa-exclamation-circle text-info"></i> 業障重 完全沒有畫面</h3>
+            <h3><i class="fas fa-exclamation-triangle text-danger"></i> 抱歉搞砸惹~ 自個兒回去唄</h3>
 
             <p>
                 乖乖回家吧 <a href="{{ path_for('home') }}"> > /dev/null </a>
