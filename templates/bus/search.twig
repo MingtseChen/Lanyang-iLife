@@ -11,7 +11,7 @@
             <div class="col">
                 <div class="card card-info card-outline">
                     <div class="card-header">
-                        <h3 class="card-title">交通車預約</h3>
+                        <h3 class="card-title">交通車班次表</h3>
                     </div>
                     <div class="card-body table-responsive">
                         <table class="table table-hover">
@@ -27,8 +27,7 @@
                             {% for schedule in schedules %}
                                 <tr class="select-id-{{ schedule.id }}">
                                     <td>
-                                        {% if schedule.can_reserve %}
-                                        {% elseif schedule.reservation %}
+                                        {% if schedule.reservation and schedule.is_open %}
                                             <div class="radio">
                                                 <label>
                                                     <input type="radio" data-id="{{ schedule.id }}" name="schedule"
@@ -77,7 +76,7 @@
         $('#confirm').click(function () {
             swal({
                 title: "確定預訂此班車",
-                content: "如不搭車請務必取消，否則將受停權處分",
+                text: "如不搭車請務必取消，否則將受停權處分",
                 icon: "info",
                 buttons: {
                     cancel: "取消",
@@ -99,11 +98,11 @@
                                 title: "預訂成功",
                                 icon: "success",
                             }).then(function () {
-                                    location.href = "{{ path_for("home") }}";
+                                    location.href = "{{ path_for("userBus") }}";
                                 }
                             );
                         } else {
-                            swal("系統錯誤", "", "error")
+                            swal("抱歉無法訂位", "請勿重複預約以免遭受停權處分", "error")
                         }
                     }).fail(function () {
                         swal("系統錯誤", {
