@@ -159,8 +159,9 @@
 {% block scripts %}
     <script>
         $(document).ready(function () {
-            var validator = $("#repair").validate({
+            let validator = $("#repair").validate({
                 rules: {
+                    // debug: true,
                     // simple rule, converted to {required:true}
                     room: "required",
                     item: "required",
@@ -200,8 +201,10 @@
             // Toolbar extra buttons
             var btnFinish = $('<button></button>').text('Submit')
                 .addClass('btn btn-info btn-finish')
-                .on('click', function () {
-                    return validator.valid();
+                .on('click', function (event) {
+                    // event.preventDefault();
+                    // console.log(validator.valid());
+                    // return validator.valid();
                     $("#repair").submit();
                 });
 
