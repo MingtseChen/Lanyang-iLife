@@ -6,38 +6,34 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-3">
-            {% include("partials/user.menu.twig") %}
-            <!-- /.card -->
-        </div>
-        <div class="col-md-9">
+        <div class="col-md-8 mx-auto">
             <div class="card card-outline card-info animated fadeInDown">
                 <div class="card-header">
-                    <h3 class="card-title">Profile</h3>
+                    <h3 class="card-title">個人信息</h3>
                 </div>
 
                 <div class="card-body">
-                    <div class="form-group">
-                        <label for="inputName" class="col-sm-2 control-label">Name</label>
+                    <div class="form-group row">
+                        <label for="inputName" class="col-sm-2 control-label">姓名</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" value="{{ _session.name }}" disabled>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="inputName" class="col-sm-2 control-label">ID</label>
+                    <div class="form-group row">
+                        <label for="inputName" class="col-sm-2 control-label">人員代號</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" value="{{ _session.id }}" disabled>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="inputEmail" class="col-sm-2 control-label">Default email</label>
+                    <div class="form-group row">
+                        <label for="inputEmail" class="col-sm-2 control-label">校籍信箱</label>
                         <div class="col-sm-10">
                             <input type="email" class="form-control" value="{{ email|default('') }}"
                                    disabled>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="inputEmail" class="col-sm-6 control-label">Primary email</label>
+                    <div class="form-group row">
+                        <label for="inputEmail" class="col-sm-2 control-label">常用信箱</label>
                         <div class="col-sm-10">
                             <div class="input-group">
                                 <input type="email" id="test" class="form-control" value="{{ email2|default('') }}"
@@ -49,7 +45,7 @@
                                 </div>
                             </div>
                             <small class="form-text text-muted">
-                                We'll never share your email with anyone else.
+                                有填常用信箱比較方便呦~
                             </small>
                         </div>
                     </div>
