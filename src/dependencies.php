@@ -3,11 +3,8 @@
 
 $container = $app->getContainer();
 
-// view controller
-//$container['controller'] = function ($app) {
-//    $controller = new App\Controller\RootController($app);
-//    return $controller;
-//};
+//***************************************************//
+//Error Handlers
 
 //Override the default Not Found Handler
 $container['notFoundHandler'] = function ($c) {
@@ -15,6 +12,26 @@ $container['notFoundHandler'] = function ($c) {
         return $c['view']->render($response->withStatus(404), '/errors/404.twig');
     };
 };
+//Override the default Not Allow Handler
+$container['notAllowedHandler'] = function ($c) {
+    return function ($request, $response, $methods) use ($c) {
+        return $c['view']->render($response->withStatus(405), '/errors/405.twig');
+    };
+};
+//Override the default PHP Error Handler
+$container['phpErrorHandler'] = function ($c) {
+    return function ($request, $response, $error) use ($c) {
+        return $c['view']->render($response->withStatus(500), '/errors/500.twig');
+    };
+};
+//Override the default Slim Error Handler
+$container['errorHandler'] = function ($c) {
+    return function ($request, $response, $error) use ($c) {
+        return $c['view']->render($response->withStatus(500), '/errors/500.twig');
+    };
+};
+
+//***************************************************//
 
 //View renderer
 $container['renderer'] = function ($c) {
