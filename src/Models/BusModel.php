@@ -9,6 +9,7 @@ class Bus
         //sunday will be the first day of the week
         //add 10 minute for the policy 'can not reserve seats 60 min before departure'
         $now = Carbon::now('Asia/Taipei')->addMinutes(60);
+//        $now = Carbon::parse("2018-09-03 00:00");
         $endOfWeek = Carbon::now('Asia/Taipei')->endOfWeek();
         $whereClause = 'departure_time BETWEEN \'' . $now . '\' AND \'' . $endOfWeek . '\'';
         //find schedule in given range
