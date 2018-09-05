@@ -9,13 +9,20 @@ $container = $app->getContainer();
 //    return $controller;
 //};
 
-// view renderer
+//Override the default Not Found Handler
+$container['notFoundHandler'] = function ($c) {
+    return function ($request, $response) use ($c) {
+        return $c['view']->render($response->withStatus(404), '/errors/404.twig');
+    };
+};
+
+//View renderer
 $container['renderer'] = function ($c) {
     $settings = $c->get('settings')['renderer'];
     return new Slim\Views\PhpRenderer($settings['template_path']);
 };
 
-// monolog
+//Monolog
 $container['logger'] = function ($c) {
     $settings = $c->get('settings')['logger'];
     $logger = new Monolog\Logger($settings['name']);
@@ -24,7 +31,7 @@ $container['logger'] = function ($c) {
     return $logger;
 };
 
-// Twig
+//Twig
 $container['twig_profile'] = function () {
     return new Twig_Profiler_Profile();
 };
@@ -50,10 +57,10 @@ $container['flash'] = function () {
     return new \Slim\Flash\Messages();
 };
 
-// Database
+//Database
 ORM::configure($container->get('settings')['db']);
 
-//session
+//Session
 $container['session'] = function ($c) {
     return new \SlimSession\Helper;
 };
