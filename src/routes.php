@@ -12,7 +12,6 @@ include 'Plugins/Mail.php';
 include 'Plugins/Upload.php';
 include 'Middleware/Permission.php';
 include 'Middleware/AdminGuard.php';
-include 'Middleware/BusTimeRestriction.php';
 
 //Home
 $app->get('/', function ($request, $response, $args) {

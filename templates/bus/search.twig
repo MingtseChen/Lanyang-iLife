@@ -98,7 +98,7 @@
                                 title: "預訂成功",
                                 icon: "success",
                             }).then(function () {
-                                    window.location.href = "{{ path_for("userBus") }}";
+                                    location.href = "{{ base_url()~path_for("userBus") }}";
                                 }
                             );
                         } else {
