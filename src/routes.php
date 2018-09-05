@@ -35,6 +35,10 @@ $app->get('/', function ($request, $response, $args) {
     return $this->view->render($response, 'home.twig', $data);
 })->setName('home');
 
+$app->get('/error', function ($request, $response, $args) {
+    return $this->view->render($response, '/errors/status.twig');
+})->setName('error');
+
 //User
 $app->group('/user', function ($app) {
 
@@ -57,7 +61,6 @@ $app->group('/user', function ($app) {
         return $response->withRedirect('/user/index');
     })->setName('userAddMail');
 
-    //TODO no search option , use list instead
     $app->get('/bus', function ($request, $response, $args) {
         $bus = new Bus();
         $id = $this->session->id;
@@ -69,17 +72,13 @@ $app->group('/user', function ($app) {
     $app->post('/bus', function ($request, $response, $args) {
         $bus = new Bus();
         $uid = $this->session->id;
-        $action = $request->getParsedBody()['delete'];
-        if ((bool)$action) {
-            $id = $request->getParsedBody()['id'];
-            $status = $bus->deleteReserve($id, $uid);
-            if ($status) {
-                $this->flash->addMessage('success', 'operation success !');
-            } else {
-                $this->flash->addMessage('error', 'Invalid operation !');
-            }
+        $id = $request->getParsedBody()['id'];
+        $status = $bus->deleteReserve($id, $uid);
+        if ($status) {
+            return "success";
+        } else {
+            return "error";
         }
-        return $response->withRedirect('/user/bus');
     })->setName('deleteBus');
 
     $app->get('/package', function ($request, $response, $args) {
@@ -256,7 +255,7 @@ $app->group('/bus', function ($app) {
         $bus = new Bus();
         $data = $bus->getWeekSchedule();
         return $this->view->render($response, '/bus/search.twig', ['schedules' => $data]);
-    })->setName('busIndex')->add(new BusTimeRestriction());
+    })->setName('busIndex');
 
     $app->post('', function ($request, $response, $args) {
         $bus = new Bus();
@@ -274,10 +273,8 @@ $app->group('/bus', function ($app) {
         } else {
             return "error";
         }
-//        return $this->view->render($response, '/bus/search.twig', ['schedules' => $data]);
-    })->setName('busIndex')->add(new BusTimeRestriction());
+    })->setName('busIndex');
     $app->get('/status', function ($request, $response, $args) {
-//        $result = $request->getQueryParams()['action'];
         return $this->view->render($response, '/bus/status.twig');
     })->setName('busStatus');
 });
@@ -320,8 +317,7 @@ $app->group('/repair', function ($app) {
                 $filename = $uploadStatus['file_name'];
             } else {
                 $this->flash->addMessage('error', "資料有誤!");
-                $uri = $request->getUri();
-                return $response->withRedirect($uri->getPath());
+                return $response->withRedirect('/create');
             }
         }
         //pass form params
@@ -332,8 +328,7 @@ $app->group('/repair', function ($app) {
             return $response->withRedirect('/repair');
         } else {
             $this->flash->addMessage('error', '資料有誤！');
-            $uri = $request->getUri();
-            return $response->withRedirect($uri->getPath());
+            return $response->withRedirect('/create');
         }
     })->setName('repairSubmit');
 

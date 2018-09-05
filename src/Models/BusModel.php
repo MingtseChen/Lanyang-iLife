@@ -17,12 +17,13 @@ class Bus
         $buses = $time->whereGte('departure_time', $now)->findArray();
         foreach ($buses as $key => $bus) {
             $id = $buses[$key]['id'];
+            $remain = (int)$buses[$key]['capacity'] - (int)$this->getRemainSeats($id);
             $buses[$key]['reserved_seats'] = $this->getRemainSeats($id);
-            if ((int)$buses[$key]['capacity'] - (int)$this->getRemainSeats($id) == 0) {
-                $buses[$key]['can_reserve'] = false;
-            }
-            if ((int)$buses[$key]['capacity'] - (int)$this->getRemainSeats($id) == 0) {
-                $buses[$key]['can_reserve'] = true;
+
+            if ($this->isOpen($id) && $remain > 0) {
+                $buses[$key]['is_open'] = true;
+            } else {
+                $buses[$key]['is_open'] = false;
             }
 
         }
@@ -35,11 +36,24 @@ class Bus
         return $count;
     }
 
+    public function isOpen($busID)
+    {
+        $col = ORM::forTable('bus_schedule')->select('open_time')->findOne($busID);
+        $openTime = Carbon::parse($col->open_time);
+        if (Carbon::now()->lessThan($openTime)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public function getSchedule()
     {
         $bus = ORM::forTable('bus_schedule')->findArray();
         return $bus;
     }
+
+    //use this function for security reason
 
     public function delete($id)
     {
@@ -47,14 +61,34 @@ class Bus
         $bus->delete();
     }
 
-    //use this function for secure
     public function deleteReserve($busID, $userID)
     {
-        $bus = ORM::forTable('bus_reserve')->where(['uid' => $userID, 'bus_id' => $busID])->findOne();
-        if ($bus == false) {
+        $dept_time = $this->checkDeparture($busID);
+        if ($this->enableModify($dept_time)) {
+            $bus = ORM::forTable('bus_reserve')->where(['uid' => $userID, 'bus_id' => $busID])->findOne();
+            if ($bus == false) {
+                return false;
+            } else {
+                $bus->delete();
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public function checkDeparture($busID)
+    {
+        $time = ORM::forTable('bus_schedule')->select('departure_time')->findOne($busID);
+        return $time['departure_time'];
+    }
+
+    public function enableModify($time)
+    {
+        $deadline = Carbon::parse($time)->subHour(1);
+        if (Carbon::now()->gte($deadline)) {
             return false;
         } else {
-            $bus->delete();
             return true;
         }
     }
@@ -76,24 +110,6 @@ class Bus
         $bus->save();
     }
 
-//    public function find($from, $date)
-//    {
-//        try {
-//            $setStartDay = Carbon::parse($date);
-//            $setEndDay = Carbon::parse($date)->addHours(24);
-//            if ($setStartDay->isToday()) {
-//                $setStartDay = Carbon::now();
-//            }
-//            $query = "`type` = " . $from . " AND `departure_time` BETWEEN '" . $setStartDay . "' AND '" . $setEndDay . "'";
-//            $schedule = ORM::forTable('bus_schedule')->whereRaw($query)->findArray();
-//            return $schedule;
-//        } catch (Exception $e) {
-//            var_dump($e);
-//            return false;
-//        }
-//
-//    }
-
     public function reserve($uid, $name, $busId)
     {
         if ($this->checkBusStatus($busId, $uid)) {
@@ -105,14 +121,13 @@ class Bus
 
     }
 
-    public function checkBusStatus($busId, $uid)
+    public function checkBusStatus($busID, $uid)
     {
-        $capacity = ORM::forTable('bus_schedule')->select('capacity')->where('id', $busId)->find_array();
-        $reserveCount = ORM::forTable('bus_reserve')->where('bus_id', $busId)->count();
-        $duplicate = ORM::forTable('bus_reserve')->where(['bus_id' => $busId, 'uid' => $uid])->count();
+        $capacity = ORM::forTable('bus_schedule')->select('capacity')->where('id', $busID)->find_array();
+        $reserveCount = ORM::forTable('bus_reserve')->where('bus_id', $busID)->count();
+        $duplicate = ORM::forTable('bus_reserve')->where(['bus_id' => $busID, 'uid' => $uid])->count();
 
-        if ($duplicate > 1 || $this->isSuspend($uid)) {
-//            $this->flash->addMessage('error', 'You have already reserve this bus');
+        if ($duplicate >= 1 || $this->isSuspend($uid) || !$this->isOpen($busID)) {
             return false;
         } else {
             $capacity = (int)$capacity[0]['capacity'];
@@ -129,7 +144,6 @@ class Bus
     {
         $suspend = ORM::forTable('bus_suspend')->where('uid', $uid)->count();
         if ($suspend != 0) {
-//            $this->flash->addMessage('error', 'This account has been suspended');
             return true;
         } else {
             return false;
@@ -204,6 +218,14 @@ class Bus
         $today = Carbon::today();
         $buses = $select->join('bus_reserve', $rule)->where('bus_reserve.uid', $uid)->where_gte('departure_time',
             $today)->findArray();
+        foreach ($buses as $key => $value) {
+            $depart = $buses[$key]['departure_time'];
+            if ($this->enableModify($depart)) {
+                $buses[$key]['modify'] = true;
+            } else {
+                $buses[$key]['modify'] = false;
+            }
+        }
         return $buses;
     }
 
