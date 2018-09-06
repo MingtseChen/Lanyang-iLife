@@ -8,14 +8,14 @@ class Bus
     {
         //sunday will be the first day of the week
         //add 10 minute for the policy 'can not reserve seats 60 min before departure'
-        $now = Carbon::now('Asia/Taipei')->addMinutes(60);
+        $now = Carbon::now('Asia/Taipei');
 //        $now = Carbon::parse("2018-09-03 00:00");
         $endOfWeek = Carbon::now('Asia/Taipei')->endOfWeek();
         $whereClause = 'departure_time BETWEEN \'' . $now . '\' AND \'' . $endOfWeek . '\'';
         //find schedule in given range
         $time = ORM::forTable('bus_schedule')->where_raw($whereClause);
         //find opened schedule
-        $buses = $time->whereGte('departure_time', $now)->findArray();
+        $buses = $time->whereGte('departure_time', $now)->orderByAsc('departure_time')->findArray();
         foreach ($buses as $key => $bus) {
             $id = $buses[$key]['id'];
             $remain = (int)$buses[$key]['capacity'] - (int)$this->getRemainSeats($id);
@@ -218,7 +218,7 @@ class Bus
         $rule = ['bus_schedule.id', '=', 'bus_reserve.bus_id'];
         $today = Carbon::today();
         $buses = $select->join('bus_reserve', $rule)->where('bus_reserve.uid', $uid)->where_gte('departure_time',
-            $today)->findArray();
+            $today)->orderByAsc('departure_time')->findArray();
         foreach ($buses as $key => $value) {
             $depart = $buses[$key]['departure_time'];
             if ($this->enableModify($depart)) {
