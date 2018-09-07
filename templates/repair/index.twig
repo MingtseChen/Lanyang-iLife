@@ -38,7 +38,7 @@
                     <h1 class="cover-heading">線上報修</h1>
                     <p class="lead">簡化報修流程，報修更容易快速</p>
                     <p class="lead">
-                        <a href="{{ path_for('repairCreate') }}" class="btn btn-lg btn-secondary">
+                        <a href="{{ path_for('repairCreate')~'?cache='~random() }}" class="btn btn-lg btn-secondary">
                             我要報修 <i class="fas fas fa-chevron-right"></i>
                         </a>
                     </p>
@@ -47,7 +47,7 @@
                     <h1 class="cover-heading">我的報修</h1>
                     <p class="lead">進度一目瞭然，輕鬆追蹤</p>
                     <p class="lead">
-                        <a href="{{ path_for('repairStatus') }}" class="btn btn-lg btn-default">
+                        <a href="{{ path_for('repairStatus')~'?cache='~random() }}" class="btn btn-lg btn-default">
                             我的報修 <i class="far fa-calendar-check"></i>
                         </a>
                     </p>
