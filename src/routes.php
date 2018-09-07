@@ -226,14 +226,15 @@ $app->group('/user', function ($app) {
 
     $app->get('/repair/cancel/{id}', function ($request, $response, $args) {
         $repair = new Repair();
-        $id = $args['id'];
-        $status = $repair->deleteUserItem($id);
+
+        $workID = $args['id'];
+        $uid = $this->session->id;
+
+        $status = $repair->deleteUserItem($workID,$uid);
         if ($status) {
-            $this->flash->addMessage('success', '已取消報修');
-            return $response->withRedirect('/user/repair');
+            return "success";
         } else {
-            $this->flash->addMessage('error', '資料有誤 !');
-            return $response->withRedirect('/user/repair');
+            return "error";
         }
     })->setName('repairCancel');
 

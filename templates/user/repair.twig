@@ -55,8 +55,7 @@
                                            href="{{ path_for('repairEdit',{ 'id': item.id }) }}">
                                             修改
                                         </a>
-                                        <a class="btn btn-danger confirm"
-                                           href="{{ path_for('repairCancel',{ 'id': item.id }) }}">
+                                        <a href="#" class="btn btn-danger confirm" data-id="{{ item.id }}">
                                             取消報修
                                         </a>
                                     {% elseif item.item_status == 1 or item.item_status == 2 %}
@@ -132,11 +131,31 @@
                     confirm: {
                         text: "確定",
                         value: true,
+                        closeModal: false,
                     },
                 },
             }).then((value) => {
                 if (value) {
-                    location.reload(true);
+                    let id = $(this).data("id");
+                    console.log(id);
+                    $.get("{{ base_url()~path_for('repairCancel',{ 'id': "" }) }}" + id).done(function (data) {
+                        console.log(data);
+                        if (data === "success") {
+                            swal({
+                                title: "取消成功",
+                                icon: "success",
+                            }).then(function () {
+                                    location.reload(true);
+                                }
+                            );
+                        } else {
+                            swal("不合法操作", "", "error")
+                        }
+                    }).fail(function () {
+                        swal("系統錯誤", {
+                            icon: "error",
+                        });
+                    });
                 }
             });
         });
