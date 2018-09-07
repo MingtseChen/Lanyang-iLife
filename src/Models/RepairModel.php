@@ -204,9 +204,9 @@ class Repair
         return $building['status_name'];
     }
 
-    public function deleteUserItem($id)
+    public function deleteUserItem($id, $uid)
     {
-        if ($this->allowDelete($id)) {
+        if ($this->allowDelete($id, $uid)) {
             $this->deleteRepairItem($id);
             return true;
         } else {
@@ -214,13 +214,13 @@ class Repair
         }
     }
 
-    private function allowDelete($id)
+    private function allowDelete($id, $uid)
     {
-        $status = ORM::forTable('repair_item')->select('item_status')->where('id', $id)->findArray()[0];
-        if ($status['item_status'] != 0) {
-            return false;
-        } else {
+        $status = ORM::forTable('repair_item')->select('item_status')->where(['note_man' => $uid])->findOne($id);
+        if ($status  && $status['item_status'] == 0) {
             return true;
+        } else {
+            return false;
         }
 
     }
