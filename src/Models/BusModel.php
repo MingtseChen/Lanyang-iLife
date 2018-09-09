@@ -50,8 +50,13 @@ class Bus
 
     public function getSchedule()
     {
-        $bus = ORM::forTable('bus_schedule')->findArray();
-        return $bus;
+        $buses = ORM::forTable('bus_schedule')->findArray();
+        foreach ($buses as $key => $bus) {
+            $id = $buses[$key]['id'];
+            $buses[$key]['reserved_seats'] = $this->getRemainSeats($id);
+
+        }
+        return $buses;
     }
 
     //use this function for security reason

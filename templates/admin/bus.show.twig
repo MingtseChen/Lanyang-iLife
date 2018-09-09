@@ -3,17 +3,17 @@
 {% extends "/layouts/admin.twig" %}
 {% block title %}Admin Dashboard{% endblock %}
 
-{% block page_title %}Bus Schedule{% endblock %}
+{% block page_title %}交通車預約{% endblock %}
 
 {% block content %}
     <div class="row">
         <div class="col-md-12">
             <div class="card card-outline card-success">
                 <div class="card-header">
-                    <h3 class="card-title d-inline">Schedule</h3>
+                    <h3 class="card-title d-inline">班次表</h3>
                     <button type="button" class="btn btn-success btn-flat btn-sm float-right" data-toggle="modal"
                             data-target="#create">
-                        <i class="fas fa-plus"></i> Create
+                        <i class="fas fa-plus"></i> 新增
                     </button>
 
                 </div>
@@ -22,13 +22,13 @@
                     <table id="busTable" class="table table-hover">
                         <thead>
                         <tr>
-                            <th>Bus No.</th>
-                            <th>Destination</th>
-                            <th>Departure</th>
-                            <th>Capacity</th>
-                            <th>Reservation</th>
-                            <th>Description</th>
-                            <th>Action</th>
+                            <th>#</th>
+                            <th>行車方向</th>
+                            <th>發車時間</th>
+                            <th>預約人數/空位</th>
+                            <th>預約</th>
+                            <th>備註</th>
+                            <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -41,7 +41,7 @@
                                     <td data-type="{{ schedule.type }}">蘭陽校園 → 礁溪</td>
                                 {% endif %}
                                 <td>{{ schedule.departure_time|date("Y-m-d H:i") }}</td>
-                                <td>{{ schedule.capacity }}</td>
+                                <td>{{ schedule.reserved_seats~"/"~schedule.capacity }}</td>
                                 {% if schedule.reservation %}
                                     <td data-type="{{ schedule.reservation }}">Yes</td>
                                 {% else %}
@@ -102,7 +102,8 @@
                                 <td>{{ user.dorm_no }}</td>
                                 <td>{{ user.create_time|date("Y-m-d H:i") }}</td>
                                 <td>
-                                    <a class="mx-1" style="color: #f56954" href="?deluser={{ user.id }}&from={{ current_path(true) }}" title="Delete">
+                                    <a class="mx-1" style="color: #f56954"
+                                       href="?deluser={{ user.id }}&from={{ current_path(true) }}" title="Delete">
                                         <i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
@@ -290,7 +291,8 @@
             "ordering": true,
             "info": true,
             "pageLength": 10,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "order": [2, 'asc']
         });
     </script>
 {% endblock %}
