@@ -59,7 +59,8 @@
                                             取消報修
                                         </a>
                                     {% elseif item.item_status == 1 or item.item_status == 2 %}
-                                        <a class="btn btn-info" id="call" data-id="{{ item.id }}" href="#">催件(留言)</a>
+                                        <a class="btn btn-info" id="call" data-id="{{ item.id }}"
+                                           data-cat="{{ item.item_cat }}" href="#">催件(留言)</a>
                                     {% elseif item.item_status == 3 %}
                                         <a class="btn btn-success"
                                            href="{{ path_for('repairConfirmShow',{ 'id': item.id }) }}">確認完工&評價(建議)</a>
@@ -163,6 +164,7 @@
         // input.className = "form-control";
         $("#call").click(function () {
             let id = $(this).data("id");
+            let cat = $(this).data("cat");
             console.log($(this).data("id"));
             swal({
                 title: '我要留言',
@@ -182,23 +184,25 @@
                 $.ajax({
                     type: 'POST',
                     url: "{{ base_url()~path_for('repairCall',{ 'id': '' }) }}" + id,
-                    data: "call=" + value,
+                    data: {call: value, cat: cat},
+                    timeout:200000,
                     // success: success,
                 }).done(function (data) {
                     console.log(data);
-                    if (data.status === 'ok') {
-                        swal("好的!", "我門將儘快處理!", "success");
-                    }
-                    else {
-                        swal("Oops!", "操作錯誤", "error");
-                    }
-                }).fail(function () {
-                    swal("Oops!", "請求失敗", "error");
+                    // if (data == 'ok') {
+                    //     swal("好的!", "我門將儘快處理!", "success");
+                    // }
+                    // else {
+                    //     swal("Oops!", "操作錯誤", "error");
+                    // }
+                    swal("好的!", "我門將儘快處理!", "success");
+                }).fail(function (err) {
+                    console.log(err);
+                    swal("Oops!", "目前系統異常或忙碌中，請稍後再試", "error");
                 });
-
             }).catch(err => {
                 if (err) {
-                    swal("Oops!", "請求失敗", "error");
+                    swal("Oops!", "目前系統異常或忙碌中，請稍後再試", "error");
                 } else {
                     swal.stopLoading();
                     swal.close();
