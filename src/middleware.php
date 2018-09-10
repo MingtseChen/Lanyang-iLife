@@ -16,10 +16,10 @@ $app->add(new RunTracy\Middlewares\TracyMiddleware($app));
 $app->add(new SSO());
 
 //Session
-$app->add(new \Slim\Middleware\Session([
-    'name' => 'SSID',
-    'autorefresh' => true,
-    'lifetime' => '1 hour'
-]));
+//$app->add(new \Slim\Middleware\Session([
+//    'name' => 'SSID',
+//    'autorefresh' => true,
+//    'lifetime' => '1 hour'
+//]));
 
 $app->add(new TrailingSlash(false));
