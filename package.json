@@ -22,7 +22,7 @@
     "datatables.net-responsive-bs4": "^2.2.3",
     "flatpickr": "^4.5.2",
     "jquery": "^3.3.1",
-    "jquery-validation": "^1.17.0",
+    "jquery-validation": "^1.18.0",
     "popper.js": "^1.14.4",
     "smartwizard": "^4.3.1",
     "smoothscroll-for-websites": "^1.4.6",
