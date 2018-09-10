@@ -181,6 +181,11 @@ class Bus
         $reserve = ORM::forTable('bus_reserve')->where('bus_id', $id)->findArray();
         return $reserve;
     }
+    public function showReserveDetail($id)
+    {
+        $detail = ORM::forTable('bus_schedule')->where('id', $id)->findArray();
+        return $detail[0];
+    }
 
     public function createSuspendList($data)
     {

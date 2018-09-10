@@ -230,7 +230,7 @@ $app->group('/user', function ($app) {
         $workID = $args['id'];
         $uid = $this->session->id;
 
-        $status = $repair->deleteUserItem($workID,$uid);
+        $status = $repair->deleteUserItem($workID, $uid);
         if ($status) {
             return "success";
         } else {
@@ -502,9 +502,11 @@ $app->group('/admin', function ($app) {
                 return $response->withRedirect('/admin/bus?success');
             }
             $users = [];
+            $detail = [];
             if (isset($request->getQueryParams()['user'])) {
                 $id = $request->getQueryParams()['user'];
                 $users = $bus->showReserveUser($id);
+                $detail = $bus->showReserveDetail($id);
             }
             if (isset($request->getQueryParams()['deluser'])) {
                 $id = $request->getQueryParams()['deluser'];
@@ -514,7 +516,7 @@ $app->group('/admin', function ($app) {
                 return $response->withRedirect($uri);
             }
 
-            $schedule = ['schedules' => $bus->getSchedule(), 'users' => $users];
+            $schedule = ['schedules' => $bus->getSchedule(), 'users' => $users, 'detail' => $detail];
             if (isset($request->getQueryParams()['success'])) {
                 $this->flash->addMessage('success', 'Operation Success !');
             }
