@@ -210,6 +210,7 @@ $app->group('/user', function ($app) {
     $app->post('/repair/call/{id}', function ($request, $response, $args) {
         $repair = new Repair();
         $call = $request->getParsedBody()['call'];
+
         $id = $args['id'];
         $callUser = $repair->readWorkSID($id);
         $currentUser = $this->session->id;
@@ -217,10 +218,17 @@ $app->group('/user', function ($app) {
             return $response->withJson(['status' => 'error']);
         }
         $status = $repair->userCall($id, $call);
+
+        $mail = new Mail();
+        $cat = $request->getParsedBody()['cat'];
+        $email = $repair->getCatUser($cat);
+        $mail->repairNotify($email);
+
         if ($status) {
-            return $response->withJson(['status' => 'ok']);
+
+            return "ok";
         } else {
-            return $response->withJson(['status' => 'error']);
+            return "error";
         }
     })->setName('repairCall');
 
@@ -322,6 +330,9 @@ $app->group('/repair', function ($app) {
         $status = $repair->createRepair($uid, $building, $room, $item_cat, $item, $desc, $accompany, $confirm,
             $filename);
         if ($status) {
+            $mail = new Mail();
+            $email = $repair->getCatUser($item_cat);
+            $mail->repairNotify($email);
             $this->flash->addMessage('success', '資料已送出，將儘快處理');
             return $response->withRedirect('/repair');
         } else {
@@ -734,6 +745,9 @@ $app->group('/admin', function ($app) {
                 $id = $request->getParsedBody()['id'];
                 $status = $item->edit($id, $building, $cat);
                 if ($status) {
+                    $mail = new Mail();
+                    $email = $item->getCatUser($cat);
+                    $mail->repairNotify($email);
                     $this->flash->addMessage('success', 'data saves ');
                     return $response->withRedirect('/admin/repair');
                 } else {

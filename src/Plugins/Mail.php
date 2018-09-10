@@ -16,7 +16,9 @@ class Mail
         // 0 = off (for production use)
         // 1 = client messages
         // 2 = client and server messages
-        $this->mail->SMTPDebug = 2;
+        $this->mail->SMTPDebug = 0;
+        //Charset for Chinese
+        $this->mail->CharSet = 'UTF-8';
         //Set the hostname of the mail server
         $this->mail->Host = 'smtp.mailtrap.io';
         //Set the SMTP port number - likely to be 25, 465 or 587
@@ -63,5 +65,11 @@ class Mail
     {
         $msg = "New package arrived go check it out!";
         $this->send($email, 'package notify', $msg);
+    }
+
+    public function repairNotify($email)
+    {
+        $msg = "您有新的報修項目 請儘速查看 https://sso.tku.edu/ilifelytest/admin";
+        $this->send($email, '報修通知', $msg);
     }
 }

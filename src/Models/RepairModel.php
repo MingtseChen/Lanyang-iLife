@@ -32,6 +32,12 @@ class Repair
         return true;
     }
 
+    public function getCatUser($cat)
+    {
+        $item = ORM::forTable('repair_cat')->findOne($cat);
+        return $item->admin_mail;
+    }
+
     public function finishItem($id, $repair_notes)
     {
         $row = ORM::forTable('repair_item')->findOne($id);
@@ -180,7 +186,7 @@ class Repair
             $state = $items[$key]['item_status'];
 
             $items[$key]['building'] = $this->getBuilding($building);
-            $items[$key]['item_cat'] = $this->getCategory($category);
+            $items[$key]['cat_name'] = $this->getCategory($category);
             $items[$key]['item_status_name'] = $this->getItemStatus($state);
         }
         return $items;
