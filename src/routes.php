@@ -219,13 +219,11 @@ $app->group('/user', function ($app) {
         }
         $status = $repair->userCall($id, $call);
 
-        $mail = new Mail();
-        $cat = $request->getParsedBody()['cat'];
-        $email = $repair->getCatUser($cat);
-        $mail->repairNotify($email);
-
         if ($status) {
-
+            $mail = new Mail();
+            $cat = $request->getParsedBody()['cat'];
+            $email = $repair->getCatUser($cat);
+            $mail->repairCallNotify($email, $call);
             return "ok";
         } else {
             return "error";

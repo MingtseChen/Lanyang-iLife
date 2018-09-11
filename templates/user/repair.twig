@@ -185,7 +185,6 @@
                     type: 'POST',
                     url: "{{ base_url()~path_for('repairCall',{ 'id': '' }) }}" + id,
                     data: {call: value, cat: cat},
-                    timeout:200000,
                     // success: success,
                 }).done(function (data) {
                     console.log(data);

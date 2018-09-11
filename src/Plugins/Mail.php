@@ -16,13 +16,13 @@ class Mail
         // 0 = off (for production use)
         // 1 = client messages
         // 2 = client and server messages
-        $this->mail->SMTPDebug = 0;
+        $this->mail->SMTPDebug = 2;
         //Charset for Chinese
         $this->mail->CharSet = 'UTF-8';
         //Set the hostname of the mail server
         $this->mail->Host = 'smtp.mailtrap.io';
         //Set the SMTP port number - likely to be 25, 465 or 587
-        $this->mail->Port = 25;
+        $this->mail->Port = 2525;
         //Whether to use SMTP authentication
         $this->mail->SMTPAuth = true;
         //Username to use for SMTP authentication
@@ -71,5 +71,11 @@ class Mail
     {
         $msg = "您有新的報修項目 請儘速查看 https://sso.tku.edu/ilifelytest/admin";
         $this->send($email, '報修通知', $msg);
+    }
+
+    public function repairCallNotify($email, $msg)
+    {
+        $msg = "您的報修項目有新留言:  \"" . $msg . "\"\n請儘速查看 https://sso.tku.edu/ilifelytest/admin";
+        $this->send($email, '報修催件通知', $msg);
     }
 }
