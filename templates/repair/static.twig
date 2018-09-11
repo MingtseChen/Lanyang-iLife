@@ -2,10 +2,64 @@
 {% block title %}iRepair{% endblock %}
 {% block content %}
     <div class="row">
+        <div class="col-lg-6 col-12">
+            <!-- small box -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ info.avg }}<sup style="font-size: 20px"> /件</sup></h3>
+
+                    <p>平均完成天數</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-6 col-12">
+            <!-- small box -->
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ info.total }}<sup style="font-size: 20px">件</sup></h3>
+
+                    <p>全部件數</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-suitcase"></i>
+                </div>
+            </div>
+        </div>
+        <!-- ./col -->
+    </div>
+    <div class="row">
         <div class="col-12">
             <div class="card card-info card-outline">
+
                 <div class="card-header">
-                    <h3 class="card-title">報修統計</h3>
+                    <h3 class="card-title" style="position: absolute;">報修統計</h3>
+                    <div class="dropdown ml-auto">
+                        <button class="btn btn-default dropdown-toggle btn-sm float-right" data-toggle="dropdown"
+                                type="button">
+                            時間過濾
+                        </button>
+                        <div class="dropdown-menu p-3 text-muted">
+                            <h6 class="dropdown-header">區間選擇</h6>
+                            <form>
+                                <div class="row">
+                                    <div class="form-row">
+                                        <div class="col">
+                                            <input class="form-control form-control-sm my-2" type="text"
+                                                   placeholder="起始日期" name="start" id="start">
+                                            <input class="form-control form-control-sm my-2" type="text"
+                                                   placeholder="結束日期" name="end" id="end">
+                                            <button type="submit" class="btn btn-block btn-success">查詢</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="card-body">
                     <div class="tab-content">
@@ -48,7 +102,7 @@
         $(document).ready(function () {
             $('[id=userTable]').DataTable({
                 "order": [[0, 'desc']],
-                responsive: true,
+                "responsive": true,
                 "paging": true,
                 // "lengthChange": false,
                 "searching": true,
@@ -56,6 +110,13 @@
                 "info": true,
                 "pageLength": 10,
                 "lengthMenu": [10, 15, 20, 50]
+            });
+
+            $("#start").flatpickr({
+                defaultDate: "{{ _get.start ? _get.start : "now"|date("Y-m-d") }}",
+            });
+            $("#end").flatpickr({
+                defaultDate: "{{ _get.end ? _get.end : "now"|date("Y-m-d") }}",
             });
         });
     </script>

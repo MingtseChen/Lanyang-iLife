@@ -341,8 +341,27 @@ $app->group('/repair', function ($app) {
 
     $app->get('/static', function ($request, $response, $args) {
         $repair = new Repair();
-        $items = $repair->readAllWork();
-        return $this->view->render($response, '/repair/static.twig', ['items' => $items]);
+
+        $start = null;
+        $end = null;
+
+        if (isset($request->getQueryParams()['start'])) {
+            $start = $request->getQueryParams()['start'];
+        }
+        if (isset($request->getQueryParams()['end'])) {
+            $end = $request->getQueryParams()['end'];
+        }
+
+        $items = $repair->readAllWork($start, $end);
+        $time = $repair->getAverageWorkDay($items);
+        $data = [
+            'items' => $items,
+            'info' => [
+                'avg' => $time,
+                'total' => count($items),
+            ]
+        ];
+        return $this->view->render($response, '/repair/static.twig', $data);
     })->setName('repairStatic');
 });
 
