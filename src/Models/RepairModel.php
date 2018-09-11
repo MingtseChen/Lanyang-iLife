@@ -223,7 +223,7 @@ class Repair
     private function allowDelete($id, $uid)
     {
         $status = ORM::forTable('repair_item')->select('item_status')->where(['note_man' => $uid])->findOne($id);
-        if ($status  && $status['item_status'] == 0) {
+        if ($status && $status['item_status'] == 0) {
             return true;
         } else {
             return false;
@@ -276,9 +276,16 @@ class Repair
         return $call;
     }
 
-    public function readAllWork()
+    public function readAllWork($start = null, $end = null)
     {
-        $items = ORM::forTable('repair_item')->whereNotEqual('item_status', '99')->findArray();
+        if (is_null($start)) {
+            $start = Carbon::parse("2016-01-01");
+        }
+        if (is_null($end)) {
+            $end = Carbon::now();
+        }
+        $whereClause = 'note_time BETWEEN \'' . Carbon::parse($start) . '\' AND \'' . Carbon::parse($end) . '\'';
+        $items = ORM::forTable('repair_item')->whereRaw($whereClause)->whereNotEqual('item_status', '99')->findArray();
         foreach ($items as $key => $item) {
             $building = $items[$key]['building'];
             $category = $items[$key]['item_cat'];
@@ -289,6 +296,27 @@ class Repair
             $items[$key]['item_status_name'] = $this->getItemStatus($state);
         }
         return $items;
+    }
+
+    public function getAverageWorkDay($items)
+    {
+        $counter = 0;
+        $spentTime = 0;
+        foreach ($items as $key => $item) {
+            if ($items[$key]['item_status'] == 3 || $items[$key]['item_status'] == 4) {
+                $start = Carbon::parse($items[$key]['note_time']);
+                $finish = Carbon::parse($items[$key]['ok_time']);
+                $spentTime += $start->diffInDays($finish, true);
+                $counter++;
+            } else {
+                continue;
+            }
+        }
+        if ($counter == 0) {
+            $counter = 1;
+        }
+        $average = round((float)$spentTime / (float)$counter, 2);
+        return $average;
     }
 
 }
