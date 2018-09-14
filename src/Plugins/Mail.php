@@ -10,27 +10,21 @@ class Mail
     {
         //Create a new PHPMailer instance
         $this->mail = new PHPMailer;
-        //Tell PHPMailer to use SMTP
-        $this->mail->isSMTP();
         //Enable SMTP debugging
         // 0 = off (for production use)
         // 1 = client messages
         // 2 = client and server messages
-        $this->mail->SMTPDebug = 2;
+        $this->mail->SMTPDebug = 3;
         //Charset for Chinese
         $this->mail->CharSet = 'UTF-8';
         //Set the hostname of the mail server
-        $this->mail->Host = 'smtp.mailtrap.io';
+        $this->mail->Host = 'smtp.tku.edu.tw';
         //Set the SMTP port number - likely to be 25, 465 or 587
-        $this->mail->Port = 2525;
+        $this->mail->Port = 25;
         //Whether to use SMTP authentication
         $this->mail->SMTPAuth = true;
-        //Username to use for SMTP authentication
-        $this->mail->Username = 'a8271b91a3d227';
-        //Password to use for SMTP authentication
-        $this->mail->Password = 'fcb4929c039a1b';
         //Set who the message is to be sent from
-        $this->mail->setFrom('no-reply@tku.edu.tw', 'no-reply');
+        $this->mail->setFrom('no-reply@mail.tku.edu.tw', 'web-admin');
     }
 
     public function busReserveConfirm($email)
