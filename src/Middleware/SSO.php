@@ -22,14 +22,13 @@ class SSO
         //*****************************************//test only
         $uri = $request->getUri();
         $host = $uri->getHost();
-
-        if ($host == "localhost") {
-            $uid = 403840308;
-            $ssoRole = 1;
-            $headers['sso_userid'] = $uid;
-            $headers['sso_roletype'] = $ssoRole;
-            $ssoLogin = true;
-        }
+//        if ($host == "localhost") {
+//            $uid = 403840308;
+//            $ssoRole = 1;
+//            $headers['sso_userid'] = $uid;
+//            $headers['sso_roletype'] = $ssoRole;
+//            $ssoLogin = true;
+//        }
         //*****************************************//test only
 
         $path = $request->getUri()->getPath();
@@ -74,10 +73,11 @@ class SSO
     {
         $table = ORM::forTable('students')->selectMany(['uname', 'name']);
         $data = $table->where(['uname' => $uid])->findArray();
-        if (empty($data)) {
+        if (empty($data[0])) {
             return false;
         }
-        $name = trim($data[0]['name'], '　');
+        //need to fix trim
+        $name = $data[0]['name'];
         return $name;
     }
 
@@ -112,7 +112,7 @@ class SSO
     public function setAdminSession($uid, $name, $ssoRole, $group)
     {
         $this->session->set('id', $uid);
-        $this->session->set('name', trim($name, '　'));
+        $this->session->set('name', $name);
         $this->session->set('ssoRole', $ssoRole);
         $this->session->set('group', $group);
     }
@@ -129,7 +129,7 @@ class SSO
     public function setUserSession($uid, $name, $ssoRole)
     {
         $this->session->set('id', $uid);
-        $this->session->set('name', trim($name, '　'));
+        $this->session->set('name', $name);
         $this->session->set('ssoRole', $ssoRole);
         $this->session->set('group', -1);
     }
