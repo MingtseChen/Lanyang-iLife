@@ -53,6 +53,7 @@ class Repair
 
     public function createRepair($id, $building, $room, $item_cat, $item, $desc, $accompany, $confirm, $filename)
     {
+        $report = [];
         try {
             $repairItem = ORM::forTable('repair_item')->create();
             $repairItem->building = $building;
@@ -65,9 +66,21 @@ class Repair
             $repairItem->request_need_confirm = $confirm;
             $repairItem->photo = $filename;
             $repairItem->save();
-            return true;
+            $report = [
+                'status' => true,
+                'building' => $building,
+                'location' => $room,
+                'item_cat' => $item_cat,
+                'item' => $item,
+                'item_desc' => $desc
+            ];
+            return $report;
         } catch (Exception $e) {
-            return false;
+            $report = [
+                'status' => false,
+                'error' => $e,
+            ];
+            return $report;
         }
     }
 

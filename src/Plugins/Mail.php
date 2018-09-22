@@ -61,10 +61,11 @@ class Mail
         $this->send($email, 'package notify', $msg);
     }
 
-    public function repairNotify($email)
+    public function repairNotify($email, $info)
     {
+        $notifyString = '地點: ' . $info['location'] . '物品: ' . $info['item'] . '狀況: ' . $info['item_desc'];
         $msg = "您有新的報修項目 請儘速查看 https://sso.tku.edu/ilifelytest/admin";
-        $this->send($email, '報修通知', $msg);
+        $this->send($email, '報修通知', $notifyString . '\n' . $msg);
     }
 
     public function repairCallNotify($email, $msg)

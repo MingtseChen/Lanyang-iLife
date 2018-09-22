@@ -298,7 +298,7 @@ $app->group('/repair', function ($app) {
     })->setName('repairCreate');
 
     $app->post('/create', function ($request, $response, $args) {
-        //TODO handle upload exceeds server's threshhold cause blank form send and 500 response
+        //TODO handle upload exceeds server's threshold cause blank form send and 500 response
         $repair = new Repair();
         $upload = new FileUpload();
         $params = $request->getParsedBody();
@@ -325,12 +325,13 @@ $app->group('/repair', function ($app) {
             }
         }
         //pass form params
-        $status = $repair->createRepair($uid, $building, $room, $item_cat, $item, $desc, $accompany, $confirm,
+        //if it will return message
+        $rpr = $repair->createRepair($uid, $building, $room, $item_cat, $item, $desc, $accompany, $confirm,
             $filename);
-        if ($status) {
+        if ($rpr['status']) {
             $mail = new Mail();
             $email = $repair->getCatUser($item_cat);
-            $mail->repairNotify($email);
+            $mail->repairNotify($email, $rpr);
             $this->flash->addMessage('success', '資料已送出，將儘快處理');
             return $response->withRedirect('/repair');
         } else {
