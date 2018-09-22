@@ -11,7 +11,7 @@ class Bus
         $now = Carbon::now('Asia/Taipei');
 //        $now = Carbon::parse("2018-09-03 00:00");
         $endOfWeek = Carbon::now('Asia/Taipei')->endOfWeek();
-        $whereClause = 'departure_time BETWEEN \'' . $now . '\' AND \'' . $endOfWeek . '\'';
+        $whereClause = 'departure_time BETWEEN \'' . $now . '\' AND \'' . $endOfWeek->addWeek() . '\'';
         //find schedule in given range
         $time = ORM::forTable('bus_schedule')->where_raw($whereClause);
         //find opened schedule
@@ -181,6 +181,7 @@ class Bus
         $reserve = ORM::forTable('bus_reserve')->where('bus_id', $id)->findArray();
         return $reserve;
     }
+
     public function showReserveDetail($id)
     {
         $detail = ORM::forTable('bus_schedule')->where('id', $id)->findArray();
