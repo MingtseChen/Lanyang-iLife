@@ -22,13 +22,13 @@ class SSO
         //*****************************************//test only
         $uri = $request->getUri();
         $host = $uri->getHost();
-//        if ($host == "localhost") {
-//            $uid = 403840308;
-//            $ssoRole = 1;
-//            $headers['sso_userid'] = $uid;
-//            $headers['sso_roletype'] = $ssoRole;
-//            $ssoLogin = true;
-//        }
+        if ($host == "localhost") {
+            $uid = 403840308;
+            $ssoRole = 1;
+            $headers['sso_userid'] = $uid;
+            $headers['sso_roletype'] = $ssoRole;
+            $ssoLogin = true;
+        }
         //*****************************************//test only
 
         $path = $request->getUri()->getPath();
