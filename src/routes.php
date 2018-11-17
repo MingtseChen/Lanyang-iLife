@@ -430,8 +430,8 @@ $app->group('/admin', function ($app) {
             $status = $package->createPackage($data['rcp'], $data['cat'], $data['strg'], $data['pid'],
                 $data['time']);
             if ($status) {
-                $uid = $this->session->id;
-                $email = $student->fetch($uid)->getPrimaryMail();
+                $user = $data['rcp'];
+                $email = $student->unameFetch($user)->getPrimaryMail();
 
                 $mail->packageConfirm($email);
                 $this->flash->addMessage('success', 'Package updated');
