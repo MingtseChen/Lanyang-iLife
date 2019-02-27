@@ -751,6 +751,7 @@ $app->group('/admin', function ($app) {
                 $id = $request->getParsedBody()['id'];
                 $status = $item->signWork($id);
                 if ($status) {
+                    $test = $item->readUserById($id);
                     return 'success';
                 } else {
                     return 'error';

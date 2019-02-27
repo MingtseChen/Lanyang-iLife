@@ -4,6 +4,11 @@ use Carbon\Carbon;
 
 class Repair
 {
+    public function readUserById($id)
+    {
+        $user = ORM::forTable('repair_item')->select('note_man')->findOne($id);
+        return $user;
+    }
     public function readCategory()
     {
         $category = ORM::forTable('repair_cat')->orderByAsc('soc')->findArray();
