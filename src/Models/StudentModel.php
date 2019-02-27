@@ -15,6 +15,17 @@ class Student
         return $this;
     }
 
+    public function unameFetch($uname)
+    {
+        $table = ORM::forTable('students')->where('name', $uname)->findArray();
+        if (!empty($table)) {
+            $this->row = $table[0];
+        } else {
+            $this->row = false;
+        }
+        return $this;
+    }
+
     public function getUsername()
     {
         if ($this->row) {
